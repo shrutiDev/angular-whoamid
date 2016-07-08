@@ -92,7 +92,7 @@ angular.module('app', [
   }])
   .run(['waidService',function(waidService){
     waidService.initialize(
-      '/en/api',
+      '/nl/api',
       config.accountId,
       config.applicationId
     );

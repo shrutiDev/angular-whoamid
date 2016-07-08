@@ -9,6 +9,7 @@ angular.module('waid.services', ['app'])
         'applicationId':null,
         'token':null,
         'authenticated':false,
+        'fp':'',
         'request': function(args) {
             var that = this;
             
@@ -21,6 +22,8 @@ angular.module('waid.services', ['app'])
             } else {
                 $http.defaults.headers.common['Authorization'] = null;
             }
+
+            $http.defaults.headers.common['FPID'] = this.fp;
 
             // Extend headers
             var headers = {}
@@ -78,6 +81,22 @@ angular.module('waid.services', ['app'])
             this.authenticated = false;
             $cookies.remove('token');
             this.token = null;
+        },
+        '_makeFileRequest': function(method, path, broadcast, data) {
+            var deferred = $q.defer();
+            this.request({
+                'method': method,
+                'url': path,
+                'data' :data,
+                'headers':{'Content-Type': undefined }
+            }).then(function(data){
+                $rootScope.$broadcast("waid.services." + broadcast + '.' + method.toLowerCase() + ".ok", data);
+                deferred.resolve(data);
+            }, function(data){
+                $rootScope.$broadcast("waid.services." + broadcast + '.' + method.toLowerCase() + ".error", data);
+                deferred.reject(data);
+            });
+            return deferred.promise;
         },
         '_makeRequest': function(method, path, broadcast, data) {
             var deferred = $q.defer();
@@ -164,8 +183,19 @@ angular.module('waid.services', ['app'])
         'userEmailDelete': function(id) {
             return this._makeRequest('DELETE', this._getAppUrl("/user/email/" + id + "/"), 'application.userEmail');
         },
+        'userAvatarPut': function(fd) {
+            return this._makeFileRequest('PUT', this._getAppUrl("/user/avatar/"), 'application.userAvatar', fd);
+        },
         'socialProviderListGet': function() {
             return this._makeRequest('GET', this._getAppUrl("/social/providers/"), 'application.socialProviderList');
+        },
+        'commentsListGet': function(params) {
+            if (typeof params != "undefined") {
+                var query = '?' + $.param(params);
+            } else {
+                var query = '';
+            }
+            return this._makeRequest('GET', this._getAppUrl("/comments/" + query), 'application.commentsList');
         },
         'adminAccountGet': function() {
             return this._makeRequest('GET', this._getAdminUrl("/account/"), 'admin.account');
@@ -222,6 +252,12 @@ angular.module('waid.services', ['app'])
             this.API_URL = url;
             this.accountId = accountId;
             this.applicationId = applicationId;
+            
+            new Fingerprint2().get(function(result, components){
+              that.fp = result;
+              that.fpComponents = components;
+            });
+
             return this
         }
 

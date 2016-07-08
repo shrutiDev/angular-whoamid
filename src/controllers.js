@@ -17,7 +17,16 @@ angular.module('client.controllers', ['app'])
       $uibModalInstance.dismiss('close');
     };
   }) 
-
+  .controller('CommentCtrl', function($scope, waidService) {
+    // TODO
+    var params = {
+      'ordering': '-created',
+      'page_id': 'page_1'
+    }
+    waidService.commentsListGet(params).then(function(data){
+      console.log(data);
+    });
+  })
   .controller('MainCtrl', function ($scope, $location, waidService,  $uibModal) {
     $scope.completeProfile = function () {
       var modalInstance = $uibModal.open({
@@ -131,9 +140,9 @@ angular.module('client.controllers', ['app'])
     });
   })
 
-  .controller('ProfileMainCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
+  .controller('ProfileMainCtrl', function ($scope, $rootScope, $location, waidService, $filter, $timeout) {
     $scope.model = {};
-
+    $scope.isUploading = false;
     $scope.dateOptions = {
       dateDisabled: false,
       maxDate: new Date(),
@@ -150,19 +159,35 @@ angular.module('client.controllers', ['app'])
       $scope.popup.opened = true;
     };
 
-    waidService.userProfileGet().then(function(data) {
-      $scope.errors = [];
-      if (data.date_of_birth) {
-        var dateParts = data.date_of_birth.split('-')
-        data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
-      }
-      $scope.model = data;
-    }, function(data) {
-      $scope.errors = data;
-    });
+    $scope.updateProfileInfo = function() {
+      waidService.userProfileGet().then(function(data) {
+        $scope.errors = [];
+        if (data.date_of_birth) {
+          var dateParts = data.date_of_birth.split('-')
+          data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+        }
+        $scope.model = data;
+      }, function(data) {
+        $scope.errors = data;
+      });
+    }
 
+    $scope.uploadFile = function(files) {
+      $scope.isUploading = true;
+      var fd = new FormData();
+      fd.append("file", files[0]);
+      waidService.userAvatarPut(fd).then(function(data){
+        $timeout(function(){
+          $scope.updateProfileInfo();
+          $scope.isUploading = false;
+        }, 1000);
+        
+      })
+    }
     $scope.save = function(){
       $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
+
+      console.log($scope.model.avatar);
 
       waidService.userProfilePatch($scope.model).then(function(data) {
         $scope.errors = [];
@@ -171,6 +196,8 @@ angular.module('client.controllers', ['app'])
         $scope.errors = data;
       });
     }
+
+    $scope.updateProfileInfo();
   })
   .controller('ProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
     $scope.model = {};
