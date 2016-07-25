@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('waid.services', ['app'])
-  .service('waidService', function idm($q, $http, $cookies, $rootScope, $location) {
+  .service('waidService', function idm($q, $http, $cookies, $rootScope, $location, Slug) {
     var service = {
         'API_URL': '',
         'apiVersion': 'v1',
@@ -189,13 +189,48 @@ angular.module('waid.services', ['app'])
         'socialProviderListGet': function() {
             return this._makeRequest('GET', this._getAppUrl("/social/providers/"), 'application.socialProviderList');
         },
+        'userCommentsPatch': function(id, data) {
+            return this._makeRequest('PATCH', this._getAppUrl("/user/comments/" + id + "/"), 'application.userComments', data);
+        },
+        'userCommentsPost': function(data) {
+            if (typeof data.thread_id == 'undefined') {
+                data.thread_id = Slug.slugify($location.absUrl());
+            }
+            data.url = $location.absUrl();
+            return this._makeRequest('POST', this._getAppUrl("/user/comments/"), 'application.userComments', data);
+        },
+        'userCommentsDelete': function(id) {
+            return this._makeRequest('DELETE', this._getAppUrl("/user/comments/" + id + "/"), 'application.userComments');
+        },
+        'userCommentsListGet': function(params) {
+            if (typeof params != "undefined") {
+                if (typeof params.thread_id != "undefined" && params.thread_id == 'currenturl') {
+                    params.thread_id = Slug.slugify($location.absUrl());
+                }
+                var query = '?' + $.param(params);
+            } else {
+                var query = '';
+            }
+            return this._makeRequest('GET', this._getAppUrl("/user/comments/" + query), 'application.userCommentsList');
+        },
         'commentsListGet': function(params) {
             if (typeof params != "undefined") {
+                if (typeof params.thread_id != "undefined" && params.thread_id == 'currenturl') {
+                    params.thread_id = Slug.slugify($location.absUrl());
+                }
                 var query = '?' + $.param(params);
             } else {
                 var query = '';
             }
             return this._makeRequest('GET', this._getAppUrl("/comments/" + query), 'application.commentsList');
+        },
+        'commentsVotePost': function(id, vote) {
+            var data = {'vote':vote};
+            return this._makeRequest('POST', this._getAppUrl("/comments/" + id + "/vote/"), 'application.commentsVote', data);
+        },
+        'commentsMarkPost': function(id, mark) {
+            var data = {'mark':mark};
+            return this._makeRequest('POST', this._getAppUrl("/comments/" + id + "/mark/"), 'application.commentsMark', data);
         },
         'adminAccountGet': function() {
             return this._makeRequest('GET', this._getAdminUrl("/account/"), 'admin.account');

@@ -5,13 +5,16 @@ angular.module('app', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  'client.controllers',
+  'waid.controllers',
   'waid.services',
+  'waid.directives',
   'angular-growl',
   'ui.bootstrap',
   'angular-confirm',
   'chart.js',
-  'textAngular'
+  'textAngular',
+  'slugifier',
+  'monospaced.elastic'
 ])
 .config(['growlProvider', function(growlProvider) {
     growlProvider.globalTimeToLive(5000);
@@ -21,6 +24,14 @@ angular.module('app', [
       .when('/social/error/:error/', {
         template: '',
         controller: 'ClientSocialError'
+      })
+      .when('/comments/', {
+        templateUrl: 'waid/client/comments.html',
+        resolve: {
+          authenticate: function(waidService){
+            return waidService.authenticate();
+          }
+        }
       })
       .when('/profile/emails/', {
         templateUrl: 'waid/profile/emails.html',

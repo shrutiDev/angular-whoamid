@@ -1,32 +1,137 @@
 'use strict';
 
-angular.module('client.controllers', ['app'])
+angular.module('waid.controllers', ['app'])
   .controller('ClientSocialError', function ($scope, $rootScope, growl, $routeParams, $location) {
     growl.addErrorMessage(config.errorCodes[$routeParams.error]);
     $location.path("/");
   }) 
+
   .controller('DefaultModalCtrl', function ($scope, $location, waidService,  $uibModalInstance) {
     $scope.close = function () {
       $uibModalInstance.dismiss('close');
     };
-  }) 
+  })
+  .controller('UserProfileMenuCtrl', function($scope, waidService) {
+    waidService.userProfileGet().then(function(data) {
+      $scope.user = data;
+    }, function(data) {
+      $scope.errors = data;
+    });
+  })
+  .controller('CommentClientCtrl', function($scope, waidService) {
+    $scope.loadComments = function() {
+      waidService.userCommentsListGet()
+        .then(function(data){
+          $scope.comments = data
+        },function(data){
+          alert('Invalid response')
+        }
+      );
+    }
+    $scope.loadComments();
+  })
+  .controller('CommentsMainCtrl', function($scope, waidService, $q) {
+    $scope.ordering =  angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
+    $scope.orderingEnabled =  angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
+    $scope.threadId =  angular.isDefined($scope.threadId) ? $scope.threadId : 'currenturl';
 
-  .controller('CompleteProfileCtrl', function ($scope, $location, $window, waidService,  $uibModalInstance) {
+    console.log($scope.orderingEnabled)
+
+    $scope.comment = {
+      'comment':''
+    }
+
+    $scope.orderCommentList = function(ordering) {
+      $scope.ordering = ordering;
+      $scope.loadComments();
+    }
+
+    $scope.voteComment = function(comment, vote){
+      console.log(vote)
+      waidService.commentsVotePost(comment.id, vote).then(function(data){
+        console.log(data);
+        comment.vote_up_count = data.vote_up_count;
+        comment.vote_down_count = data.vote_down_count;
+        comment.vote_count = data.vote_count;
+      })
+    }
+
+    $scope.markComment = function(comment, mark) {
+      waidService.commentsMarkPost(comment.id, mark).then(function(data){
+        console.log(data);
+        comment.marked_as_spam = data.marked_as_spam;
+      })
+    }
+
+    waidService.userProfileGet().then(function(data) {
+      $scope.user = data
+    });
+    
+    $scope.editComment = function(comment) {
+      comment.is_edit = true;
+    }
+
+    $scope.updateComment = function(comment) {
+      var patch_comment = {
+        'comment':comment.comment_formatted
+      }
+
+      //var deferred = $q.defer();
+      waidService.userCommentsPatch(comment.id, patch_comment).then(function(data){
+        //deferred.resolve(data);
+        comment.is_edit = false;
+        comment.comment_formatted = data.comment_formatted
+        comment.comment = data.comment
+      });
+
+      //comment = deferred.promise
+      // comment.is_edit = false;
+    }
+
+    $scope.deleteComment = function(comment) {
+      waidService.userCommentsDelete(comment.id).then(function(data){
+        var index = $scope.comments.indexOf(comment);
+        $scope.comments.splice(index, 1);
+      })
+    }
+
+    $scope.loadComments = function() {
+      waidService.commentsListGet({'thread_id': $scope.threadId, 'ordering':$scope.ordering})
+        .then(function(data){
+          for(var i=0; i < data.length; i++) {
+            data[i].is_edit = false;
+            if (data[i].user.id == $scope.user.id) {
+              data[i].is_owner = true;
+            }
+          }
+          console.log(data)
+          $scope.comments = data
+        },function(data){
+          alert('Invalid response')
+        }
+      );
+    }
+
+    $scope.post = function(){
+      waidService.userCommentsPost($scope.comment).then(function(data){
+        console.log(data);
+        $scope.comment.comment = '';
+        $scope.loadComments();
+      })
+    }
+    $scope.$watch('user', function(newUser, oldUser){
+      if (typeof newUser != "undefined" && newUser != oldUser) {
+        $scope.loadComments();
+        console.log(newUser);
+      }
+    }, true);
+  })
+  .controller('CompleteProfileCtrl', function ($scope, $location, $window, waidService, $uibModalInstance) {
     $scope.mode = 'complete';
     $scope.close = function () {
       $uibModalInstance.dismiss('close');
     };
   }) 
-  .controller('CommentCtrl', function($scope, waidService) {
-    // TODO
-    var params = {
-      'ordering': '-created',
-      'page_id': 'page_1'
-    }
-    waidService.commentsListGet(params).then(function(data){
-      console.log(data);
-    });
-  })
   .controller('MainCtrl', function ($scope, $location, waidService,  $uibModal) {
     $scope.completeProfile = function () {
       var modalInstance = $uibModal.open({
