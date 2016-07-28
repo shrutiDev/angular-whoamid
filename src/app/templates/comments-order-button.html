@@ -1,0 +1,15 @@
+<div class="btn-group">
+  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+     <span class="glyphicon glyphicon-sort"></span> 
+     <span ng-show="ordering=='-created'">Newest first</span>
+     <span ng-show="ordering=='created'">Oldest first</span>
+     <span ng-show="ordering=='-vote_count'">Top votes</span><span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#" ng-click="orderCommentList('-created')"><span class="glyphicon glyphicon-sort-by-attributes-alt"></span> Newest first </a></li>
+    <li><a href="#" ng-click="orderCommentList('created')"><span class="glyphicon glyphicon-sort-by-attributes
+        "></span> Oldest first</a></li>
+    <li><a href="#" ng-click="orderCommentList('-vote_count')"><span class="glyphicon glyphicon-flash
+        "></span> Top votes</a></li>
+  </ul>
+</div>

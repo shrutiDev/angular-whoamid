@@ -11,7 +11,6 @@ angular.module('app', [
   'angular-growl',
   'ui.bootstrap',
   'angular-confirm',
-  'chart.js',
   'textAngular',
   'slugifier',
   'monospaced.elastic'
@@ -25,8 +24,9 @@ angular.module('app', [
         template: '',
         controller: 'ClientSocialError'
       })
-      .when('/comments/', {
-        templateUrl: 'waid/client/comments.html',
+      .when('/page/:page/', {
+        templateUrl: 'app/templates/page.html',
+        controller: 'WAIDPageCtrl',
         resolve: {
           authenticate: function(waidService){
             return waidService.authenticate();
@@ -74,7 +74,7 @@ angular.module('app', [
         }
       })
       .when('/profile/overview/', {
-        templateUrl: 'waid/profile/overview.html',
+        templateUrl: 'app/templates/user-profile-home.html',
         resolve: {
           authenticate: function(waidService){
             return waidService.authenticate();
@@ -86,7 +86,7 @@ angular.module('app', [
         controller: 'AutoLoginCtrl'
       })
       .when('/', {
-        templateUrl: 'waid/client/main.html',
+        templateUrl: 'app/templates/user-login-and-register-home.html',
         resolve: {
           authenticate: function(waidService){
             // Authenticate, if logged in then you can redirect the user
@@ -103,14 +103,46 @@ angular.module('app', [
   }])
   .run(['waidService',function(waidService){
     waidService.initialize(
-      '/nl/api',
+      config.apiUrl,
       config.accountId,
       config.applicationId
     );
     waidService.authenticate();
   }])
-  .controller('MasterCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log) {
+  .controller('WAIDMasterCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log,  $uibModal) {
     // Assume user is not logged in until we hear otherwise
+
+    $scope.userLoginAndRegisterHome = function () {
+      $scope.userLoginAndRegisterHomeModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'app/templates/user-login-and-register-modal.html',
+        controller: 'DefaultModalCtrl',
+        size: 'lg',
+        resolve: {
+          account: function () {
+            return $scope.account;
+          }
+        }
+      });
+    }
+
+    $scope.userProfileHome = function () {
+      // if ($location.path() != '/profile/overview/') {
+      //       $location.path('/profile/overview/')
+      // }
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'app/templates/user-profile-modal.html',
+        controller: 'DefaultModalCtrl',
+        size: 'lg',
+        resolve: {
+          account: function () {
+            return $scope.account;
+          }
+        }
+      });
+    }
+
     $rootScope.authenticated = false;
     $rootScope.showMenu = false;
     $rootScope.initialized = false;
@@ -149,8 +181,9 @@ angular.module('app', [
         }
 
         if(data.profile_status.indexOf('profile_ok') !== -1) {
-          if ($location.path() != '/profile/overview/') {
-            $location.path('/profile/overview/')
+          $scope.userProfileHome();
+          if ($scope.userLoginAndRegisterHomeModalInstance) {
+            $scope.userLoginAndRegisterHomeModalInstance.dismiss('close');
           }
         }
       }

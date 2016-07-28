@@ -1,0 +1,80 @@
+
+<div class="row">
+  <div class="col-md-4">
+    <ng-include src="'waid/profile/menu.html'"></ng-include>
+  </div>      
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Overzicht</h3>
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+          <dt>Geboortedatum</dt>
+          <dd>{{ model.date_of_birth }}</dd>
+        </dl>
+        <dl class="dl-horizontal">
+          <dt>Geslacht</dt>
+          <dd><span ng-show="model.gender=='F'">Vrouw</span><span ng-show="model.gender=='M'">Male</span></dd>
+        </dl>
+        <a class="btn btn-default btn-sm pull-right" href="profile/main/">Algemene gegevens aanpassen</a>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Interesses</h3>
+      </div>
+      <div class="panel-body">
+          <dl class="dl-horizontal">
+          <dt>Leuk</dt>
+          <dd>{{ model.like_tags }}</dd>
+        </dl>
+        <dl class="dl-horizontal">
+          <dt>Niet leuk</dt>
+          <dd>{{ model.dislike_tags }}</dd>
+        </dl>
+        <a class="btn btn-default btn-sm pull-right" href="profile/interests/">Interesses aanpassen</a>
+      </div>
+      
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">E-mail adressen</h3>
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal" ng-repeat="email in emails">
+          <dt>
+            <span class="glyphicon glyphicon-eye-close text-danger" ng-show="!email.is_verified"></span>
+            <span class="glyphicon glyphicon-ok text-success" ng-show="email.is_verified"></span>
+          </dt>
+          <dd>{{ email.email }}</dd>
+        </dl>
+        <a class="btn btn-default btn-sm pull-right" href="profile/emails/">E-mail adressen aanpassen</a>
+      </div>
+      
+    </div>
+     
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Login</h3>
+      </div>
+      <div class="panel-body">
+      <a class="btn btn-default btn-sm pull-right" href="profile/username/">Login aanpassen</a>
+        <dl class="dl-horizontal">
+          <dt>Gebruikersnaam</dt>
+          <dd>{{ model.username }}</dd>
+        </dl>
+        
+        <a class="btn btn-default btn-sm pull-right" href="profile/password/">Wachtwoord aanpassen</a>
+        <dl class="dl-horizontal">
+          <dt>Wachtwoord</dt>
+          <dd>******</dd>
+        </dl>
+        
+      </div>
+      
+    </div>
+  </div>
+</div>

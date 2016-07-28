@@ -1,0 +1,11 @@
+<div class="btn-group">
+  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="glyphicon glyphicon-user"></span> Ingelogd als {{ user.default_name }}  <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="profile/overview/"><span class="glyphicon glyphicon-cog"></span> Profiel</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="#" ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span> Uitloggen</a></li>
+    <li><a href="#" ng-click="logoutAll()"><span class="glyphicon glyphicon-new-window"></span> Op alle systemen uitloggen</a></li>
+  </ul>
+</div>

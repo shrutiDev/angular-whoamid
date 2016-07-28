@@ -1,0 +1,13 @@
+  <ul class="nav navbar-nav navbar-right">
+    <li class="dropdown" ng-show="user">
+      <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" ng-cloak><span class="glyphicon glyphicon-user"></span> Ingelogd als {{ user.default_name }} <span class="caret"></span></a>
+      <ul class="dropdown-menu" ng-controller="LogoutCtrl">
+        <li><a href="profile/overview/"><span class="glyphicon glyphicon-cog"></span> Profiel</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#" ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span> Uitloggen</a></li>
+        <li><a href="#" ng-click="logoutAll()"><span class="glyphicon glyphicon-new-window"></span> Op alle systemen uitloggen</a></li>
+      </ul>
+    </li>
+    <li ng-hide="user"><a ng-click="userLoginAndRegisterHome()">Login of Registreer</a></li>
+    
+  </ul>
