@@ -8,28 +8,33 @@ angular.module('waid.directives', ['waid.controllers',])
         ordering:"@?",
         threadId:"@?",
         orderingEnabled:"=?",
+        waid:"="
       },
       controller: 'WAIDCommentsCtrl',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || 'waid/comments/main.html'
+        return attrs.templateUrl || 'app/templates/comments-home.html'
       }
     }
   })
-  .directive('waidUserProfileMenu', function () {
+  .directive('waidUserProfileNavbar', function () {
   return {
+    scope: {
+      waid:"="
+    },
     restrict: 'E',
-      controller: 'UserProfileMenuCtrl',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || 'app/templates/user-profile-menu.html'
+        return attrs.templateUrl || 'app/templates/user-profile-navbar.html'
       }
     }
   })
-  .directive('waidUserProfileButton', function () {
+  .directive('waidUserProfileStatusButton', function () {
   return {
+    scope: {
+      waid:"="
+    },
     restrict: 'E',
-      controller: 'UserProfileMenuCtrl',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || 'app/templates/user-profile-button.html'
+        return attrs.templateUrl || 'app/templates/user-profile-status-button.html'
       }
     }
   })

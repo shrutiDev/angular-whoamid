@@ -3,7 +3,6 @@
 angular.module('waid.controllers', ['app'])
   .controller('ClientSocialError', function ($scope, $rootScope, growl, $routeParams, $location) {
     growl.addErrorMessage(config.errorCodes[$routeParams.error]);
-    $location.path("/");
   }) 
 
   .controller('DefaultModalCtrl', function ($scope, $location, waidService,  $uibModalInstance) {
@@ -11,23 +10,29 @@ angular.module('waid.controllers', ['app'])
       $uibModalInstance.dismiss('close');
     };
   })
-  .controller('UserProfileMenuCtrl', function($scope, waidService) {
-    waidService.userProfileGet().then(function(data) {
-      $scope.user = data;
-    }, function(data) {
-      $scope.errors = data;
-    });
-  })
   .controller('WAIDPageCtrl', function($scope, waidService, $routeParams) {
-    console.log($routeParams.page);
+    // console.log($routeParams.page);
   })
   
+  .controller('WAIDUserProfileHomeCtrl', function($scope, waidService, $routeParams) {
+    $scope.currentProfilePage = 'overview';
+
+    $scope.showProfilePage = function(page) {
+      return (page == $scope.currentProfilePage) ? true : false;
+    };
+
+    $scope.getActiveProfilePageMenuClass = function(page) {
+      return (page == $scope.currentProfilePage) ? 'active' : '';
+    }
+
+    $scope.goToProfilePage = function(page) {
+      $scope.currentProfilePage = page;
+    }
+  })
   .controller('WAIDCommentsCtrl', function($scope, waidService, $q) {
     $scope.ordering =  angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
     $scope.orderingEnabled =  angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
     $scope.threadId =  angular.isDefined($scope.threadId) ? $scope.threadId : 'currenturl';
-
-    console.log($scope.orderingEnabled)
 
     $scope.comment = {
       'comment':''
@@ -39,25 +44,22 @@ angular.module('waid.controllers', ['app'])
     }
 
     $scope.voteComment = function(comment, vote){
-      console.log(vote)
-      waidService.commentsVotePost(comment.id, vote).then(function(data){
-        console.log(data);
-        comment.vote_up_count = data.vote_up_count;
-        comment.vote_down_count = data.vote_down_count;
-        comment.vote_count = data.vote_count;
-      })
+      if (!$scope.waid.user) {
+        $scope.waid.openLoginAndRegisterHomeModal();
+      } else {
+        waidService.commentsVotePost(comment.id, vote).then(function(data){
+          comment.vote_up_count = data.vote_up_count;
+          comment.vote_down_count = data.vote_down_count;
+          comment.vote_count = data.vote_count;
+        })
+      }
     }
 
     $scope.markComment = function(comment, mark) {
       waidService.commentsMarkPost(comment.id, mark).then(function(data){
-        console.log(data);
         comment.marked_as_spam = data.marked_as_spam;
       })
     }
-
-    waidService.userProfileGet().then(function(data) {
-      $scope.user = data
-    });
     
     $scope.editComment = function(comment) {
       comment.is_edit = true;
@@ -68,16 +70,11 @@ angular.module('waid.controllers', ['app'])
         'comment':comment.comment_formatted
       }
 
-      //var deferred = $q.defer();
       waidService.userCommentsPatch(comment.id, patch_comment).then(function(data){
-        //deferred.resolve(data);
         comment.is_edit = false;
         comment.comment_formatted = data.comment_formatted
         comment.comment = data.comment
       });
-
-      //comment = deferred.promise
-      // comment.is_edit = false;
     }
 
     $scope.deleteComment = function(comment) {
@@ -92,14 +89,13 @@ angular.module('waid.controllers', ['app'])
         .then(function(data){
           for(var i=0; i < data.length; i++) {
             data[i].is_edit = false;
-            if (data[i].user.id == $scope.user.id) {
+            if (data[i].user.id == $scope.waid.user.id) {
               data[i].is_owner = true;
             }
           }
-          console.log(data)
           $scope.comments = data
         },function(data){
-          alert('Invalid response')
+          alert('Cannot retrieve comments.');
         }
       );
     }
@@ -111,14 +107,11 @@ angular.module('waid.controllers', ['app'])
         $scope.loadComments();
       })
     }
-    $scope.$watch('user', function(newUser, oldUser){
-      if (typeof newUser != "undefined" && newUser != oldUser) {
-        $scope.loadComments();
-        console.log(newUser);
-      }
-    }, true);
+
+    $scope.loadComments();
+
   })
-  .controller('CompleteProfileCtrl', function ($scope, $location, $window, waidService, $uibModalInstance) {
+  .controller('WAIDCompleteProfileCtrl', function ($scope, $location, $window, waidService, $uibModalInstance) {
     $scope.mode = 'complete';
     $scope.close = function () {
       $uibModalInstance.dismiss('close');
@@ -126,36 +119,8 @@ angular.module('waid.controllers', ['app'])
   }) 
   .controller('MainCtrl', function ($scope, $location, waidService,  $uibModal) {
 
-
-    $scope.completeProfile = function () {
-      var modalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: 'waid/client/complete-profile.html',
-        controller: 'CompleteProfileCtrl',
-        size: 'lg',
-        resolve: {
-          account: function () {
-            return $scope.account;
-          }
-        }
-      });
-    }
-
-    $scope.lostLogin = function () {
-      var modalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: 'waid/client/lost-login-modal.html',
-        controller: 'DefaultModalCtrl',
-        size: 'lg',
-        resolve: {
-          account: function () {
-            return $scope.account;
-          }
-        }
-      });
-    }
   }) 
-  .controller('LoginCtrl', function ($scope, $location, waidService) {
+  .controller('WAIDLoginCtrl', function ($scope, $location, waidService) {
 
     $scope.model = {
       'username':'',
@@ -167,16 +132,14 @@ angular.module('waid.controllers', ['app'])
     $scope.login = function() {
       waidService.userLoginPost($scope.model)
         .then(function(data){
-          if(typeof data.profile_status != "undefined" && data.profile_status.indexOf('missing_profile_data') !== -1) {
-            $scope.completeProfile();
-          }
+          
         },function(data){
           $scope.errors = data;
         }
       );
     }
   })
-  .controller('LostLoginCtrl', function ($scope, $location, waidService) {
+  .controller('WAIDLostLoginCtrl', function ($scope, $location, waidService) {
 
     $scope.model = {
       'email':'',
@@ -188,25 +151,13 @@ angular.module('waid.controllers', ['app'])
       waidService.userLostLoginPost($scope.model)
         .then(function(data){
           $scope.errors = [];
-          $scope.close();
         },function(data){
           $scope.errors = data;
         }
       );
     }
   }) 
-  .controller('AutoLoginCtrl', function ($scope, $location, waidService, $routeParams) {
-    waidService.userAutoLoginGet($routeParams.code).then(function(data) {
-      if(typeof data.profile_status != "undefined" && data.profile_status.indexOf('missing_profile_data') !== -1) {
-        $scope.completeProfile(data);
-      }
-    });
-  })  
-  // .controller('ProfileLoginCtrl', function ($scope, $rootScope, $location, waidService) {
-  //   $scope.currentPanel = 'login';
-  // })
-  .controller('ProfileInterestsCtrl', function ($scope, $rootScope, $location, waidService) {
-    // $scope.currentPanel = 'interests';
+  .controller('WAIDUserProfileInterestsCtrl', function ($scope, $rootScope, $location, waidService) {
     $scope.model = {};
 
     waidService.userProfileGet().then(function(data) {
@@ -219,14 +170,13 @@ angular.module('waid.controllers', ['app'])
     $scope.save = function(){
       waidService.userProfilePatch($scope.model).then(function(data) {
         $scope.errors = [];
-        $location.path("/profile/overview/");
       }, function(data) {
         $scope.errors = data;
       });
     }
   })
 
-  .controller('ProfileOverviewCtrl', function ($scope, $rootScope, $location, waidService) {
+  .controller('WAIDUserProfileOverviewCtrl', function ($scope, $rootScope, $location, waidService) {
     waidService.userProfileGet().then(function(data) {
       $scope.errors = [];
       $scope.model = data;
@@ -239,7 +189,7 @@ angular.module('waid.controllers', ['app'])
     });
   })
 
-  .controller('ProfileMainCtrl', function ($scope, $rootScope, $location, waidService, $filter, $timeout) {
+  .controller('WAIDUserProfileMainCtrl', function ($scope, $rootScope, $location, waidService, $filter, $timeout) {
     $scope.model = {};
     $scope.isUploading = false;
     $scope.dateOptions = {
@@ -285,32 +235,27 @@ angular.module('waid.controllers', ['app'])
     }
     $scope.save = function(){
       $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
-
-      console.log($scope.model.avatar);
-
       waidService.userProfilePatch($scope.model).then(function(data) {
         $scope.errors = [];
-        $location.path("/profile/overview/");
       }, function(data) {
         $scope.errors = data;
       });
     }
-
     $scope.updateProfileInfo();
   })
-  .controller('ProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
+  .controller('WAIDUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
     $scope.model = {};
 
     $scope.save = function(){
       waidService.userPasswordPut($scope.model).then(function(data) {
         $scope.errors = [];
-        $location.path("/profile/overview/");
+        $scope.model = {};
       }, function(data) {
         $scope.errors = data;
       });
     }
   })
-  .controller('ProfileUsernameCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
+  .controller('WAIDUserProfileUsernameCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
     //$scope.model = {};
 
     waidService.userProfileGet().then(function(data) {
@@ -323,13 +268,12 @@ angular.module('waid.controllers', ['app'])
     $scope.save = function(){
       waidService.userUsernamePut($scope.model).then(function(data) {
         $scope.errors = [];
-        $location.path("/profile/overview/");
       }, function(data) {
         $scope.errors = data;
       });
     }
   })
-  .controller('ProfileEmailCtrl', function ($scope, $rootScope, $location, waidService) {
+  .controller('WAIDUserProfileEmailCtrl', function ($scope, $rootScope, $location, waidService) {
     $scope.inactiveEmails = [];
     $scope.activeEmails = [];
 
@@ -379,7 +323,7 @@ angular.module('waid.controllers', ['app'])
     $scope.loadEmailList();
     
   })
-  .controller('SocialCtrl', function ($scope, $location, waidService) {
+  .controller('WAIDSocialCtrl', function ($scope, $location, waidService) {
     $scope.providers = [];
     $scope.getProviders = function() {
       waidService.socialProviderListGet().then(function(data){
@@ -388,15 +332,7 @@ angular.module('waid.controllers', ['app'])
     }
     $scope.getProviders();
   })
-  .controller('LogoutCtrl', function ($scope, $location, waidService) {
-    $scope.logout = function() {
-      waidService.userLogoutPost();
-    }
-    $scope.logoutAll = function() {
-      waidService.userLogoutAllPost();
-    }
-  })
-  .controller('RegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
+  .controller('WAIDRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
     $scope.show = {};
     $scope.missingEmailVerification = false;
     if ($scope.modus == 'complete') {
@@ -423,22 +359,7 @@ angular.module('waid.controllers', ['app'])
         'terms_and_conditions_check':true
       }
     }
-
-
-    $scope.openTermsAndConditions = function (template) {
-      var modalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: 'waid/client/terms-and-conditions.html',
-        controller: 'DefaultModalCtrl',
-        size: 'lg',
-        resolve: {
-          application: function () {
-            return $scope.application;
-          }
-        }
-      });
-    };
-
+    
     // $scope.model = {
     //   'username':'',
     //   'password':'',

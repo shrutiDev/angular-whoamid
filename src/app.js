@@ -26,67 +26,10 @@ angular.module('app', [
       })
       .when('/page/:page/', {
         templateUrl: 'app/templates/page.html',
-        controller: 'WAIDPageCtrl',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/profile/emails/', {
-        templateUrl: 'waid/profile/emails.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/profile/main/', {
-        templateUrl: 'waid/profile/main.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/profile/username/', {
-        templateUrl: 'waid/profile/username.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/profile/password/', {
-        templateUrl: 'waid/profile/password.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/profile/interests/', {
-        templateUrl: 'waid/profile/interests.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/profile/overview/', {
-        templateUrl: 'app/templates/user-profile-home.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/al/:code/', {
-        template: '',
-        controller: 'AutoLoginCtrl'
+        controller: 'WAIDPageCtrl'
       })
       .when('/', {
-        templateUrl: 'app/templates/user-login-and-register-home.html',
+        templateUrl: 'app/templates/home.html',
         resolve: {
           authenticate: function(waidService){
             // Authenticate, if logged in then you can redirect the user
@@ -111,80 +54,144 @@ angular.module('app', [
   }])
   .controller('WAIDMasterCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log,  $uibModal) {
     // Assume user is not logged in until we hear otherwise
+    $rootScope.waid = {
+      'logout' : function() {
+        waidService.userLogoutPost();
+      },
+      'logoutAll' : function() {
+        waidService.userLogoutAllPost();
+      },
+      'openLoginAndRegisterHomeModal' : function() {
+        $scope.openLoginAndRegisterHomeModal();
+      },
+      'openUserProfileHomeModal' : function() {
+        $scope.openUserProfileHomeModal();
+      },
+      'openLostLoginModal' : function() {
+        $scope.openLostLoginModal();
+      },
+      'openTermsAndConditionsModal' : function() {
+        $scope.openTermsAndConditionsModal();
+      },
+      'user': false
+    };
 
-    $scope.userLoginAndRegisterHome = function () {
-      $scope.userLoginAndRegisterHomeModalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: 'app/templates/user-login-and-register-modal.html',
-        controller: 'DefaultModalCtrl',
-        size: 'lg',
-        resolve: {
-          account: function () {
-            return $scope.account;
-          }
-        }
+    var waidAlCode = $location.search().waidAlCode; 
+    if (waidAlCode) {
+      waidService.userAutoLoginGet(waidAlCode).then(function(data) {
+        
       });
     }
 
-    $scope.userProfileHome = function () {
-      // if ($location.path() != '/profile/overview/') {
-      //       $location.path('/profile/overview/')
-      // }
-      var modalInstance = $uibModal.open({
+    waidService.userProfileGet();
+
+
+
+    $scope.openTermsAndConditionsModal = function (template) {
+       $scope.openTermsAndConditionsModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'app/templates/terms-and-conditions-modal.html',
+        controller: 'DefaultModalCtrl',
+        size: 'lg',
+        resolve: {
+          application: function () {
+            return $scope.application;
+          }
+        }
+      });
+    };
+
+    $scope.closeTermsAndConditionsModal = function () {
+      if ($scope.openTermsAndConditionsModalInstance) {
+        $scope.openTermsAndConditionsModalInstance.dismiss('close');
+      }
+    }
+
+    $scope.openCompleteProfileModal = function () {
+      $scope.openCompleteProfileModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'app/templates/complete-profile.html',
+        controller: 'WAIDCompleteProfileCtrl',
+        size: 'lg'
+      });
+    }
+
+    $scope.closeCompleteProfileModal = function () {
+      if ($scope.openCompleteProfileModalInstance) {
+        $scope.openCompleteProfileModalInstance.dismiss('close');
+      }
+    }
+
+    $scope.openLostLoginModal = function () {
+      $scope.closeAllModals();
+      $scope.lostLoginModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'app/templates/lost-login-modal.html',
+        controller: 'DefaultModalCtrl',
+        size: 'lg'
+      });
+    }
+
+    $scope.closeLostLoginModal = function() {
+      if ($scope.lostLoginModalInstance) {
+        $scope.lostLoginModalInstance.dismiss('close');
+      }
+    }
+
+    $scope.openLoginAndRegisterHomeModal = function () {
+      $scope.loginAndRegisterHomeModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'app/templates/login-and-register-modal.html',
+        controller: 'DefaultModalCtrl',
+        size: 'lg'
+      });
+    }
+
+    $scope.closeLoginAndRegisterModal = function() {
+       if ($scope.loginAndRegisterHomeModalInstance) {
+        $scope.loginAndRegisterHomeModalInstance.dismiss('close');
+      }
+    }
+
+    $scope.openUserProfileHomeModal = function () {
+      $scope.userProfileHomeModalInstance = $uibModal.open({
         animation: true,
         templateUrl: 'app/templates/user-profile-modal.html',
         controller: 'DefaultModalCtrl',
-        size: 'lg',
-        resolve: {
-          account: function () {
-            return $scope.account;
-          }
-        }
+        size: 'lg'
       });
     }
 
+    $scope.closeUserProfileModal = function() {
+      if ($scope.userProfileHomeModalInstance) {
+        $scope.userProfileHomeModalInstance.dismiss('close');
+      }
+    }
+  
+    $scope.closeAllModals = function(){
+      $scope.closeUserProfileModal();
+      $scope.closeLoginAndRegisterModal();
+      $scope.closeLostLoginModal();
+      $scope.closeTermsAndConditionsModal();
+    }
+
     $rootScope.authenticated = false;
-    $rootScope.showMenu = false;
-    $rootScope.initialized = false;
 
     $rootScope.$on('waid.services.authenticate.ok', function(event, data) {
       $rootScope.authenticated = true;
-      if ($location.path() == '/') {
-        $location.path("/profile/overview/");
-      }
     });
-
-    $rootScope.$on('waid.services.authenticate.error', function(event, data) {
-      if ($location.path() != '/') {
-        $location.path("/");
-      }
-    });
-
-    $rootScope.$watch('authenticated', function(){
-      $scope.initVars();
-    });
-
-
-    $scope.initVars = function() {
-      if ($rootScope.authenticated) {
-        $rootScope.showMenu = true;
-      } else {
-        $rootScope.showMenu = false;
-      }
-    };
 
     $scope.loginCheck = function(data) {
-      if (data.profile_status.length > 0) {
-        if(data.profile_status.indexOf('email_is_not_verified') !== -1) {
-          growl.addErrorMessage("Er is een activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.",  {ttl: -1});
-          $location.path('/');
+      
+      if (typeof data.profile_status != "undefined" && data.profile_status.length > 0) {
+        if(data.profile_status.indexOf('profile_ok') !== -1) {
+           growl.addSuccessMessage("Succesvol ingelogd.");
+           $scope.closeAllModals();
         }
 
-        if(data.profile_status.indexOf('profile_ok') !== -1) {
-          $scope.userProfileHome();
-          if ($scope.userLoginAndRegisterHomeModalInstance) {
-            $scope.userLoginAndRegisterHomeModalInstance.dismiss('close');
-          }
+        if(typeof data.profile_status != "undefined" && data.profile_status.indexOf('missing_profile_data') !== -1) {
+          $scope.closeAllModals();
+          $scope.openCompleteProfileModal();
         }
       }
     };
@@ -194,7 +201,6 @@ angular.module('app', [
     });
 
     $rootScope.$on('waid.services.application.userAutoLogin.get.error', function(event, data) {
-       $location.path("/");
     });
 
     $rootScope.$on('waid.services.application.userLogin.post.ok', function(event, data) {
@@ -203,15 +209,33 @@ angular.module('app', [
 
     $rootScope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
       $rootScope.authenticated = false;
-      $location.path("/");
+      $scope.waid.user = false;
+      $scope.closeAllModals();
     });
+
     $rootScope.$on('waid.services.application.userLogoutAll.post.ok', function(event, data) {
       $rootScope.authenticated = false;
-      $location.path("/");
+      $scope.waid.user = false;
+      $scope.closeAllModals();
     });
 
     $scope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
-      $scope.userProfile = data;
+      $scope.waid.user = data;
+    });
+
+    $scope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
+      // Reload profile info
+      if (data.profile_status.indexOf('profile_ok') !== -1) {
+        // Wait for data to be stored
+        setTimeout(function() {
+          waidService.userProfileGet();
+        }, 1000);
+      }
+      $scope.closeCompleteProfileModal();
+      if(data.profile_status.indexOf('email_is_not_verified') !== -1) {
+          growl.addErrorMessage("Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.",  {ttl: -1});
+          console.log('Do....');
+      }
     });
 
     $scope.$on('waid.services.application.userEmail.post.ok', function(event, data) {
@@ -228,16 +252,11 @@ angular.module('app', [
 
      $scope.$on('waid.services.application.userLostLogin.post.ok', function(event, data) {
       growl.addSuccessMessage("Instructies om in te loggen zijn naar jouw e-mail gestuurd.");
+      $scope.closeAllModals();
     });
     $scope.$on('waid.services.application.userRegister.post.ok', function(event, data) {
       growl.addSuccessMessage("Geregistreerd als nieuwe gebruiker! Controleer je mail om de account te verifieren.",  {ttl: -1});
       $scope.isRegister = true;
     });
-    $scope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
-      $scope.loginCheck(data);
-    });
 
-    $scope.getMenuActiveClass = function (path) {
-      return ($location.path().substr(0, path.length) === path) ? 'active' : '';
-    }
   });

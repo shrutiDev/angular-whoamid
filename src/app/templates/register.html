@@ -1,0 +1,30 @@
+ <div ng-controller="WAIDRegisterCtrl">
+      <div ng-show="modus=='complete'" class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Om verder te gaan met jouw account hebben we wat extra gegevens nodig...</div>
+
+      <div class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.</div>
+    <form role="form" name="registerForm" novalidate>
+      <div class="form-group" ng-show="show.username">
+          <label for="id_username">Username</label>
+          <input name="username" id="id_username" class="form-control" type="text" ng-model="model.username" placeholder="Username" required />
+      </div>
+      <div class="alert alert-danger" ng-repeat="error in errors.username"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+      <div class="form-group" ng-show="show.password">
+          <label for="id_password">Password</label>
+          <input name="password1" id="id_password" class="form-control" type="password" ng-model="model.password" placeholder="Password" required />
+      </div>
+      <div class="alert alert-danger" ng-repeat="error in errors.password"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+      <div class="form-group" ng-show="show.email">
+          <label for="id_email">Email</label>
+          <input name="email" id="id_email" class="form-control" type="email" ng-model="model.email" placeholder="Email" required />
+      </div>
+      <div class="alert alert-danger" ng-repeat="error in errors.email"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+      <div class="checkbox" ng-show="show.terms_and_conditions_check">
+        <label>
+          <input type="checkbox" ng-model="model.terms_and_conditions_check"> Ik ga akkoord met de <a ng-click="waid.openTermsAndConditionsModal()">algemene voorwaarden</a>.
+        </label>
+      </div>
+      <div class="alert alert-danger" ng-repeat="error in errors.terms_and_conditions_check"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+      <div class="alert alert-danger" ng-repeat="error in errors.__all__"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+      <button ng-disabled="!model.terms_and_conditions_check" type="submit" class="btn btn-primary" ng-click="register()">Registreren</button>
+    </form>
+  </div>
