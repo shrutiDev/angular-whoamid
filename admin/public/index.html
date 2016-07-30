@@ -15,10 +15,7 @@
     
         
     <base href="http://testclientwhoamid.com:8080/">
-
-
     <link rel="stylesheet" href="css/main.css">
-       
     <link rel="icon" href="icon/favicon.ico" type="image/x-icon"/>
   </head>
   
@@ -53,7 +50,15 @@
           <li ng-class="getMenuActiveClass('/account/')"><a href="account/overview/"><span class="glyphicon glyphicon-cloud"></span> Account</a></li>
         </ul>
 
-        <waid-user-profile-navbar waid="waid"/>
+        <form class="navbar-form navbar-right" ng-hide="waid.accountId">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Admin account" ng-model="account">
+          </div>
+          <button type="submit" class="btn btn-primary" ng-click="goToAccount()" ng-disabled="account.length == 0">Ga naar admin account</button>
+          <button type="submit" class="btn btn-success" ng-click="createAccount()">Nieuwe account aanmaken  </button> 
+        </form>
+
+        <waid-user-profile-navbar waid="waid" ng-show="waid.accountId"/>
  
 
 
@@ -77,26 +82,105 @@
 
 
 
+    <script type="text/ng-template" id="waid/public/account/create.html">
+       
+        <div class="modal-header">
+            <h3 class="modal-title" ng-hide="registrationDone">Gratis nieuwe admin account aanmaken</h3>
+            <h3 class="modal-title" ng-show="registrationDone">Account aangemaakt,.. Bijna klaar!</h3>
+        </div>
+        <div class="modal-body">
+            <div class="row" ng-hide="registrationDone">
+              <div class="col-md-6">
+                <h4>Account gegevens</h4>
+                <form>
+                  <div class="form-group">
+                    <label for="name">Account naam</label>
+                    <input type="input" class="form-control" id="name" ng-model="model.name">
+                    <p class="help-block">Geef hier een duidelijke account naam op. Gebruik hier bijvoorbeeld een bedrijfsnaam. Deze naam word gebruikt door het gehele systeem gebruikt in de presentatie van de admin en klantenportaal.</p>
+                  </div>
+                  <div class="alert alert-danger" ng-repeat="error in errors.name">{{error}}</div>
+                  <div class="form-group">
+                    <label for="slug">Account ID</label>
+                    <input type="input" class="form-control" id="slug" ng-model="model.slug" ng-change="slugify()">
+                    <p class="help-block">Een account ID is een unieke naam in ons systeem waarmee we de account kunnen identificeren. Deze word o.a. gebruikt in de url voor de interface van jouw klantenportaal.</p>
+                    <p class="bg-info" ng-show="model.slug"><b>Voorbeeld portals:</b><br />Admin : http://www.whoamid.com/nl/admin/{{ model.slug }}/<br />Client : http://www.whoamid.com/nl/client/{{ model.slug }}/</p>
+                  </div>
+                   <div class="alert alert-danger" ng-repeat="error in errors.slug">{{error}}</div>
+                </form>
+              </div>
+              <div class="col-md-6">
+                <h4>Admin login</h4>
+                <form>
+                  <div class="form-group">
+                    <label for="username">Gebruikersnaam</label>
+                    <input type="input" class="form-control" id="username" ng-model="model.username">
+                    <p class="help-block">Voer hier de gewenste gebruikersnaam in.</p>
+                  </div>
+                  <div class="alert alert-danger" ng-repeat="error in errors.username">{{error}}</div>
+                  <div class="form-group">
+                    <label for="password">Wachtwoord</label>
+                    <input type="input" class="form-control" id="password" ng-model="model.password">
+                    <p class="help-block">Wachtwoord dient minimaal 6 characters lang te zijn.</p>
+                  </div>
+                  <div class="alert alert-danger" ng-repeat="error in errors.password">{{error}}</div>
+                  <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="input" class="form-control" id="email" ng-model="model.email">
+                    <p class="help-block">Na inschrijving ontvang je ontvangt een activatie mail.</p>
+                  </div>
+                  <div class="alert alert-danger" ng-repeat="error in errors.email">{{error}}</div>
+                </form>
+              </div>
+            </div>
+
+             <div class="row" ng-show="registrationDone">
+              <div class="col-md-6">
+                
+                <!-- <img src='/static/idm/img/public-new-account-created.jpg' class="img-responsive"/>
+                 -->
+              </div>
+              <div class="col-md-6">
+                <p>Er is een bevestigings e-mail naar je toe gestuurd.</p>
+                <p>In deze e-mail zit een activatie link om jouw nieuwe account en login te activeren.</p>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()" ng-show="showRegisterButton">Registreren</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Sluiten</button>
+        </div>
+        
+    </script>
+
+
+
+
 
 
 
 
 <script type="text/ng-template" id="waid/admin/home.html">
-  <div class="container">
+  <div class="header" style="background-image: url('img/header-background.jpg');" data-stellar-background-ratio="0.1" data-stellar-vertical-offset="1280">
+    <div class="container">
+      <div style="padding:20px;color:white;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;">
+        <div class="row">
+          <div class="col-md-6 col-lg-6 col-sm-6">
+            <h1 style="color:white;">WhoAmID<span class="beta">Beta</span></h1>
+            <p class="lead">WhoAmID levert tools voor online registratie en identificatie en zorgt tevens voor een veilige opslag van gebruikersgegevens. Gegevens die voor bedrijven van onschatbare waarde zijn om de customer journey in kaart te brengen en essentieel zijn voor (commerciële) optimalisatie en product development. </p>
+            <a ng-click="createAccount()" class="btn btn-primary btn-sm">Maak een gratis account aan voor uw website of app</a>
+          </div>
+          <div class="col-md-6 col-lg-6 col-sm-6">
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" ng-show="waid.accountId" style="margin-top:20px">
+    <ng-include src="'/idm/templates/login-and-register-home.html'"></ng-include>
   </div>
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -5,7 +5,7 @@ angular.module('app', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  // 'waid.templates',
+  'waid.templates',
   'waid.core.services',
   'waid.idm.controllers',
   'waid.idm.directives',
@@ -117,9 +117,7 @@ angular.module('app', [
   }])
   .run(['waidService',function(waidService){
     waidService.initialize(
-      waid.config.getConfig('api.url'),
-      waid.config.getConfig('api.accountId'),
-      waid.config.getConfig('api.applicationId')
+      waid.config.getConfig('api.url')
     );
     waidService.authenticate();
   }]);

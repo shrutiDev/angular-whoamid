@@ -1,4 +1,4 @@
-angular.module('app').run(['$templateCache', function($templateCache) {
+angular.module('waid.templates',[]).run(['$templateCache', function($templateCache) { 
   'use strict';
 
   $templateCache.put('/idm/templates/comments-home.html',
@@ -209,7 +209,7 @@ angular.module('app').run(['$templateCache', function($templateCache) {
     "  <h3 class=\"modal-title\">Login gegevens kwijt?</h3>\n" +
     "</div>\n" +
     "<div class=\"modal-body\">\n" +
-    "  <ng-include src=\"'app/templates/lost-login.html'\"></ng-include>\n" +
+    "  <ng-include src=\"'/idm/templates/lost-login.html'\"></ng-include>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
     "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"close()\">Sluiten</button>\n" +
@@ -639,5 +639,4 @@ angular.module('app').run(['$templateCache', function($templateCache) {
     "  <button ng-hide=\"waid.user\" ng-click=\"waid.openLoginAndRegisterHomeModal()\" class=\"btn btn-default btn-xs\">Login of Registreer</button>\n" +
     "</div>"
   );
-
 }]);

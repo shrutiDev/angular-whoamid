@@ -5,8 +5,8 @@ waid.config.setConfig('admin', {
 
 waid.config.setConfig('api', {
   'url' : 'http://dev.whoamid.com:8000/nl/api',
-  'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
-  'applicationId' : 'c7d23002-da7d-4ad3-a665-9ae9de276c9e',
+  // 'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
+  // 'applicationId' : 'c7d23002-da7d-4ad3-a665-9ae9de276c9e',
   'errorCodes':{
     'auth-cancelled' : 'Authentication was canceled by the user.',
     'auth-failed' : 'Authentication failed for some reason.',

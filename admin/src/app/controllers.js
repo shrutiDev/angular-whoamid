@@ -1,7 +1,38 @@
 'use strict';
 
 angular.module('waid.admin.controllers', ['waid.core.services',])
-  .controller('WAIDAdminCtrl', function ($scope, waidService, growl, $location) {
+  .controller('WAIDAdminCtrl', function ($scope, waidService, growl, $location, $uibModal) {
+    $scope.account = '';
+    $scope.goToAccount = function(){
+      if($scope.account.length > 0) {
+        waidService.publicAccountGet($scope.account).then(function(data){
+          //$window.location.href = '/admin/' + data.slug + '/';
+          $scope.waid.accountId = data.id;
+          $scope.waid.applicationId = data.main_application_id;
+
+          waidService.accountId = $scope.waid.accountId;
+          waidService.applicationId = $scope.waid.applicationId 
+        }, function(data){
+          growl.addErrorMessage("Geen geldige account.");
+        });
+      }
+    }
+
+    $scope.createAccount = function () {
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'waid/public/account/create.html',
+        controller: 'WAIDCreateAccountCtrl',
+        size: 'lg',
+        resolve: {
+          account: function () {
+            return $scope.account;
+          }
+        }
+      });
+    };
+
+
     $scope.$on('waid.services.admin.application.patch.ok', function(event, data) {
       growl.addSuccessMessage("Applicatie gegevens zijn opgeslagen.");
     });
@@ -21,7 +52,37 @@ angular.module('waid.admin.controllers', ['waid.core.services',])
         }
       }
     }, true);
-  }) 
+  })
+  .controller('WAIDCreateAccountCtrl', function ($scope, $uibModalInstance, Slug, waidService, account) {
+      $scope.errors = [];
+      $scope.registrationDone = false;
+      $scope.model = {
+          'name':account
+      };
+      $scope.showRegisterButton = true;
+      
+      $scope.$watch('model.name', function(){
+        $scope.model.slug = Slug.slugify($scope.model.name);
+      });
+
+      $scope.slugify = function(){
+          $scope.model.slug = Slug.slugify($scope.model.slug);
+      }
+
+      $scope.ok = function () {
+        waidService.publicAccountCreatePost($scope.model).then(function(data){
+            $scope.errors = [];
+            $scope.registrationDone = true;
+            $scope.showRegisterButton = false;
+        }, function(data){
+            $scope.errors = data;
+        });
+      };
+
+      $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+      };
+  })
   .controller('ErrorCodesCtrl', function ($scope, $rootScope, $location, waidService) {
     $scope.errorCodes = config.errorCodes;
   })

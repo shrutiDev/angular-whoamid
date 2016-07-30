@@ -12,10 +12,6 @@ module.exports = function (grunt) {
             css: { 
                 files: 'src/**/*.css',
                 tasks: ['cssmin']
-            },
-            templates: { 
-                files: 'src/bower_components/angular-whoamid/**/*.html',
-                tasks: ['ngtemplates']
             }
         },
 
@@ -27,7 +23,7 @@ module.exports = function (grunt) {
           target: {
             files: {
               'public/css/main.css': [
-                // Build waid
+                // Build waid sources
                 'src/bower_components/textAngular/dist/textAngular.css',
                 'src/bower_components/font-awesome/css/font-awesome.min.css',
                 'src/bower_components/angular-growl/build/angular-growl.min.css',
@@ -39,27 +35,11 @@ module.exports = function (grunt) {
           }
         },
 
-        ngtemplates:  {
-          // options:{
-          //   bootstrap: function(module, script) {
-          //       return 'angular.module(\'waid.templates\').run([\'$templateCache\', function($templateCache) { ' + "\n" + script + '}]);';
-          //   }
-          // },
-          options: {
-            prefix: '/'
-          },
-          app: {
-            cwd: 'src/bower_components/angular-whoamid',
-            src:      '**/templates/**.html',
-            dest:     'src/bower_components/angular-whoamid/dist/templates.js'
-          }
-        },
-
         copy: {
           main: {
             files: [
               // includes files within path and its sub-directories
-              {expand: true, flatten: true, src: ['src/bower_components/angular-whoamid/assets/fonts/*'], dest: 'public/fonts/'},
+              {expand: true, flatten: true, src: ['src/bower_components/angular-whoamid/dist/fonts/*'], dest: 'public/fonts/'},
             ],
           },
         },
@@ -102,16 +82,12 @@ module.exports = function (grunt) {
                     'src/bower_components/jquery.stellar/src/jquery.stellar.js',
 
                     // Build waid
-                    'src/bower_components/angular-whoamid/waid.js',
-                    
-                    'src/bower_components/angular-whoamid/core/services.js',
-                    'src/bower_components/angular-whoamid/idm/config.js',
-                    'src/bower_components/angular-whoamid/idm/controllers.js',
-                    'src/bower_components/angular-whoamid/idm/directives.js',
+                    'src/bower_components/angular-whoamid/dist/waid.js',
+                    'src/bower_components/angular-whoamid/dist/templates.js',
 
                     // // Build admin
                     'src/app/app.js',
-                    'src/bower_components/angular-whoamid/dist/templates.js',
+                    
                     'src/app/config.js',
                     'src/app/controllers.js'
                 ],
@@ -125,9 +101,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
-    grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['uglify', 'cssmin', 'ngtemplates', 'copy', 'watch']);
+    grunt.registerTask('default', ['uglify', 'cssmin', 'copy', 'watch']);
 }

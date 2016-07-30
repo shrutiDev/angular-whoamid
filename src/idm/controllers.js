@@ -22,7 +22,9 @@ angular.module('waid.idm.controllers', ['waid.core.services'])
       'openTermsAndConditionsModal' : function() {
         $scope.openTermsAndConditionsModal();
       },
-      'user': false
+      'user': false,
+      'accountId': false,
+      'applicationId': false,
     };
 
     var waidAlCode = $location.search().waidAlCode; 
@@ -38,7 +40,7 @@ angular.module('waid.idm.controllers', ['waid.core.services'])
     $scope.openTermsAndConditionsModal = function (template) {
        $scope.openTermsAndConditionsModalInstance = $uibModal.open({
         animation: true,
-        templateUrl: '/idm/templates//terms-and-conditions-modal.html',
+        templateUrl: '/idm/templates/terms-and-conditions-modal.html',
         controller: 'DefaultModalCtrl',
         size: 'lg',
         resolve: {
@@ -58,7 +60,7 @@ angular.module('waid.idm.controllers', ['waid.core.services'])
     $scope.openCompleteProfileModal = function () {
       $scope.openCompleteProfileModalInstance = $uibModal.open({
         animation: true,
-        templateUrl: '/idm/templates//complete-profile.html',
+        templateUrl: '/idm/templates/complete-profile.html',
         controller: 'WAIDCompleteProfileCtrl',
         size: 'lg'
       });
