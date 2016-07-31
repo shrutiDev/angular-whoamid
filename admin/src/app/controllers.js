@@ -21,7 +21,7 @@ angular.module('waid.admin.controllers', ['waid.core.services',])
     $scope.createAccount = function () {
       var modalInstance = $uibModal.open({
         animation: true,
-        templateUrl: 'waid/public/account/create.html',
+        templateUrl: '/admin/templates/create-account-modal.html',
         controller: 'WAIDCreateAccountCtrl',
         size: 'lg',
         resolve: {
@@ -31,7 +31,6 @@ angular.module('waid.admin.controllers', ['waid.core.services',])
         }
       });
     };
-
 
     $scope.$on('waid.services.admin.application.patch.ok', function(event, data) {
       growl.addSuccessMessage("Applicatie gegevens zijn opgeslagen.");

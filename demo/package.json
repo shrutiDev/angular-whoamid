@@ -1,7 +1,7 @@
 {
-  "name": "WhoAmIDadmin",
+  "name": "WhoAmIDDemo",
   "version": "0.9.0",
-  "description": "Angular WhoAmID admin",
+  "description": "Angular WhoAmID demo",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

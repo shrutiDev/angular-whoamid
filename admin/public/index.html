@@ -31,9 +31,9 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <span class="navbar-brand">
-                WhoAmID
-              </span>
+              
+              <a class="navbar-brand" href="/">WhoAmID <span class="beta">Beta</span></a>
+              
         </div>
         
         <ul class="nav navbar-nav" ng-show="waid.user">
@@ -56,93 +56,83 @@
 
       </div><!-- /.container-fluid -->
     </nav>
-  <div ng-view="">
-    
+    <div ng-view="">
+      
+    </div>
+
+
+
+
+
+
+
+<script type="text/ng-template" id="/admin/templates/create-account-modal.html">
+  <div class="modal-header">
+      <h3 class="modal-title" ng-hide="registrationDone">Gratis nieuwe admin account aanmaken</h3>
+      <h3 class="modal-title" ng-show="registrationDone">Account aangemaakt,.. Bijna klaar!</h3>
   </div>
-
-
-
-  <div growl></div>
-
-
-
-
-
-
-
-
-
-
-
-    <script type="text/ng-template" id="waid/public/account/create.html">
-       
-        <div class="modal-header">
-            <h3 class="modal-title" ng-hide="registrationDone">Gratis nieuwe admin account aanmaken</h3>
-            <h3 class="modal-title" ng-show="registrationDone">Account aangemaakt,.. Bijna klaar!</h3>
-        </div>
-        <div class="modal-body">
-            <div class="row" ng-hide="registrationDone">
-              <div class="col-md-6">
-                <h4>Account gegevens</h4>
-                <form>
-                  <div class="form-group">
-                    <label for="name">Account naam</label>
-                    <input type="input" class="form-control" id="name" ng-model="model.name">
-                    <p class="help-block">Geef hier een duidelijke account naam op. Gebruik hier bijvoorbeeld een bedrijfsnaam. Deze naam word gebruikt door het gehele systeem gebruikt in de presentatie van de admin en klantenportaal.</p>
-                  </div>
-                  <div class="alert alert-danger" ng-repeat="error in errors.name">{{error}}</div>
-                  <div class="form-group">
-                    <label for="slug">Account ID</label>
-                    <input type="input" class="form-control" id="slug" ng-model="model.slug" ng-change="slugify()">
-                    <p class="help-block">Een account ID is een unieke naam in ons systeem waarmee we de account kunnen identificeren. Deze word o.a. gebruikt in de url voor de interface van jouw klantenportaal.</p>
-                    <p class="bg-info" ng-show="model.slug"><b>Voorbeeld portals:</b><br />Admin : http://www.whoamid.com/nl/admin/{{ model.slug }}/<br />Client : http://www.whoamid.com/nl/client/{{ model.slug }}/</p>
-                  </div>
-                   <div class="alert alert-danger" ng-repeat="error in errors.slug">{{error}}</div>
-                </form>
-              </div>
-              <div class="col-md-6">
-                <h4>Admin login</h4>
-                <form>
-                  <div class="form-group">
-                    <label for="username">Gebruikersnaam</label>
-                    <input type="input" class="form-control" id="username" ng-model="model.username">
-                    <p class="help-block">Voer hier de gewenste gebruikersnaam in.</p>
-                  </div>
-                  <div class="alert alert-danger" ng-repeat="error in errors.username">{{error}}</div>
-                  <div class="form-group">
-                    <label for="password">Wachtwoord</label>
-                    <input type="input" class="form-control" id="password" ng-model="model.password">
-                    <p class="help-block">Wachtwoord dient minimaal 6 characters lang te zijn.</p>
-                  </div>
-                  <div class="alert alert-danger" ng-repeat="error in errors.password">{{error}}</div>
-                  <div class="form-group">
-                    <label for="email">E-mail</label>
-                    <input type="input" class="form-control" id="email" ng-model="model.email">
-                    <p class="help-block">Na inschrijving ontvang je ontvangt een activatie mail.</p>
-                  </div>
-                  <div class="alert alert-danger" ng-repeat="error in errors.email">{{error}}</div>
-                </form>
-              </div>
+  <div class="modal-body">
+      <div class="row" ng-hide="registrationDone">
+        <div class="col-md-6">
+          <h4>Account gegevens</h4>
+          <form>
+            <div class="form-group">
+              <label for="name">Account naam</label>
+              <input type="input" class="form-control" id="name" ng-model="model.name">
+              <p class="help-block">Geef hier een duidelijke account naam op. Gebruik hier bijvoorbeeld een bedrijfsnaam. Deze naam word gebruikt door het gehele systeem gebruikt in de presentatie van de admin en klantenportaal.</p>
             </div>
-
-             <div class="row" ng-show="registrationDone">
-              <div class="col-md-6">
-                
-                <!-- <img src='/static/idm/img/public-new-account-created.jpg' class="img-responsive"/>
-                 -->
-              </div>
-              <div class="col-md-6">
-                <p>Er is een bevestigings e-mail naar je toe gestuurd.</p>
-                <p>In deze e-mail zit een activatie link om jouw nieuwe account en login te activeren.</p>
-              </div>
+            <div class="alert alert-danger" ng-repeat="error in errors.name">{{error}}</div>
+            <div class="form-group">
+              <label for="slug">Account ID</label>
+              <input type="input" class="form-control" id="slug" ng-model="model.slug" ng-change="slugify()">
+              <p class="help-block">Een account ID is een unieke naam in ons systeem waarmee we de account kunnen identificeren. Deze word o.a. gebruikt in de url voor de interface van jouw klantenportaal.</p>
+              <p class="bg-info" ng-show="model.slug"><b>Voorbeeld portals:</b><br />Admin : http://www.whoamid.com/nl/admin/{{ model.slug }}/<br />Client : http://www.whoamid.com/nl/client/{{ model.slug }}/</p>
             </div>
+             <div class="alert alert-danger" ng-repeat="error in errors.slug">{{error}}</div>
+          </form>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()" ng-show="showRegisterButton">Registreren</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Sluiten</button>
+        <div class="col-md-6">
+          <h4>Admin login</h4>
+          <form>
+            <div class="form-group">
+              <label for="username">Gebruikersnaam</label>
+              <input type="input" class="form-control" id="username" ng-model="model.username">
+              <p class="help-block">Voer hier de gewenste gebruikersnaam in.</p>
+            </div>
+            <div class="alert alert-danger" ng-repeat="error in errors.username">{{error}}</div>
+            <div class="form-group">
+              <label for="password">Wachtwoord</label>
+              <input type="input" class="form-control" id="password" ng-model="model.password">
+              <p class="help-block">Wachtwoord dient minimaal 6 characters lang te zijn.</p>
+            </div>
+            <div class="alert alert-danger" ng-repeat="error in errors.password">{{error}}</div>
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input type="input" class="form-control" id="email" ng-model="model.email">
+              <p class="help-block">Na inschrijving ontvang je ontvangt een activatie mail.</p>
+            </div>
+            <div class="alert alert-danger" ng-repeat="error in errors.email">{{error}}</div>
+          </form>
         </div>
-        
-    </script>
+      </div>
+
+      <div class="row" ng-show="registrationDone">
+        <div class="col-md-6">
+          
+          <!-- <img src='/static/idm/img/public-new-account-created.jpg' class="img-responsive"/>
+           -->
+        </div>
+        <div class="col-md-6">
+          <p>Er is een bevestigings e-mail naar je toe gestuurd.</p>
+          <p>In deze e-mail zit een activatie link om jouw nieuwe account en login te activeren.</p>
+        </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-primary" type="button" ng-click="ok()" ng-show="showRegisterButton">Registreren</button>
+      <button class="btn btn-warning" type="button" ng-click="cancel()">Sluiten</button>
+  </div>
+</script>
 
 
 
@@ -151,7 +141,7 @@
 
 
 
-<script type="text/ng-template" id="waid/admin/home.html">
+<script type="text/ng-template" id="/admin/templates/home.html">
   <div class="header" style="background-image: url('static/img/header-background.jpg');" data-stellar-background-ratio="0.1" data-stellar-vertical-offset="1280">
     <div class="container">
       <div style="padding:20px;color:white;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;">
@@ -168,7 +158,6 @@
       </div>
     </div>
   </div>
-
   <div class="container" ng-show="waid.accountId" style="margin-top:20px">
     <ng-include src="'/idm/templates/login-and-register-home.html'"></ng-include>
   </div>
@@ -179,62 +168,89 @@
 
 
     
-    <div class="footer">
-      
-        <div class="container">
-          <div class="row">
-            <div class="col-md-4">
-              <div class="panel panel-default" style="height:150px;">
-                <div class="panel-heading">
-                  <h4 class="panel-title">Algemeen</h4>
-                </div>
-                <div class="panel-body">
-                   <ul>
-                    <li>Over ons</li>
-                    <li>Taal</li>
-                    <li>Contact</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-             
-             <div class="col-md-4">
-              <div class="panel panel-default" style="height:150px;">
-                <div class="panel-heading">
-                  <h4 class="panel-title">Juridisch</h4>
-                </div>
-                <div class="panel-body">
-                <ul>
-                  <li>Algemene voorwaarden</li>
-                  <li>Privacy Policy</li>
-                  <li>Cookie Policy</li>
-                  <li>Copyright Policy</li>
-                </ul>
-                </div>
-              </div>
-            </div>
-             <div class="col-md-4">
-              <div class="panel panel-default" style="height:150px;">
-                <div class="panel-heading">
-                  <h4 class="panel-title">Gebruik</h4>
-                </div>
-                <div class="panel-body">
-                <ul>
-                  <li>Webbeheerders</li>
-                  <li>Online marketeers</li>
-                  <li>Developers</li>
-                </ul>
-                </div>
-              </div>
-            </div>
+<div class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="panel panel-default" style="height:150px;">
+          <div class="panel-heading">
+            <h4 class="panel-title">Adres</h4>
+          </div>
+          <div class="panel-body">
+            <address>
+            <b>WhoAmID B.V.</b><br />
+            Franciscusweg 345A1<br />
+            1216 SL - Hilversum<br />
+            <br />
+            Tel : 06 21 26 57 69
+            </address>
           </div>
         </div>
-      
+      </div>
+       
+      <div class="col-md-4">
+        <div class="panel panel-default" style="height:150px;">
+          <div class="panel-heading">
+            <h4 class="panel-title">Informatie</h4>
+          </div>
+          <div class="panel-body">
+          <ul>
+            <li><a href="http://api.whoamid.com/docs/" target="blank">Swagger API Documentatie</a></li>
+            <li><a href="https://github.com/WhoAmID/angular-whoamid" target="blank">AngularJS client code</a></li>
+            <li><a href="http://demo.whoamid.com" target="blank">Portal demo</a></li>
+          </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="panel panel-default" style="height:150px;">
+          <div class="panel-heading">
+            <h4 class="panel-title">Gebruik</h4>
+          </div>
+          <div class="panel-body">
+          <ul>
+            <li><a href="info/terms-and-conditions/">Algemene voorwaarden</a></li>
+            <li><a href="info/privacy-policy/">Privacy Policy</li>
+            <li><a href="info/cookie-policy/">Cookie Policy</li>
+            <li><a href="info/copyright-policy/">Copyright Policy</li>
+          </ul>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
+
+
+<script type="text/ng-template" id="/admin/templates/info-terms-and-conditions.html">
+  <div class="container" style="margin-top:20px;">
+    <h1>Algemene voorwaarden</h1>
+  </div>
+</script>
+
+<script type="text/ng-template" id="/admin/templates/info-privacy-policy.html">
+  <div class="container" style="margin-top:20px;">
+    <h1>Privacy informatie</h1>
+  </div>
+</script>
+
+<script type="text/ng-template" id="/admin/templates/info-cookie-policy.html">
+  <div class="container" style="margin-top:20px;">
+    <h1>Cookie informatie</h1>
+  </div>
+</script>
+
+<script type="text/ng-template" id="/admin/templates/info-copywrite.html">
+  <div class="container" style="margin-top:20px;">
+    <h1>Copywrite informatie</h1>
+  </div>
+</script>
 
 
 
 
+<!-- Old templates need to refactor path's -->
 
 <script type="text/ng-template" id="waid/page/overview.html">
   <div class="container" style="margin-top:20px;" ng-controller="AdminPageCtrl">
@@ -373,7 +389,6 @@
 </script>
 
 <script type="text/ng-template" id="waid/admin/application/overview.html">
-  
   <div class="container" style="margin-top:20px;" ng-show="authenticated == true" ng-controller="AdminApplicationOverviewCtrl">
     <div class="row">
       <div class="col-md-4">
@@ -399,7 +414,6 @@
       </div>
     </div>
   </div>
-  
 </script>
 
 
@@ -408,36 +422,28 @@
     <div class="panel-heading">
       <h3 class="panel-title">Account</h3>
     </div>
- 
     <div class="list-group">
       <a class="list-group-item" ng-class="getMenuActiveClass('/account/overview/')" href="account/overview/">Overzicht</a>
       <a class="list-group-item" ng-class="getMenuActiveClass('/account/main/')" href="account/main/">Algemeen</a>
-<!--         <a class="list-group-item" ng-class="getMenuActiveClass('/account/reseller-admin/')" href="#/account/">Reseller admin</a> -->
-<!--         <a class="list-group-item" ng-class="getMenuActiveClass('/account/admin/')" href="#/account/">Client</a> -->
     </div>
   </div>
 </script>
 
 <script type="text/ng-template" id="waid/admin/application/menu.html">
-  
-
-
   <div class="panel panel-default" ng-controller="AdminApplicationMenuCtrl" ng-init="application">
     <div class="panel-heading">
       <h3 class="panel-title">App `{{ application.name }}`</h3>
     </div>
-      <div class="list-group">
-        <a class="list-group-item" ng-class="getMenuActiveClass('/application/detail/' + application.id + '/overview/')" href="application/detail/{{ application.id }}/overview/">Overzicht</a>
-        <a class="list-group-item" ng-class="getMenuActiveClass('/application/detail/' + application.id + '/main/')" href="application/detail/{{ application.id }}/main/">Algemeen</a>
-        <a class="list-group-item" ng-class="getMenuActiveClass('/application/detail/' + application.id + '/social-login/')" href="application/detail/{{ application.id }}/social-login/">Social login</a>
-        <a class="list-group-item" ng-class="getMenuActiveClass('/application/detail/' + application.id + '/mail-settings/')" href="application/detail/{{ application.id }}/mail-settings/">Mail</a>
-      </div>
+    <div class="list-group">
+      <a class="list-group-item" ng-class="getMenuActiveClass('/application/detail/' + application.id + '/overview/')" href="application/detail/{{ application.id }}/overview/">Overzicht</a>
+      <a class="list-group-item" ng-class="getMenuActiveClass('/application/detail/' + application.id + '/main/')" href="application/detail/{{ application.id }}/main/">Algemeen</a>
+      <a class="list-group-item" ng-class="getMenuActiveClass('/application/detail/' + application.id + '/social-login/')" href="application/detail/{{ application.id }}/social-login/">Social login</a>
+      <a class="list-group-item" ng-class="getMenuActiveClass('/application/detail/' + application.id + '/mail-settings/')" href="application/detail/{{ application.id }}/mail-settings/">Mail</a>
+    </div>
   </div>
-  
 </script>
 
 <script type="text/ng-template" id="waid/admin/application/detail/mail-settings.html">
-  
   <div class="container" style="margin-top:20px;" ng-show="authenticated == true" ng-controller="AdminApplicationDetailMailTemplatesCtrl">
     <div class="row">
       <div class="col-md-4">

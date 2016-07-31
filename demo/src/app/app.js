@@ -99,20 +99,16 @@ angular.module('app', [
         }
       })
 
-      .when('/info/terms-and-conditions/', {
-        templateUrl: '/admin/templates/info-terms-and-conditions.html',
-      })
-      .when('/info/privacy-policy/', {
-        templateUrl: '/admin/templates/info-privacy-policy.html',
-      })
-      .when('/info/cookie-policy/', {
-        templateUrl: '/admin/templates/info-cookie-policy.html',
-      })
-      .when('/info/copyright-policy/', {
-        templateUrl: '/admin/templates/info-copywrite.html',
-      })
       .when('/', {
-        templateUrl: '/admin/templates/home.html'
+        templateUrl: 'waid/admin/home.html',
+        resolve: {
+          authenticate: function(waidService){
+            // Authenticate, if logged in then you can redirect the user
+            waidService.authenticate();
+            // Just return true, otherwhise it will not load
+            return true
+          }
+        }
       })
       .otherwise({
         redirectTo: '/'
