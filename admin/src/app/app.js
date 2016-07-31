@@ -116,8 +116,16 @@ angular.module('app', [
     $locationProvider.html5Mode(true);
   }])
   .run(['waidService',function(waidService){
-    waidService.initialize(
-      waid.config.getConfig('api.url')
-    );
+    if (window.location.port == '8080'){
+      var apiUrl = waid.config.getConfig('api.environment.development.url');
+    } else if (window.location.port == '8001') {
+      var apiUrl = waid.config.getConfig('api.environment.testing.url');
+    } else if (window.location.port == '8002') {
+      var apiUrl = waid.config.getConfig('api.environment.staging.url');
+    } else {
+      var apiUrl = waid.config.getConfig('api.environment.production.url');
+    }
+    
+    waidService.initialize(apiUrl);
     waidService.authenticate();
   }]);
