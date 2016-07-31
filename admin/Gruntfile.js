@@ -22,12 +22,12 @@ module.exports = function (grunt) {
           },
           target: {
             files: {
-              'public/css/main.css': [
+              'public/static/css/main.css': [
                 // Build waid sources
                 'src/bower_components/textAngular/dist/textAngular.css',
                 'src/bower_components/font-awesome/css/font-awesome.min.css',
                 'src/bower_components/angular-growl/build/angular-growl.min.css',
-                'src/bower_components/angular-whoamid/assets/bootstrap3-themes/simplex.css',
+                'src/angular-whoamid/assets/bootstrap3-themes/simplex.css',
 
                 'src/main.css'
               ]
@@ -39,7 +39,7 @@ module.exports = function (grunt) {
           main: {
             files: [
               // includes files within path and its sub-directories
-              {expand: true, flatten: true, src: ['src/bower_components/angular-whoamid/dist/fonts/*'], dest: 'public/fonts/'},
+              {expand: true, flatten: true, src: ['src/angular-whoamid/dist/fonts/*'], dest: 'public/static/fonts/'},
             ],
           },
         },
@@ -82,8 +82,8 @@ module.exports = function (grunt) {
                     'src/bower_components/jquery.stellar/src/jquery.stellar.js',
 
                     // Build waid
-                    'src/bower_components/angular-whoamid/dist/waid.js',
-                    'src/bower_components/angular-whoamid/dist/templates.js',
+                    'src/angular-whoamid/dist/waid.js',
+                    'src/angular-whoamid/dist/templates.js',
 
                     // // Build admin
                     'src/app/app.js',
@@ -91,7 +91,7 @@ module.exports = function (grunt) {
                     'src/app/config.js',
                     'src/app/controllers.js'
                 ],
-                dest: 'public/js/script.js'
+                dest: 'public/static/js/script.js'
             }
         }
 
