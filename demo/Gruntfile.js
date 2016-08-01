@@ -29,6 +29,8 @@ module.exports = function (grunt) {
                 'src/bower_components/angular-growl/build/angular-growl.min.css',
                 'src/angular-whoamid/assets/bootstrap3-themes/simplex.css',
 
+                'src/angular-whoamid/dist/waid.css',
+                // 'src/bower_components/angular-isotope/styles/style.css',
                 'src/main.css'
               ]
             }
@@ -68,24 +70,24 @@ module.exports = function (grunt) {
                     'src/bower_components/angular-bootstrap/ui-bootstrap.min.js',
                     'src/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
                     'src/bower_components/angular-confirm-modal/angular-confirm.min.js',
-
-                  
                     'src/bower_components/angular-slugify/angular-slugify.js',
-                  
                     'src/bower_components/angular-elastic/elastic.js',
-
                     'src/bower_components/textAngular/dist/textAngular-rangy.min.js',
                     'src/bower_components/textAngular/dist/textAngular-sanitize.min.js',
                     'src/bower_components/textAngular/dist/textAngular.min.js',
 
-                    'src/bower_components/jquery/dist/jquery.min.js',
+
+                    
                     'src/bower_components/jquery.stellar/src/jquery.stellar.js',
+
+                    'src/bower_components/isotope/jquery.isotope.js',
+                    'src/bower_components/angular-isotope/dist/angular-isotope.js',
 
                     // Build waid
                     'src/angular-whoamid/dist/waid.js',
                     'src/angular-whoamid/dist/templates.js',
 
-                    // // Build admin
+                    // Build demo
                     'src/app/app.js',
                     
                     'src/app/config.js',

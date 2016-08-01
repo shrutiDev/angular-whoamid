@@ -9,106 +9,26 @@ angular.module('app', [
   'waid.core.services',
   'waid.idm.controllers',
   'waid.idm.directives',
-  'waid.admin.controllers',
+  'waid.demo.controllers',
   'angular-growl',
   'ui.bootstrap',
   'angular-confirm',
   'textAngular',
   'slugifier',
-  'monospaced.elastic'
+  'monospaced.elastic',
+  'iso.directives'
 ])
 .config(['growlProvider', function(growlProvider) {
     growlProvider.globalTimeToLive(5000);
 }])
   .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider, waidService) {
     $routeProvider
-      .when('/social/error/:error/', {
-        template: '',
-        controller: 'ClientSocialError'
+      .when('/article/:id/', {
+        templateUrl: '/demo/templates/article-view.html',
+        controller: 'WAIDArticleCtrl'
       })
-      .when('/dashboard/', {
-        templateUrl: 'waid/admin/dashboard.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/application/overview/', {
-        templateUrl: 'waid/admin/application/overview.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/application/detail/:applicationId/main/', {
-        templateUrl: 'waid/admin/application/detail/main.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/application/detail/:applicationId/overview/', {
-        templateUrl: 'waid/admin/application/detail/overview.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/application/detail/:applicationId/mail-settings/', {
-        templateUrl: 'waid/admin/application/detail/mail-settings.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/application/detail/:applicationId/social-login/', {
-        templateUrl: 'waid/admin/application/detail/social-login.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/page/overview/', {
-        templateUrl: 'waid/page/overview.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/account/overview/', {
-        templateUrl: 'waid/admin/account/overview.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-      .when('/account/main/', {
-        templateUrl: 'waid/admin/account/main.html',
-        resolve: {
-          authenticate: function(waidService){
-            return waidService.authenticate();
-          }
-        }
-      })
-
       .when('/', {
-        templateUrl: 'waid/admin/home.html',
-        resolve: {
-          authenticate: function(waidService){
-            // Authenticate, if logged in then you can redirect the user
-            waidService.authenticate();
-            // Just return true, otherwhise it will not load
-            return true
-          }
-        }
+        templateUrl: '/demo/templates/home.html'
       })
       .otherwise({
         redirectTo: '/'
@@ -126,6 +46,10 @@ angular.module('app', [
       var apiUrl = waid.config.getConfig('api.environment.production.url');
     }
 
-    waidService.initialize(apiUrl);
+    waidService.initialize(
+      apiUrl,
+      'efa26bbd-33dc-4148-b135-a1e9234e0fef',
+      'c7d23002-da7d-4ad3-a665-9ae9de276c9e'
+    );
     waidService.authenticate();
   }]);
