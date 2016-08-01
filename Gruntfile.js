@@ -12,9 +12,25 @@ module.exports = function (grunt) {
             templates: { 
                 files: 'src/**/*.html',
                 tasks: ['ngtemplates']
+            },
+            css: { 
+                files: 'src/**/*.css',
+                tasks: ['cssmin']
             }
         },
-
+        cssmin: {
+          options: {
+            shorthandCompacting: false,
+            roundingPrecision: -1
+          },
+          target: {
+            files: {
+              'src/dist/waid.css': [
+                'src/waid.css'
+              ]
+            }
+          }
+        },
         ngtemplates:  {
           options: {
             prefix: '/',
@@ -64,9 +80,10 @@ module.exports = function (grunt) {
     // Loading tasks
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['uglify', 'ngtemplates', 'copy', 'watch']);
+    grunt.registerTask('default', ['uglify', 'ngtemplates', 'cssmin', 'copy', 'watch']);
 }

@@ -1,8 +1,10 @@
-
+    <h3>Comments</h3>
+    <blockquote ng-hide="waid.user">
+      <p>Om comments te plaatsen dien je een account te hebben, login of registreer je snel!</p>
+    </blockquote>
+    <div>
     <waid-comments-order-button waid="waid"></waid-comments-order-button>
     <waid-user-profile-status-button waid="waid"></waid-user-profile-status-button>
-    <br />
-    <hr />
       <div class="media" ng-show="waid.user">
         <div class="media-left">
           <a href="#">
@@ -16,11 +18,11 @@
           </button>
         </div>
       </div>
-      <p ng-hide="waid.user">Om comments te plaatsen dien je een account te hebben, login of registreer je snel!</p>
-      <hr />
+    </div>
     
     
-    <div class="media" ng-repeat="comment in comments" style="overflow: visible;">
+    
+    <div class="media" ng-repeat="comment in comments" style="overflow: visible;" ng-show="comments">
       <div class="media-left">
         <a href="#">
           <img class="media-object" ng-src="{{ comment.user.avatar_thumb_50_50 }}" alt="{{ comment.user.default_name }}">
@@ -29,7 +31,7 @@
       <div class="media-body" style="overflow: visible;">
         <h4 class="media-heading">{{ comment.user.default_name }}<br />
           <small>{{ comment.created | date:'medium' }}</small>
-          <div class="btn-group pull-right">
+          <div class="btn-group pull-right" ng-show="waid.user">
             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Action <span class="caret"></span>
             </button>
@@ -71,7 +73,6 @@
           </p>
         </div>
       </div>
-      <hr />
     </div>
     
 

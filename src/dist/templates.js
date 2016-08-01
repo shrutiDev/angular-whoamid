@@ -2,11 +2,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   'use strict';
 
   $templateCache.put('/idm/templates/comments-home.html',
-    "\n" +
+    "    <h3>Comments</h3>\n" +
+    "    <blockquote ng-hide=\"waid.user\">\n" +
+    "      <p>Om comments te plaatsen dien je een account te hebben, login of registreer je snel!</p>\n" +
+    "    </blockquote>\n" +
+    "    <div>\n" +
     "    <waid-comments-order-button waid=\"waid\"></waid-comments-order-button>\n" +
     "    <waid-user-profile-status-button waid=\"waid\"></waid-user-profile-status-button>\n" +
-    "    <br />\n" +
-    "    <hr />\n" +
     "      <div class=\"media\" ng-show=\"waid.user\">\n" +
     "        <div class=\"media-left\">\n" +
     "          <a href=\"#\">\n" +
@@ -20,11 +22,11 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          </button>\n" +
     "        </div>\n" +
     "      </div>\n" +
-    "      <p ng-hide=\"waid.user\">Om comments te plaatsen dien je een account te hebben, login of registreer je snel!</p>\n" +
-    "      <hr />\n" +
+    "    </div>\n" +
     "    \n" +
     "    \n" +
-    "    <div class=\"media\" ng-repeat=\"comment in comments\" style=\"overflow: visible;\">\n" +
+    "    \n" +
+    "    <div class=\"media\" ng-repeat=\"comment in comments\" style=\"overflow: visible;\" ng-show=\"comments\">\n" +
     "      <div class=\"media-left\">\n" +
     "        <a href=\"#\">\n" +
     "          <img class=\"media-object\" ng-src=\"{{ comment.user.avatar_thumb_50_50 }}\" alt=\"{{ comment.user.default_name }}\">\n" +
@@ -33,7 +35,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "      <div class=\"media-body\" style=\"overflow: visible;\">\n" +
     "        <h4 class=\"media-heading\">{{ comment.user.default_name }}<br />\n" +
     "          <small>{{ comment.created | date:'medium' }}</small>\n" +
-    "          <div class=\"btn-group pull-right\">\n" +
+    "          <div class=\"btn-group pull-right\" ng-show=\"waid.user\">\n" +
     "            <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n" +
     "              Action <span class=\"caret\"></span>\n" +
     "            </button>\n" +
@@ -75,7 +77,6 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          </p>\n" +
     "        </div>\n" +
     "      </div>\n" +
-    "      <hr />\n" +
     "    </div>\n" +
     "    \n" +
     "\n" +
@@ -130,38 +131,20 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "\n" +
     "    <div class=\"row\">\n" +
     "      <div class=\"col-md-4\">\n" +
-    "        <div class=\"panel panel-default\">\n" +
-    "          <div class=\"panel-heading\">\n" +
-    "            <h3 class=\"panel-title\">Social login/registratie</h3>\n" +
-    "          </div>\n" +
-    "          <div class=\"panel-body\">\n" +
-    "            <p>Social login zorgt ervoor dat je snel kan aanmelden met jouw social media account.</p>\n" +
-    "            <p>Je word doorverwezen naar de social account met verdere informatie en instructies.</p>\n" +
-    "            <p>Zodra je daar akkoord geeft word je weer doorverwezen naar deze site en is jouw account aangemaakt!</p>\n" +
-    "            <ng-include src=\"'/idm/templates/social-login.html'\"></ng-include>\n" +
-    "          </div>\n" +
-    "        </div>\n" +
+    "        <h3>Social login/registratie</h3>\n" +
+    "        <p>Social login zorgt ervoor dat je snel kan aanmelden met jouw social media account.</p>\n" +
+    "        <p>Je word doorverwezen naar de social account met verdere informatie en instructies.</p>\n" +
+    "        <p>Zodra je daar akkoord geeft word je weer doorverwezen naar deze site en is jouw account aangemaakt!</p>\n" +
+    "        <ng-include src=\"'/idm/templates/social-login.html'\"></ng-include>\n" +
     "      </div>\n" +
     "      <div class=\"col-md-4\">\n" +
-    "        <div class=\"panel panel-default\">\n" +
-    "          <div class=\"panel-heading\">\n" +
-    "            <h3 class=\"panel-title\">Login</h3>\n" +
-    "          </div>\n" +
-    "          <div class=\"panel-body\">\n" +
-    "            <ng-include src=\"'/idm/templates/login.html'\"></ng-include>\n" +
-    "          </div>\n" +
-    "        </div>\n" +
+    "        <h3>Login</h3>\n" +
+    "        <ng-include src=\"'/idm/templates/login.html'\"></ng-include>\n" +
     "      </div>\n" +
     "      \n" +
     "      <div class=\"col-md-4\">\n" +
-    "        <div class=\"panel panel-default\">\n" +
-    "          <div class=\"panel-heading\">\n" +
-    "            <h3 class=\"panel-title\">Registreren</h3>\n" +
-    "          </div>\n" +
-    "          <div class=\"panel-body\">\n" +
-    "            <ng-include src=\"'/idm/templates/register.html'\"></ng-include>\n" +
-    "          </div>\n" +
-    "        </div>\n" +
+    "        <h3>Registreren</h3>\n" +
+    "        <ng-include src=\"'/idm/templates/register.html'\"></ng-include>\n" +
     "      </div>\n" +
     "    </div>\n"
   );
@@ -326,97 +309,76 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  <div class=\"col-md-8\">\n" +
     "\n" +
     "    <div ng-show=\"showProfilePage('overview')\" ng-controller=\"WAIDUserProfileOverviewCtrl\">\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">Overzicht</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "          <dl class=\"dl-horizontal\">\n" +
-    "            <dt>Geboortedatum</dt>\n" +
-    "            <dd>{{ model.date_of_birth }}</dd>\n" +
-    "          </dl>\n" +
-    "          <dl class=\"dl-horizontal\">\n" +
-    "            <dt>Geslacht</dt>\n" +
-    "            <dd><span ng-show=\"model.gender=='F'\">Vrouw</span><span ng-show=\"model.gender=='M'\">Male</span></dd>\n" +
-    "          </dl>\n" +
-    "          <a class=\"btn btn-default btn-sm pull-right\" ng-click=\"goToProfilePage('main')\">Algemene gegevens aanpassen</a>\n" +
-    "        </div>\n" +
+    "      <div>\n" +
+    "        <a class=\"btn btn-default btn-xs pull-right\" ng-click=\"goToProfilePage('main')\">Algemene gegevens aanpassen</a>\n" +
+    "        <h3>Overzicht</h3>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Geboortedatum</dt>\n" +
+    "          <dd>{{ model.date_of_birth }}</dd>\n" +
+    "        </dl>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Geslacht</dt>\n" +
+    "          <dd><span ng-show=\"model.gender=='F'\">Vrouw</span><span ng-show=\"model.gender=='M'\">Male</span></dd>\n" +
+    "        </dl>\n" +
+    "      </div>\n" +
+    "      \n" +
+    "      <div>\n" +
+    "        <a class=\"btn btn-default btn-xs pull-right\" ng-click=\"goToProfilePage('interests')\">Interesses aanpassen</a>\n" +
+    "        <h3>Interesses</h3>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Leuk</dt>\n" +
+    "          <dd>{{ model.like_tags }}</dd>\n" +
+    "        </dl>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Niet leuk</dt>\n" +
+    "          <dd>{{ model.dislike_tags }}</dd>\n" +
+    "        </dl>\n" +
+    "      \n" +
     "      </div>\n" +
     "\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">Interesses</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "            <dl class=\"dl-horizontal\">\n" +
-    "            <dt>Leuk</dt>\n" +
-    "            <dd>{{ model.like_tags }}</dd>\n" +
-    "          </dl>\n" +
-    "          <dl class=\"dl-horizontal\">\n" +
-    "            <dt>Niet leuk</dt>\n" +
-    "            <dd>{{ model.dislike_tags }}</dd>\n" +
-    "          </dl>\n" +
-    "          <a class=\"btn btn-default btn-sm pull-right\" ng-click=\"goToProfilePage('interests')\">Interesses aanpassen</a>\n" +
-    "        </div>\n" +
+    "      <div>\n" +
+    "        <a class=\"btn btn-default btn-xs pull-right\" ng-click=\"goToProfilePage('emails')\">E-mail adressen aanpassen</a>\n" +
+    "        <h3>E-mail adressen</h3>\n" +
+    "        <dl class=\"dl-horizontal\" ng-repeat=\"email in emails\">\n" +
+    "          <dt>\n" +
+    "            <span class=\"glyphicon glyphicon-eye-close text-danger\" ng-show=\"!email.is_verified\"></span>\n" +
+    "            <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"email.is_verified\"></span>\n" +
+    "          </dt>\n" +
+    "          <dd>{{ email.email }}</dd>\n" +
+    "        </dl>\n" +
     "        \n" +
     "      </div>\n" +
     "\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">E-mail adressen</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "          <dl class=\"dl-horizontal\" ng-repeat=\"email in emails\">\n" +
-    "            <dt>\n" +
-    "              <span class=\"glyphicon glyphicon-eye-close text-danger\" ng-show=\"!email.is_verified\"></span>\n" +
-    "              <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"email.is_verified\"></span>\n" +
-    "            </dt>\n" +
-    "            <dd>{{ email.email }}</dd>\n" +
-    "          </dl>\n" +
-    "          <a class=\"btn btn-default btn-sm pull-right\" ng-click=\"goToProfilePage('emails')\">E-mail adressen aanpassen</a>\n" +
-    "        </div>\n" +
+    "      <div>\n" +
+    "        <h3>Login</h3>\n" +
+    "        <a class=\"btn btn-default btn-xs pull-right\" ng-click=\"goToProfilePage('username')\">Login aanpassen</a>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Gebruikersnaam</dt>\n" +
+    "          <dd>{{ model.username }}</dd>\n" +
+    "        </dl>\n" +
     "        \n" +
-    "      </div>\n" +
-    "       \n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">Login</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "        <a class=\"btn btn-default btn-sm pull-right\" ng-click=\"goToProfilePage('username')\">Login aanpassen</a>\n" +
-    "          <dl class=\"dl-horizontal\">\n" +
-    "            <dt>Gebruikersnaam</dt>\n" +
-    "            <dd>{{ model.username }}</dd>\n" +
-    "          </dl>\n" +
-    "          \n" +
-    "          <a class=\"btn btn-default btn-sm pull-right\" ng-click=\"goToProfilePage('password')\">Wachtwoord aanpassen</a>\n" +
-    "          <dl class=\"dl-horizontal\">\n" +
-    "            <dt>Wachtwoord</dt>\n" +
-    "            <dd>******</dd>\n" +
-    "          </dl>\n" +
-    "          \n" +
-    "        </div>\n" +
+    "        <a class=\"btn btn-default btn-xs pull-right\" ng-click=\"goToProfilePage('password')\">Wachtwoord aanpassen</a>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Wachtwoord</dt>\n" +
+    "          <dd>******</dd>\n" +
+    "        </dl>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "\n" +
     "\n" +
     "    <div ng-show=\"showProfilePage('emails')\" ng-controller=\"WAIDUserProfileEmailCtrl\">\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">E-Mail adresses</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "\n" +
-    "            <div class=\"input-group input-group-sm\">\n" +
-    "              <input type=\"add_email\" class=\"form-control\" id=\"add_email\" placeholder=\"Email\" ng-model=\"emailAdd\">\n" +
-    "              <span class=\"input-group-btn\">\n" +
-    "                <button class=\"btn btn-default\" type=\"button\" ng-click=\"addEmail()\">Toevoegen</button>\n" +
-    "              </span>\n" +
-    "            </div>\n" +
-    "              \n" +
-    "              \n" +
-    "            <div class=\"alert alert-danger\" ng-repeat=\"error in errors.email\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "       \n" +
+    "      <div>\n" +
+    "        <h3>E-Mail adresses</h3>\n" +
+    "          <div class=\"input-group input-group-sm\">\n" +
+    "            <input type=\"add_email\" class=\"form-control\" id=\"add_email\" placeholder=\"Email\" ng-model=\"emailAdd\">\n" +
+    "            <span class=\"input-group-btn\">\n" +
+    "              <button class=\"btn btn-default\" type=\"button\" ng-click=\"addEmail()\">Toevoegen</button>\n" +
+    "            </span>\n" +
+    "          </div>\n" +
+    "            \n" +
+    "            \n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.email\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "     \n" +
     "          <div ng-show=\"inactiveEmails.length > 0\">\n" +
     "            <h4><span class=\"glyphicon glyphicon-eye-close text-danger\"></span> Nog te valideren e-mail adressen</h4>\n" +
     "            <p>Onderstaande e-mail adressen dienen nog te worden gecontroleerd. Er is een mail gestuurd naar het adres met een activatie link. Als je deze niet hebt ontvangen kan je het email adres verwijderen en een nieuwe toevoegen</p> \n" +
@@ -447,113 +409,98 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          </div>\n" +
     "          <div class=\"alert alert-danger\" ng-if=\"errors.detail\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{errors.detail}}</div> <br />  \n" +
     "          <a class=\"btn btn-default btn-sm pull-right\" ng-click=\"goToProfilePage('overview')\">Naar overzicht</a>\n" +
-    "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "\n" +
     "\n" +
     "    <div ng-show=\"showProfilePage('main')\" ng-controller=\"WAIDUserProfileMainCtrl\">\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">Algemene gegevens</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "          <form>\n" +
-    "            <div class=\"form-group\">\n" +
-    "              <label for=\"date_of_birth\">Geboortedatum</label>\n" +
+    "      <div>\n" +
+    "        <h3>Algemene gegevens</h3>\n" +
+    "        <form>\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label for=\"date_of_birth\">Geboortedatum</label>\n" +
     "\n" +
-    "              <div class=\"input-group\">\n" +
-    "                <input type=\"text\" class=\"form-control\" id=\"date_of_birth\" uib-datepicker-popup ng-model=\"model.date_of_birth\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" />\n" +
-    "                <span class=\"input-group-btn\">\n" +
-    "                  <button type=\"button\" class=\"btn btn-default\" ng-click=\"open()\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
-    "                </span>\n" +
-    "              </div>\n" +
+    "            <div class=\"input-group\">\n" +
+    "              <input type=\"text\" class=\"form-control\" id=\"date_of_birth\" uib-datepicker-popup ng-model=\"model.date_of_birth\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "              <span class=\"input-group-btn\">\n" +
+    "                <button type=\"button\" class=\"btn btn-default\" ng-click=\"open()\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "              </span>\n" +
     "            </div>\n" +
-    "            <div class=\"alert alert-danger\" ng-repeat=\"error in errors.date_of_birth\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "          </div>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.date_of_birth\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "          \n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>Geslacht</label><br />\n" +
+    "            <label class=\"radio-inline\">\n" +
+    "              <input type=\"radio\" ng-model=\"model.gender\" value=\"M\"> Male\n" +
+    "            </label>\n" +
+    "            <label class=\"radio-inline\">\n" +
+    "              <input type=\"radio\" ng-model=\"model.gender\" value=\"F\"> Vrouw\n" +
+    "            </label>\n" +
+    "          </div>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.gender\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "\n" +
+    "\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>Avatar</label><br />\n" +
+    "            <img style=\"width:200px;\" ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
+    "            <div ng-show=\"isUploading\" class=\"alert alert-info\" role=\"alert\">Bezig met uploaden van foto.</div>\n" +
+    "            <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Avatar\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
     "            \n" +
-    "            <div class=\"form-group\">\n" +
-    "              <label>Geslacht</label><br />\n" +
-    "              <label class=\"radio-inline\">\n" +
-    "                <input type=\"radio\" ng-model=\"model.gender\" value=\"M\"> Male\n" +
-    "              </label>\n" +
-    "              <label class=\"radio-inline\">\n" +
-    "                <input type=\"radio\" ng-model=\"model.gender\" value=\"F\"> Vrouw\n" +
-    "              </label>\n" +
-    "            </div>\n" +
-    "            <div class=\"alert alert-danger\" ng-repeat=\"error in errors.gender\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "           \n" +
+    "          </div>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.avatar\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "\n" +
     "\n" +
-    "            <div class=\"form-group\">\n" +
-    "              <label>Avatar</label><br />\n" +
-    "              <img style=\"width:200px;\" ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
-    "              <div ng-show=\"isUploading\" class=\"alert alert-info\" role=\"alert\">Bezig met uploaden van foto.</div>\n" +
-    "              <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Avatar\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
-    "              \n" +
-    "             \n" +
-    "            </div>\n" +
-    "            <div class=\"alert alert-danger\" ng-repeat=\"error in errors.avatar\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "          <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
+    "        </form>\n" +
+    "      </div>\n" +
     "\n" +
-    "\n" +
-    "            <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
-    "          </form>\n" +
-    "        </div>\n" +
-    "      </div> \n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-show=\"showProfilePage('interests')\" ng-controller=\"WAIDUserProfileInterestsCtrl\">\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">Interesses</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "          <p>Om de kwaliteit en gebruiksvriendelijkheid te verbeteren willen we graag weten waar jouw interesses liggen.\n" +
-    "          Uiteraart is dit niet verplicht maar we stellen het wel op prijs!<p>\n" +
-    "          <form>\n" +
-    "            <div class=\"form-group\">\n" +
-    "              <label for=\"like_taks\">Wat vind je leuk?</label>\n" +
-    "              <textarea class=\"form-control\" rows=\"3\" id=\"like_tags\" ng-model=\"model.like_tags\"></textarea>\n" +
-    "              <p class=\"help-block\">Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.</p>\n" +
-    "            </div>\n" +
-    "            <div class=\"alert alert-danger\" ng-repeat=\"error in errors.like_tags\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "            <div class=\"form-group\">\n" +
-    "              <label for=\"dislike_tags\">Wat vind je echt niet leuk?</label>\n" +
-    "              <textarea class=\"form-control\" rows=\"3\" id=\"dislike_tags\" ng-model=\"model.dislike_tags\"></textarea>\n" +
-    "              <p class=\"help-block\">Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.</p>\n" +
-    "            </div>\n" +
-    "            <div class=\"alert alert-danger\" ng-repeat=\"error in errors.dislike_tags\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "            <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
-    "          </form>\n" +
-    "        </div>\n" +
+    "      <div>\n" +
+    "        <h3>Interesses</h3>\n" +
+    "        <p>Om de kwaliteit en gebruiksvriendelijkheid te verbeteren willen we graag weten waar jouw interesses liggen.\n" +
+    "        Uiteraart is dit niet verplicht maar we stellen het wel op prijs!<p>\n" +
+    "        <form>\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label for=\"like_taks\">Wat vind je leuk?</label>\n" +
+    "            <textarea class=\"form-control\" rows=\"3\" id=\"like_tags\" ng-model=\"model.like_tags\"></textarea>\n" +
+    "            <p class=\"help-block\">Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.</p>\n" +
+    "          </div>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.like_tags\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label for=\"dislike_tags\">Wat vind je echt niet leuk?</label>\n" +
+    "            <textarea class=\"form-control\" rows=\"3\" id=\"dislike_tags\" ng-model=\"model.dislike_tags\"></textarea>\n" +
+    "            <p class=\"help-block\">Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.</p>\n" +
+    "          </div>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.dislike_tags\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "          <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
+    "        </form>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "\n" +
     "\n" +
     "    <div ng-show=\"showProfilePage('username')\" ng-controller=\"WAIDUserProfileUsernameCtrl\">\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">Gebruikersnaam</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "          <form>\n" +
-    "            <div class=\"form-group\">\n" +
-    "              <label for=\"username\">Gebruikersnaam</label>\n" +
-    "              <input type=\"input\" class=\"form-control\" id=\"username\" placeholder=\"Gebruikersnaam\" ng-model=\"model.username\">\n" +
-    "            </div>\n" +
-    "            <div class=\"alert alert-danger\" ng-repeat=\"error in errors.username\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "            <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
-    "          </form>\n" +
-    "        </div>\n" +
+    "      <div>\n" +
+    "        <h3>Gebruikersnaam</h3>\n" +
+    "        <form>\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label for=\"username\">Gebruikersnaam</label>\n" +
+    "            <input type=\"input\" class=\"form-control\" id=\"username\" placeholder=\"Gebruikersnaam\" ng-model=\"model.username\">\n" +
+    "          </div>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.username\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "          <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
+    "        </form>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "\n" +
     "\n" +
     "    <div ng-show=\"showProfilePage('password')\" ng-controller=\"WAIDUserProfilePasswordCtrl\">\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">Wachtwoord wijzigen</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "          <form>\n" +
+    "      <div>\n" +
+    "        <h3>wachtwoord wijzigen</h3>\n" +
+    "        <form>\n" +
     "            <div class=\"form-group\">\n" +
     "              <label for=\"password\">Wachtwoord</label>\n" +
     "              <input type=\"password\" class=\"form-control\" id=\"password\" placeholder=\"Password\" ng-model=\"model.password\">\n" +
@@ -569,20 +516,15 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "            <div class=\"alert alert-danger\" ng-repeat=\"error in errors.non_field_errors\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "            <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
     "          </form>\n" +
-    "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
-    "\n" +
     "  </div>\n" +
     "</div>\n"
   );
 
 
   $templateCache.put('/idm/templates/user-profile-menu.html',
-    "<div class=\"panel panel-default\">\n" +
-    "  <div class=\"panel-heading\">\n" +
-    "    <h3 class=\"panel-title\">Persoonlijk profiel</h3>\n" +
-    "  </div>\n" +
+    "<div class=\"list-group\">\n" +
     "  <div class=\"list-group\">\n" +
     "    <a class=\"list-group-item\" ng-class=\"getActiveProfilePageMenuClass('overview')\" ng-click=\"goToProfilePage('overview')\">Overzicht</a>\n" +
     "    <a class=\"list-group-item\" ng-class=\"getActiveProfilePageMenuClass('main')\" ng-click=\"goToProfilePage('main')\">Algemeen</a>\n" +

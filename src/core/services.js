@@ -232,6 +232,12 @@ angular.module('waid.core.services', ['app'])
             var data = {'mark':mark};
             return this._makeRequest('POST', this._getAppUrl("/comments/" + id + "/mark/"), 'application.commentsMark', data);
         },
+        'articlesListGet': function() {
+            return this._makeRequest('GET', this._getAppUrl("/articles/"), 'application.articlesList');
+        },
+        'articlesGet': function(id) {
+            return this._makeRequest('GET', this._getAppUrl("/articles/" + id + '/'), 'application.articles');
+        },
         'adminAccountGet': function() {
             return this._makeRequest('GET', this._getAdminUrl("/account/"), 'admin.account');
         },

@@ -6,97 +6,76 @@
   <div class="col-md-8">
 
     <div ng-show="showProfilePage('overview')" ng-controller="WAIDUserProfileOverviewCtrl">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Overzicht</h3>
-        </div>
-        <div class="panel-body">
-          <dl class="dl-horizontal">
-            <dt>Geboortedatum</dt>
-            <dd>{{ model.date_of_birth }}</dd>
-          </dl>
-          <dl class="dl-horizontal">
-            <dt>Geslacht</dt>
-            <dd><span ng-show="model.gender=='F'">Vrouw</span><span ng-show="model.gender=='M'">Male</span></dd>
-          </dl>
-          <a class="btn btn-default btn-sm pull-right" ng-click="goToProfilePage('main')">Algemene gegevens aanpassen</a>
-        </div>
+      <div>
+        <a class="btn btn-default btn-xs pull-right" ng-click="goToProfilePage('main')">Algemene gegevens aanpassen</a>
+        <h3>Overzicht</h3>
+        <dl class="dl-horizontal">
+          <dt>Geboortedatum</dt>
+          <dd>{{ model.date_of_birth }}</dd>
+        </dl>
+        <dl class="dl-horizontal">
+          <dt>Geslacht</dt>
+          <dd><span ng-show="model.gender=='F'">Vrouw</span><span ng-show="model.gender=='M'">Male</span></dd>
+        </dl>
+      </div>
+      
+      <div>
+        <a class="btn btn-default btn-xs pull-right" ng-click="goToProfilePage('interests')">Interesses aanpassen</a>
+        <h3>Interesses</h3>
+        <dl class="dl-horizontal">
+          <dt>Leuk</dt>
+          <dd>{{ model.like_tags }}</dd>
+        </dl>
+        <dl class="dl-horizontal">
+          <dt>Niet leuk</dt>
+          <dd>{{ model.dislike_tags }}</dd>
+        </dl>
+      
       </div>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Interesses</h3>
-        </div>
-        <div class="panel-body">
-            <dl class="dl-horizontal">
-            <dt>Leuk</dt>
-            <dd>{{ model.like_tags }}</dd>
-          </dl>
-          <dl class="dl-horizontal">
-            <dt>Niet leuk</dt>
-            <dd>{{ model.dislike_tags }}</dd>
-          </dl>
-          <a class="btn btn-default btn-sm pull-right" ng-click="goToProfilePage('interests')">Interesses aanpassen</a>
-        </div>
+      <div>
+        <a class="btn btn-default btn-xs pull-right" ng-click="goToProfilePage('emails')">E-mail adressen aanpassen</a>
+        <h3>E-mail adressen</h3>
+        <dl class="dl-horizontal" ng-repeat="email in emails">
+          <dt>
+            <span class="glyphicon glyphicon-eye-close text-danger" ng-show="!email.is_verified"></span>
+            <span class="glyphicon glyphicon-ok text-success" ng-show="email.is_verified"></span>
+          </dt>
+          <dd>{{ email.email }}</dd>
+        </dl>
         
       </div>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">E-mail adressen</h3>
-        </div>
-        <div class="panel-body">
-          <dl class="dl-horizontal" ng-repeat="email in emails">
-            <dt>
-              <span class="glyphicon glyphicon-eye-close text-danger" ng-show="!email.is_verified"></span>
-              <span class="glyphicon glyphicon-ok text-success" ng-show="email.is_verified"></span>
-            </dt>
-            <dd>{{ email.email }}</dd>
-          </dl>
-          <a class="btn btn-default btn-sm pull-right" ng-click="goToProfilePage('emails')">E-mail adressen aanpassen</a>
-        </div>
+      <div>
+        <h3>Login</h3>
+        <a class="btn btn-default btn-xs pull-right" ng-click="goToProfilePage('username')">Login aanpassen</a>
+        <dl class="dl-horizontal">
+          <dt>Gebruikersnaam</dt>
+          <dd>{{ model.username }}</dd>
+        </dl>
         
-      </div>
-       
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Login</h3>
-        </div>
-        <div class="panel-body">
-        <a class="btn btn-default btn-sm pull-right" ng-click="goToProfilePage('username')">Login aanpassen</a>
-          <dl class="dl-horizontal">
-            <dt>Gebruikersnaam</dt>
-            <dd>{{ model.username }}</dd>
-          </dl>
-          
-          <a class="btn btn-default btn-sm pull-right" ng-click="goToProfilePage('password')">Wachtwoord aanpassen</a>
-          <dl class="dl-horizontal">
-            <dt>Wachtwoord</dt>
-            <dd>******</dd>
-          </dl>
-          
-        </div>
+        <a class="btn btn-default btn-xs pull-right" ng-click="goToProfilePage('password')">Wachtwoord aanpassen</a>
+        <dl class="dl-horizontal">
+          <dt>Wachtwoord</dt>
+          <dd>******</dd>
+        </dl>
       </div>
     </div>
 
 
     <div ng-show="showProfilePage('emails')" ng-controller="WAIDUserProfileEmailCtrl">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">E-Mail adresses</h3>
-        </div>
-        <div class="panel-body">
-
-            <div class="input-group input-group-sm">
-              <input type="add_email" class="form-control" id="add_email" placeholder="Email" ng-model="emailAdd">
-              <span class="input-group-btn">
-                <button class="btn btn-default" type="button" ng-click="addEmail()">Toevoegen</button>
-              </span>
-            </div>
-              
-              
-            <div class="alert alert-danger" ng-repeat="error in errors.email"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-       
+      <div>
+        <h3>E-Mail adresses</h3>
+          <div class="input-group input-group-sm">
+            <input type="add_email" class="form-control" id="add_email" placeholder="Email" ng-model="emailAdd">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" ng-click="addEmail()">Toevoegen</button>
+            </span>
+          </div>
+            
+            
+          <div class="alert alert-danger" ng-repeat="error in errors.email"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+     
           <div ng-show="inactiveEmails.length > 0">
             <h4><span class="glyphicon glyphicon-eye-close text-danger"></span> Nog te valideren e-mail adressen</h4>
             <p>Onderstaande e-mail adressen dienen nog te worden gecontroleerd. Er is een mail gestuurd naar het adres met een activatie link. Als je deze niet hebt ontvangen kan je het email adres verwijderen en een nieuwe toevoegen</p> 
@@ -127,113 +106,98 @@
           </div>
           <div class="alert alert-danger" ng-if="errors.detail"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{errors.detail}}</div> <br />  
           <a class="btn btn-default btn-sm pull-right" ng-click="goToProfilePage('overview')">Naar overzicht</a>
-        </div>
       </div>
     </div>
 
 
     <div ng-show="showProfilePage('main')" ng-controller="WAIDUserProfileMainCtrl">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Algemene gegevens</h3>
-        </div>
-        <div class="panel-body">
-          <form>
-            <div class="form-group">
-              <label for="date_of_birth">Geboortedatum</label>
+      <div>
+        <h3>Algemene gegevens</h3>
+        <form>
+          <div class="form-group">
+            <label for="date_of_birth">Geboortedatum</label>
 
-              <div class="input-group">
-                <input type="text" class="form-control" id="date_of_birth" uib-datepicker-popup ng-model="model.date_of_birth" is-open="popup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-                <span class="input-group-btn">
-                  <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
-                </span>
-              </div>
+            <div class="input-group">
+              <input type="text" class="form-control" id="date_of_birth" uib-datepicker-popup ng-model="model.date_of_birth" is-open="popup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
             </div>
-            <div class="alert alert-danger" ng-repeat="error in errors.date_of_birth"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+          </div>
+          <div class="alert alert-danger" ng-repeat="error in errors.date_of_birth"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+          
+          <div class="form-group">
+            <label>Geslacht</label><br />
+            <label class="radio-inline">
+              <input type="radio" ng-model="model.gender" value="M"> Male
+            </label>
+            <label class="radio-inline">
+              <input type="radio" ng-model="model.gender" value="F"> Vrouw
+            </label>
+          </div>
+          <div class="alert alert-danger" ng-repeat="error in errors.gender"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+
+
+          <div class="form-group">
+            <label>Avatar</label><br />
+            <img style="width:200px;" ng-show="model.avatar_thumb_50_50" src="{{ model.avatar_thumb_50_50 }}" />
+            <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
+            <input type="file" class="form-control" id="avatar" placeholder="Avatar" onchange="angular.element(this).scope().uploadFile(this.files)">
             
-            <div class="form-group">
-              <label>Geslacht</label><br />
-              <label class="radio-inline">
-                <input type="radio" ng-model="model.gender" value="M"> Male
-              </label>
-              <label class="radio-inline">
-                <input type="radio" ng-model="model.gender" value="F"> Vrouw
-              </label>
-            </div>
-            <div class="alert alert-danger" ng-repeat="error in errors.gender"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+           
+          </div>
+          <div class="alert alert-danger" ng-repeat="error in errors.avatar"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
 
 
-            <div class="form-group">
-              <label>Avatar</label><br />
-              <img style="width:200px;" ng-show="model.avatar_thumb_50_50" src="{{ model.avatar_thumb_50_50 }}" />
-              <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
-              <input type="file" class="form-control" id="avatar" placeholder="Avatar" onchange="angular.element(this).scope().uploadFile(this.files)">
-              
-             
-            </div>
-            <div class="alert alert-danger" ng-repeat="error in errors.avatar"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+          <button type="submit" class="btn btn-default" ng-click="save()">Opslaan</button>
+        </form>
+      </div>
 
-
-            <button type="submit" class="btn btn-default" ng-click="save()">Opslaan</button>
-          </form>
-        </div>
-      </div> 
     </div>
 
     <div ng-show="showProfilePage('interests')" ng-controller="WAIDUserProfileInterestsCtrl">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Interesses</h3>
-        </div>
-        <div class="panel-body">
-          <p>Om de kwaliteit en gebruiksvriendelijkheid te verbeteren willen we graag weten waar jouw interesses liggen.
-          Uiteraart is dit niet verplicht maar we stellen het wel op prijs!<p>
-          <form>
-            <div class="form-group">
-              <label for="like_taks">Wat vind je leuk?</label>
-              <textarea class="form-control" rows="3" id="like_tags" ng-model="model.like_tags"></textarea>
-              <p class="help-block">Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.</p>
-            </div>
-            <div class="alert alert-danger" ng-repeat="error in errors.like_tags"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-            <div class="form-group">
-              <label for="dislike_tags">Wat vind je echt niet leuk?</label>
-              <textarea class="form-control" rows="3" id="dislike_tags" ng-model="model.dislike_tags"></textarea>
-              <p class="help-block">Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.</p>
-            </div>
-            <div class="alert alert-danger" ng-repeat="error in errors.dislike_tags"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-            <button type="submit" class="btn btn-default" ng-click="save()">Opslaan</button>
-          </form>
-        </div>
+      <div>
+        <h3>Interesses</h3>
+        <p>Om de kwaliteit en gebruiksvriendelijkheid te verbeteren willen we graag weten waar jouw interesses liggen.
+        Uiteraart is dit niet verplicht maar we stellen het wel op prijs!<p>
+        <form>
+          <div class="form-group">
+            <label for="like_taks">Wat vind je leuk?</label>
+            <textarea class="form-control" rows="3" id="like_tags" ng-model="model.like_tags"></textarea>
+            <p class="help-block">Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.</p>
+          </div>
+          <div class="alert alert-danger" ng-repeat="error in errors.like_tags"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+          <div class="form-group">
+            <label for="dislike_tags">Wat vind je echt niet leuk?</label>
+            <textarea class="form-control" rows="3" id="dislike_tags" ng-model="model.dislike_tags"></textarea>
+            <p class="help-block">Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.</p>
+          </div>
+          <div class="alert alert-danger" ng-repeat="error in errors.dislike_tags"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+          <button type="submit" class="btn btn-default" ng-click="save()">Opslaan</button>
+        </form>
       </div>
     </div>
 
 
     <div ng-show="showProfilePage('username')" ng-controller="WAIDUserProfileUsernameCtrl">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Gebruikersnaam</h3>
-        </div>
-        <div class="panel-body">
-          <form>
-            <div class="form-group">
-              <label for="username">Gebruikersnaam</label>
-              <input type="input" class="form-control" id="username" placeholder="Gebruikersnaam" ng-model="model.username">
-            </div>
-            <div class="alert alert-danger" ng-repeat="error in errors.username"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-            <button type="submit" class="btn btn-default" ng-click="save()">Opslaan</button>
-          </form>
-        </div>
+      <div>
+        <h3>Gebruikersnaam</h3>
+        <form>
+          <div class="form-group">
+            <label for="username">Gebruikersnaam</label>
+            <input type="input" class="form-control" id="username" placeholder="Gebruikersnaam" ng-model="model.username">
+          </div>
+          <div class="alert alert-danger" ng-repeat="error in errors.username"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+          <button type="submit" class="btn btn-default" ng-click="save()">Opslaan</button>
+        </form>
       </div>
     </div>
 
 
     <div ng-show="showProfilePage('password')" ng-controller="WAIDUserProfilePasswordCtrl">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Wachtwoord wijzigen</h3>
-        </div>
-        <div class="panel-body">
-          <form>
+      <div>
+        <h3>wachtwoord wijzigen</h3>
+        <form>
             <div class="form-group">
               <label for="password">Wachtwoord</label>
               <input type="password" class="form-control" id="password" placeholder="Password" ng-model="model.password">
@@ -249,9 +213,7 @@
             <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
             <button type="submit" class="btn btn-default" ng-click="save()">Opslaan</button>
           </form>
-        </div>
       </div>
     </div>
-
   </div>
 </div>
