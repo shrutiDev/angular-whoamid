@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width">
     <base href="/">
     <link rel="stylesheet" href="static/css/main.css">
+    
     <link rel="icon" href="icon/favicon.ico" type="image/x-icon"/>
   </head>
   
@@ -39,7 +40,7 @@
           <li ng-class="getMenuActiveClass('/page/overview/')"><a href="page/overview/"><span class="glyphicon glyphicon glyphicon-info-sign"></span> Artikelen</a></li>
         </ul> -->
 
-        <waid-user-profile-navbar waid="waid" />
+        <waid-user-profile-navbar />
       </div>
     </nav>
     <div ng-view="">
@@ -56,6 +57,7 @@
     </div>
 
     <script type="text/ng-template" id="/demo/templates/home.html">
+      <waid-comments></waid-comments>
       <ng-include src="'/demo/templates/articles.html'"></ng-include>
     </script>
 
@@ -70,7 +72,7 @@
             <img ng-src="{{ article.image_thumb_1000_500 }}" alt="{{ article.title }}" class="img-responsive img-rounded">
             <p class="lead">{{ article.intro }}</p>
             <p>{{ article.body }}</p>
-            <waid-comments waid="waid"></waid-comments>
+            <waid-comments></waid-comments>
           </div>
           <div class="col-md-4">
             <div class="col-sm-12 col-md-12 col-lg-12" ng-repeat="article in articles | limitTo:2">

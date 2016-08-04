@@ -6,14 +6,21 @@ angular.module('app', [
   'ngSanitize',
   'ngRoute',
   'waid.templates',
+
   'waid.core.services',
+  'waid.core.controllers',
+  'waid.core.directives',
+
   'waid.idm.controllers',
   'waid.idm.directives',
+
+  'waid.comments.controllers',
+  'waid.comments.directives',
+  
   'waid.demo.controllers',
   'angular-growl',
   'ui.bootstrap',
   'angular-confirm',
-  'textAngular',
   'slugifier',
   'monospaced.elastic',
   'iso.directives'

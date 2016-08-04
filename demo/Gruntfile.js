@@ -24,14 +24,13 @@ module.exports = function (grunt) {
             files: {
               'public/static/css/main.css': [
                 // Build waid sources
-                'src/bower_components/textAngular/dist/textAngular.css',
                 'src/bower_components/font-awesome/css/font-awesome.min.css',
                 'src/bower_components/angular-growl/build/angular-growl.min.css',
-                'src/angular-whoamid/assets/bootstrap3-themes/simplex.css',
+                'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
 
                 'src/angular-whoamid/dist/waid.css',
-                // 'src/bower_components/angular-isotope/styles/style.css',
-                'src/main.css'
+                // // 'src/bower_components/angular-isotope/styles/style.css',
+                // 'src/main.css'
               ]
             }
           }
@@ -58,23 +57,30 @@ module.exports = function (grunt) {
                     
 
                     // waid resources
+                    // browser fingerprinting
                     'src/bower_components/fingerprintjs2/fingerprint2.js',
+                    // 
                     'src/bower_components/jquery/dist/jquery.min.js',
-                    'src/bower_components/angular/angular.min.js',
+                    // Bootstrap libs
                     'src/bower_components/bootstrap/dist/js/bootstrap.min.js',
+                    // Base angular resource
+                    'src/bower_components/angular/angular.min.js',
                     'src/bower_components/angular-resource/angular-resource.min.js',
                     'src/bower_components/angular-cookies/angular-cookies.min.js',
                     'src/bower_components/angular-sanitize/angular-sanitize.min.js',
                     'src/bower_components/angular-route/angular-route.js',
+
+                    // Growl
                     'src/bower_components/angular-growl/build/angular-growl.js',
+                    // ui bootstrap
                     'src/bower_components/angular-bootstrap/ui-bootstrap.min.js',
                     'src/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+                    // Confirm modal
                     'src/bower_components/angular-confirm-modal/angular-confirm.min.js',
+                    // Create slugs
                     'src/bower_components/angular-slugify/angular-slugify.js',
+                    // dynamic textarea
                     'src/bower_components/angular-elastic/elastic.js',
-                    'src/bower_components/textAngular/dist/textAngular-rangy.min.js',
-                    'src/bower_components/textAngular/dist/textAngular-sanitize.min.js',
-                    'src/bower_components/textAngular/dist/textAngular.min.js',
 
 
                     
@@ -84,9 +90,11 @@ module.exports = function (grunt) {
                     'src/bower_components/angular-isotope/dist/angular-isotope.js',
 
                     // Build waid
+                    
                     'src/angular-whoamid/dist/waid.js',
                     'src/angular-whoamid/dist/templates.js',
-
+                    
+                    //'src/angular-whoamid/dist/waid-noconflict.js',
                     // Build demo
                     'src/app/app.js',
                     

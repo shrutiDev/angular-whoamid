@@ -9,6 +9,10 @@ module.exports = function (grunt) {
                 files: 'src/**/*.js',
                 tasks: ['uglify']
             },
+            concat: { 
+                files: 'src/**/*.js',
+                tasks: ['concat']
+            },
             templates: { 
                 files: 'src/**/*.html',
                 tasks: ['ngtemplates']
@@ -25,7 +29,7 @@ module.exports = function (grunt) {
           },
           target: {
             files: {
-              'src/dist/waid.css': [
+              'dist/waid.css': [
                 'src/waid.css'
               ]
             }
@@ -41,7 +45,7 @@ module.exports = function (grunt) {
           app: {
             cwd: 'src/',
             src:      '**/templates/**.html',
-            dest:     'src/dist/templates.js'
+            dest:     'dist/templates.js'
           }
         },
 
@@ -49,11 +53,76 @@ module.exports = function (grunt) {
           main: {
             files: [
               // includes files within path and its sub-directories
-              {expand: true, flatten: true, src: ['src/assets/fonts/*'], dest: 'src/dist/fonts/'},
+              {expand: true, flatten: true, src: ['src/assets/fonts/*'], dest: 'dist/fonts/'},
             ],
           },
         },
 
+        concat: {
+          // noconflict:{
+          //     src: [
+          //       'src/noconflict-start.js',
+
+          //       // 'src/bower_components/fingerprintjs2/fingerprint2.js',
+          //       // 'src/bower_components/jquery/dist/jquery.min.js',
+          //       'src/bower_components/angular/angular.min.js',
+          //       // 'src/bower_components/bootstrap/dist/js/bootstrap.min.js',
+          //       'src/bower_components/angular-resource/angular-resource.min.js',
+          //       'src/bower_components/angular-cookies/angular-cookies.min.js',
+          //       'src/bower_components/angular-sanitize/angular-sanitize.min.js',
+          //       // 'src/bower_components/angular-route/angular-route.js',
+          //       // 'src/bower_components/angular-growl/build/angular-growl.js',
+          //       // 'src/bower_components/angular-bootstrap/ui-bootstrap.min.js',
+          //       // 'src/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+          //       // 'src/bower_components/angular-confirm-modal/angular-confirm.min.js',
+          //       // 'src/bower_components/angular-slugify/angular-slugify.js',
+          //       // 'src/bower_components/angular-elastic/elastic.js',
+          //       // 'src/bower_components/textAngular/dist/textAngular-rangy.min.js',
+          //       // 'src/bower_components/textAngular/dist/textAngular-sanitize.min.js',
+          //       // 'src/bower_components/textAngular/dist/textAngular.min.js',
+
+
+                
+          //       // 'src/bower_components/isotope/jquery.isotope.js',
+          //       // 'src/bower_components/angular-isotope/dist/angular-isotope.js',
+
+          //       // 'src/waid.js',
+          //       // 'src/core/app.js',
+          //       // 'src/core/config.js',
+          //       // 'src/core/services.js',
+          //       // 'src/idm/config.js',
+          //       // 'src/idm/controllers.js',
+          //       // 'src/idm/directives.js',
+          //       // 'dist/templates.js',
+ 
+          //       'src/noconflict-end.js'
+          //     ],
+          //     dest: 'dist/waid-noconflict.js'
+          // },
+          default:{
+              src: [
+                'src/waid.js',
+
+                'src/core/config.js',
+                'src/core/translations.js',
+                'src/core/services.js',
+                'src/core/controllers.js',
+                'src/core/directives.js',
+
+                'src/idm/config.js',
+                'src/idm/translations.js',
+                'src/idm/controllers.js',
+                'src/idm/directives.js',
+
+                'src/comments/config.js',
+                'src/comments/translations.js',
+                'src/comments/controllers.js',
+                'src/comments/directives.js',
+                
+              ],
+              dest: 'dist/waid.js'
+          }
+        },
         // Javascript compression
         uglify: {
             options: {
@@ -68,10 +137,11 @@ module.exports = function (grunt) {
                     'src/core/config.js',
                     'src/core/services.js',
                     'src/idm/config.js',
+                    'src/idm/translations.js',
                     'src/idm/controllers.js',
                     'src/idm/directives.js'
                 ],
-                dest: 'src/dist/waid.js'
+                dest: 'dist/waid.min.js'
             }
         }
 
@@ -83,7 +153,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-copy');
-
+    grunt.loadNpmTasks('grunt-contrib-concat');
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['uglify', 'ngtemplates', 'cssmin', 'copy', 'watch']);
+    grunt.registerTask('default', ['uglify', 'ngtemplates', 'concat', 'cssmin', 'copy', 'watch']);
 }

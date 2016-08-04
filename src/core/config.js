@@ -25,4 +25,13 @@ waid.config.setConfig('api', {
     'auth-token-error' : 'Unauthorized or access token error, it was invalid, impossible to authenticate or user removed permissions to it.',
     'auth-already-associated' : 'A different user has already associated the social account that the current user is trying to associate.',
     'system-error' : 'System error, failed for some reason.'
-  }});
+  }
+});
+
+
+waid.config.setConfig('core', {
+  'templates':{
+    'core': '/core/templates/core.html',
+  }
+});
+

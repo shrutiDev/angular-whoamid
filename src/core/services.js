@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('waid.core.services', ['app'])
   .service('waidService', function idm($q, $http, $cookies, $rootScope, $location, Slug) {
     var service = {
