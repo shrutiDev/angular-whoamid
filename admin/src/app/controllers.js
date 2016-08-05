@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('waid.admin.controllers', ['waid.core.services',])
+angular.module('waid.admin.controllers', ['waid'])
   .controller('WAIDAdminCtrl', function ($scope, waidService, growl, $location, $uibModal) {
     $scope.account = '';
     $scope.goToAccount = function(){

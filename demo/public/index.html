@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width">
     <base href="/">
     <link rel="stylesheet" href="static/css/main.css">
-    
+
     <link rel="icon" href="icon/favicon.ico" type="image/x-icon"/>
   </head>
   
@@ -72,7 +72,6 @@
             <img ng-src="{{ article.image_thumb_1000_500 }}" alt="{{ article.title }}" class="img-responsive img-rounded">
             <p class="lead">{{ article.intro }}</p>
             <p>{{ article.body }}</p>
-            <waid-comments></waid-comments>
           </div>
           <div class="col-md-4">
             <div class="col-sm-12 col-md-12 col-lg-12" ng-repeat="article in articles | limitTo:2">

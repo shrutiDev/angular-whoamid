@@ -103,6 +103,8 @@ module.exports = function (grunt) {
               src: [
                 'src/waid.js',
 
+                'src/core/app.js',
+
                 'src/core/config.js',
                 'src/core/translations.js',
                 'src/core/services.js',

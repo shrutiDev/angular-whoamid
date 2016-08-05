@@ -5,18 +5,7 @@ angular.module('app', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  'waid.templates',
-
-  'waid.core.services',
-  'waid.core.controllers',
-  'waid.core.directives',
-
-  'waid.idm.controllers',
-  'waid.idm.directives',
-
-  'waid.comments.controllers',
-  'waid.comments.directives',
-  
+  'waid',
   'waid.demo.controllers',
   'angular-growl',
   'ui.bootstrap',
@@ -43,7 +32,7 @@ angular.module('app', [
     $locationProvider.html5Mode(true);
   }])
   .run(['waidService',function(waidService){
-    if (window.location.port == '8080'){
+    if (window.location.port == '8000'){
       var apiUrl = waid.config.getConfig('api.environment.development.url');
     } else if (window.location.port == '8001') {
       var apiUrl = waid.config.getConfig('api.environment.test.url');

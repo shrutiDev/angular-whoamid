@@ -5,11 +5,9 @@ angular.module('app', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  'waid.templates',
-  'waid.core.services',
-  'waid.idm.controllers',
-  'waid.idm.directives',
+  'waid',
   'waid.admin.controllers',
+  'waid.admin.templates',
   'angular-growl',
   'ui.bootstrap',
   'angular-confirm',
@@ -100,19 +98,19 @@ angular.module('app', [
       })
 
       .when('/info/terms-and-conditions/', {
-        templateUrl: '/admin/templates/info-terms-and-conditions.html',
+        templateUrl: '/app/templates/terms-and-conditions.html',
       })
       .when('/info/privacy-policy/', {
-        templateUrl: '/admin/templates/info-privacy-policy.html',
+        templateUrl: '/app/templates/privacy-policy.html',
       })
       .when('/info/cookie-policy/', {
-        templateUrl: '/admin/templates/info-cookie-policy.html',
+        templateUrl: '/app/templates/cookie-policy.html',
       })
       .when('/info/copyright-policy/', {
-        templateUrl: '/admin/templates/info-copywrite.html',
+        templateUrl: '/app/templates/copyright-policy.html',
       })
       .when('/', {
-        templateUrl: '/admin/templates/home.html'
+        templateUrl: '/app/templates/home.html'
       })
       .otherwise({
         redirectTo: '/'
@@ -120,7 +118,7 @@ angular.module('app', [
     $locationProvider.html5Mode(true);
   }])
   .run(['waidService',function(waidService){
-    if (window.location.port == '8080'){
+    if (window.location.port == '8000'){
       var apiUrl = waid.config.getConfig('api.environment.development.url');
     } else if (window.location.port == '8001') {
       var apiUrl = waid.config.getConfig('api.environment.test.url');

@@ -13,9 +13,9 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "\n" +
     "      <div class=\"media\" ng-show=\"waid.user\">\n" +
     "        <div class=\"media-left\">\n" +
-    "          <a href=\"#\">\n" +
-    "            <img class=\"media-object\" ng-src=\"{{ waid.user.avatar_thumb_50_50 }}\" alt=\"{{ waid.user.default_name }}\">\n" +
-    "          </a>\n" +
+    "          \n" +
+    "          <img class=\"media-object\" ng-src=\"{{ waid.user.avatar_thumb_50_50 }}\" alt=\"{{ waid.user.default_name }}\">\n" +
+    "          \n" +
     "        </div>\n" +
     "        <div class=\"media-body\">\n" +
     "          <textarea class=\"form-control\" rows=\"3\" ng-model=\"comment.comment\" msd-elastic></textarea><br />\n" +
@@ -30,9 +30,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    \n" +
     "    <div class=\"media\" ng-repeat=\"comment in comments\" style=\"overflow: visible;\" ng-show=\"comments\">\n" +
     "      <div class=\"media-left\">\n" +
-    "        <a href=\"#\">\n" +
-    "          <img class=\"media-object\" ng-src=\"{{ comment.user.avatar_thumb_50_50 }}\" alt=\"{{ comment.user.default_name }}\">\n" +
-    "        </a>\n" +
+    "        <img class=\"media-object\" ng-src=\"{{ comment.user.avatar_thumb_50_50 }}\" alt=\"{{ comment.user.default_name }}\">\n" +
     "      </div>\n" +
     "      <div class=\"media-body\" style=\"overflow: visible;\">\n" +
     "        <h4 class=\"media-heading\">{{ comment.user.default_name }}<br />\n" +

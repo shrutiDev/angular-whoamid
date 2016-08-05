@@ -9,9 +9,9 @@
 
       <div class="media" ng-show="waid.user">
         <div class="media-left">
-          <a href="#">
-            <img class="media-object" ng-src="{{ waid.user.avatar_thumb_50_50 }}" alt="{{ waid.user.default_name }}">
-          </a>
+          
+          <img class="media-object" ng-src="{{ waid.user.avatar_thumb_50_50 }}" alt="{{ waid.user.default_name }}">
+          
         </div>
         <div class="media-body">
           <textarea class="form-control" rows="3" ng-model="comment.comment" msd-elastic></textarea><br />
@@ -26,9 +26,7 @@
     
     <div class="media" ng-repeat="comment in comments" style="overflow: visible;" ng-show="comments">
       <div class="media-left">
-        <a href="#">
-          <img class="media-object" ng-src="{{ comment.user.avatar_thumb_50_50 }}" alt="{{ comment.user.default_name }}">
-        </a>
+        <img class="media-object" ng-src="{{ comment.user.avatar_thumb_50_50 }}" alt="{{ comment.user.default_name }}">
       </div>
       <div class="media-body" style="overflow: visible;">
         <h4 class="media-heading">{{ comment.user.default_name }}<br />
