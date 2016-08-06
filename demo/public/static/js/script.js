@@ -9338,13 +9338,13 @@ waid.config.setConfig('api', {
       'url': 'http://dev.whoamid.com:8000/nl/api'
     },
     'test':{
-      'url': 'http://api.test.whoamid.com:8001/nl/api'
+      'url': 'http://test.whoamid.com:8001/nl/api'
     },
     'staging':{
-      'url': 'http://api.test.whoamid.com:8002/nl/api'
+      'url': 'http://test.whoamid.com:8002/nl/api'
     },
     'production':{
-      'url': 'http://api.whoamid.com/nl/api'
+      'url': 'http://eu.whoamid.com/nl/api'
     }
   },
   // 'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
