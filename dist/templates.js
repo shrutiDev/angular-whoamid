@@ -271,7 +271,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "        </label>\n" +
     "      </div>\n" +
     "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.terms_and_conditions_check\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.__all__\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.non_field_errors\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "      <button ng-disabled=\"!model.terms_and_conditions_check\" type=\"submit\" class=\"btn btn-primary\" ng-click=\"register()\">Registreren</button>\n" +
     "    </form>\n" +
     "  </div>"
@@ -280,7 +280,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/idm/templates/social-login.html',
     "  <div id=\"login_view\" ng-controller=\"WAIDSocialCtrl\">\n" +
-    "    <a class=\"btn btn-default\" role=\"button\" ng-repeat=\"provider in providers\" ng-href=\"{{ provider.url }}\">{{ provider.backend }}</a>\n" +
+    "    <a class=\"btn btn-default\" role=\"button\" ng-repeat=\"provider in providers\" ng-click=\"goToSocialLogin(provider)\">{{ provider.backend }}</a>\n" +
     "  </div>"
   );
 
@@ -562,7 +562,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "        <li><a href=\"#\" ng-click=\"waid.logoutAll()\"><span class=\"glyphicon glyphicon-new-window\"></span> Op alle systemen uitloggen</a></li>\n" +
     "      </ul>\n" +
     "    </li>\n" +
-    "    <li ng-hide=\"waid.user\"><a ng-click=\"waid.openLoginAndRegisterHomeModal()\">Login of Registreer</a></li>\n" +
+    "    <li ng-hide=\"waid.user\"><a ng-click=\"waid.openLoginAndRegisterHomeModal()\"><span class=\"glyphicon glyphicon-log-in\"></span> Login of Registreer</a></li>\n" +
     "  </ul>\n"
   );
 

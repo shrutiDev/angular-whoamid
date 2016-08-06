@@ -4,8 +4,6 @@ angular.module('waid.core.services', ['app'])
     var service = {
         'API_URL': '',
         'apiVersion': 'v1',
-        'accountId':null,
-        'applicationId':null,
         'token':null,
         'authenticated':false,
         'fp':'',
@@ -113,18 +111,24 @@ angular.module('waid.core.services', ['app'])
             return deferred.promise;
         },
         '_getAdminUrl': function(url) {
-            return '/admin/' + this.apiVersion + '/' + this.accountId + url;
+            return '/admin/' + this.apiVersion + '/' + $rootScope.waid.account.id + url;
         },
         '_getAppUrl': function(url) {
-            return '/application/' + this.apiVersion + '/' + this.accountId + '/' + this.applicationId + url;
+            return '/application/' + this.apiVersion + '/' + $rootScope.waid.account.id + '/' + $rootScope.waid.application.id + url;
         },
         '_getPublicUrl': function(url) {
             return '/public/' + this.apiVersion + url;
         },
         'userRegisterPost': function(data) {
+            if (typeof data.return_url == 'undefined' || data.return_url == '') {
+                data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+            }
             return this._makeRequest('POST', this._getAppUrl("/user/register/"), 'application.userRegister', data);
         },
         'userCompleteProfilePost': function(data) {
+            if (typeof data.return_url == 'undefined' || data.return_url == '') {
+                data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+            }
             return this._makeRequest('POST', this._getAppUrl("/user/complete-profile/"), 'application.userCompleteProfile', data);
         },
         'userCompleteProfileGet': function() {
@@ -177,6 +181,9 @@ angular.module('waid.core.services', ['app'])
             return this._makeRequest('GET', this._getAppUrl("/user/email/"), 'application.userEmailList');
         },
         'userEmailPost': function(data) {
+            if (typeof data.return_url == 'undefined' || data.return_url == '') {
+                data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+            }
             return this._makeRequest('POST', this._getAppUrl("/user/email/"), 'application.userEmail', data);
         },
         'userEmailDelete': function(id) {
@@ -272,7 +279,6 @@ angular.module('waid.core.services', ['app'])
                     deferred.resolve(data);
                 }, function(data){
                     $rootScope.$broadcast("waid.services.authenticate.error", that);
-                    console.log(data);
                     // Error occurs so set token to null
                     // that._clearAuthorizationData();
                     deferred.reject(data);
@@ -285,14 +291,21 @@ angular.module('waid.core.services', ['app'])
             return deferred.promise;  
         },
         'getAccountId':function() {
-            return this.accountId;
+            return $rootScope.waid.account.id;
         },
-        'initialize': function(url, accountId, applicationId){
+        'initialize': function(url){
             var that = this;
-            this.API_URL = url;
-            this.accountId = accountId;
-            this.applicationId = applicationId;
-            
+
+            if (window.location.port == '8000'){
+              this.API_URL = waid.config.getConfig('api.environment.development.url');
+            } else if (window.location.port == '8001') {
+              this.API_URL = waid.config.getConfig('api.environment.test.url');
+            } else if (window.location.port == '8002') {
+              this.API_URL = waid.config.getConfig('api.environment.staging.url');
+            } else {
+              this.API_URL = waid.config.getConfig('api.environment.production.url');
+            }
+
             new Fingerprint2().get(function(result, components){
               that.fp = result;
               that.fpComponents = components;
@@ -302,5 +315,6 @@ angular.module('waid.core.services', ['app'])
         }
 
     }
+    service.initialize();
     return service;
   });

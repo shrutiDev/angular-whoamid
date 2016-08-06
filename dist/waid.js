@@ -114,8 +114,6 @@ angular.module('waid.core.services', ['app'])
     var service = {
         'API_URL': '',
         'apiVersion': 'v1',
-        'accountId':null,
-        'applicationId':null,
         'token':null,
         'authenticated':false,
         'fp':'',
@@ -223,18 +221,24 @@ angular.module('waid.core.services', ['app'])
             return deferred.promise;
         },
         '_getAdminUrl': function(url) {
-            return '/admin/' + this.apiVersion + '/' + this.accountId + url;
+            return '/admin/' + this.apiVersion + '/' + $rootScope.waid.account.id + url;
         },
         '_getAppUrl': function(url) {
-            return '/application/' + this.apiVersion + '/' + this.accountId + '/' + this.applicationId + url;
+            return '/application/' + this.apiVersion + '/' + $rootScope.waid.account.id + '/' + $rootScope.waid.application.id + url;
         },
         '_getPublicUrl': function(url) {
             return '/public/' + this.apiVersion + url;
         },
         'userRegisterPost': function(data) {
+            if (typeof data.return_url == 'undefined' || data.return_url == '') {
+                data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+            }
             return this._makeRequest('POST', this._getAppUrl("/user/register/"), 'application.userRegister', data);
         },
         'userCompleteProfilePost': function(data) {
+            if (typeof data.return_url == 'undefined' || data.return_url == '') {
+                data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+            }
             return this._makeRequest('POST', this._getAppUrl("/user/complete-profile/"), 'application.userCompleteProfile', data);
         },
         'userCompleteProfileGet': function() {
@@ -287,6 +291,9 @@ angular.module('waid.core.services', ['app'])
             return this._makeRequest('GET', this._getAppUrl("/user/email/"), 'application.userEmailList');
         },
         'userEmailPost': function(data) {
+            if (typeof data.return_url == 'undefined' || data.return_url == '') {
+                data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+            }
             return this._makeRequest('POST', this._getAppUrl("/user/email/"), 'application.userEmail', data);
         },
         'userEmailDelete': function(id) {
@@ -382,7 +389,6 @@ angular.module('waid.core.services', ['app'])
                     deferred.resolve(data);
                 }, function(data){
                     $rootScope.$broadcast("waid.services.authenticate.error", that);
-                    console.log(data);
                     // Error occurs so set token to null
                     // that._clearAuthorizationData();
                     deferred.reject(data);
@@ -395,14 +401,21 @@ angular.module('waid.core.services', ['app'])
             return deferred.promise;  
         },
         'getAccountId':function() {
-            return this.accountId;
+            return $rootScope.waid.account.id;
         },
-        'initialize': function(url, accountId, applicationId){
+        'initialize': function(url){
             var that = this;
-            this.API_URL = url;
-            this.accountId = accountId;
-            this.applicationId = applicationId;
-            
+
+            if (window.location.port == '8000'){
+              this.API_URL = waid.config.getConfig('api.environment.development.url');
+            } else if (window.location.port == '8001') {
+              this.API_URL = waid.config.getConfig('api.environment.test.url');
+            } else if (window.location.port == '8002') {
+              this.API_URL = waid.config.getConfig('api.environment.staging.url');
+            } else {
+              this.API_URL = waid.config.getConfig('api.environment.production.url');
+            }
+
             new Fingerprint2().get(function(result, components){
               that.fp = result;
               that.fpComponents = components;
@@ -412,6 +425,7 @@ angular.module('waid.core.services', ['app'])
         }
 
     }
+    service.initialize();
     return service;
   });
 
@@ -423,7 +437,7 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       $uibModalInstance.dismiss('close');
     };
   })
-  .controller('WAIDCoreCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log,  $uibModal) {
+  .controller('WAIDCoreCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log,  $uibModal, $cookies) {
     // Assume user is not logged in until we hear otherwise
     $rootScope.waid = {
       'logout' : function() {
@@ -450,20 +464,99 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       	} 
       	return 'Unknown key `' + key + '` for module `' + module + '`';
       },
+      'clearAccount': function() {
+        $scope.clearAccount();
+      },
+      'clearUser': function(){
+        $scope.clearUser();
+      },
       'user': false,
-      'accountId': false,
-      'applicationId': false,
+      'account': false,
+      'application': false
     };
 
-    var waidAlCode = $location.search().waidAlCode; 
-    if (waidAlCode) {
-      waidService.userAutoLoginGet(waidAlCode).then(function(data) {
+
+
+    $rootScope.waid.account = {'id':angular.isDefined($scope.accountId) ? $scope.accountId : false};
+    $rootScope.waid.application = {'id':angular.isDefined($scope.applicationId) ? $scope.applicationId : false};
+
+
+    $rootScope.$watch('waid', function(waid){
+      if (typeof waid != "undefined" && waid.account && waid.application) {
+        waidService.authenticate();
+
+        var waidAlCode = $location.search().waidAlCode; 
+        if (waidAlCode) {
+          waidService.userAutoLoginGet(waidAlCode).then(function(data) {
+            $location.search('waidAlCode', null);
+          });
+        }
         
+        
+      }
+    }, true);
+
+    $scope.initRetrieveData = function(accountId, applicationId) {
+      console.log('Ja');
+      waidService.publicAccountGet(accountId).then(function(){
+        var application = data.main_application;
+        delete data.main_application
+
+        $rootScope.waid.account = data;
+        // TODO retrieve full application info
+        $rootScope.waid.application = {'id':applicationId};
+
+        $cookies.putObject('account', $rootScope.waid.account);
+        $cookies.putObject('application', $rootScope.waid.application);
       });
     }
 
-    waidService.userProfileGet();
+    $scope.initWaid = function() {
+      // Init if account and app are fixed
+      if ($scope.accountId && $scope.applicationId) {
+        if ($cookies.getObject('account') && $cookies.getObject('application')) {
+          try {
+            $rootScope.waid.account = $cookies.getObject('account');
+            $rootScope.waid.application = $cookies.getObject('application');
+            console.log($rootScope.waid.account);
+          } catch(err) {
+            console.log('Error');
+            $scope.initRetrieveData($scope.accountId, $scope.applicationId);
+          }
+        } else {
+          $scope.initRetrieveData($scope.accountId, $scope.applicationId);
+        }
+      } else {
+        // Try to set by cookie
+        if ($cookies.getObject('account') && $cookies.getObject('application')) {
+            try {
+              $rootScope.waid.account = $cookies.getObject('account');
+              $rootScope.waid.application = $cookies.getObject('application');
+            } catch(err) {
+              $rootScope.waid.clearAccount();
+              waidService._clearAuthorizationData();
+            }
+        } else {
+          $rootScope.waid.clearAccount();
+          waidService._clearAuthorizationData();
+        }
+      }
+    }
 
+    $scope.clearAccount = function() {
+      $cookies.remove('account');
+      $cookies.remove('application');
+      $scope.waid.account = false;
+      $scope.waid.application = false;
+      $scope.waid.user = false;
+      waidService._clearAuthorizationData();
+    }
+
+
+    $scope.clearUser = function() {
+      $scope.waid.user = false;
+      waidService._clearAuthorizationData();
+    }
 
     $scope.openTermsAndConditionsModal = function (template) {
        $scope.openTermsAndConditionsModalInstance = $uibModal.open({
@@ -587,20 +680,21 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
 
     $rootScope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
       $rootScope.authenticated = false;
-      $scope.waid.user = false;
+      $rootScope.waid.user = false;
       $scope.closeAllModals();
     });
 
     $rootScope.$on('waid.services.application.userLogoutAll.post.ok', function(event, data) {
       $rootScope.authenticated = false;
-      $scope.waid.user = false;
+      $rootScope.waid.user = false;
       $scope.closeAllModals();
     });
 
     $scope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
-      $scope.waid.user = data;
-    });
 
+      $rootScope.waid.user = data;
+      console.log($rootScope.waid);
+    });
     $scope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
       // Reload profile info
       if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -637,12 +731,18 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       $scope.isRegister = true;
     });
 
+    // Main init
+    $scope.initWaid();
   });
 'use strict';
 
 angular.module('waid.core.directives', ['waid.core.controllers',])
   .directive('waid', function () {
   return {
+  	scope:{
+  		'applicationId':'@',
+  		'accountId':'@'
+  	},
     restrict: 'E',
       controller: 'WAIDCoreCtrl',
       templateUrl: function(elem,attrs) {
@@ -899,14 +999,23 @@ angular.module('waid.idm.controllers', ['waid.core.services',])
     $scope.loadEmailList();
     
   })
-  .controller('WAIDSocialCtrl', function ($scope, $location, waidService) {
+  .controller('WAIDSocialCtrl', function ($scope, $location, waidService, $window) {
     $scope.providers = [];
     $scope.getProviders = function() {
       waidService.socialProviderListGet().then(function(data){
         $scope.providers = data;
       });
     }
-    $scope.getProviders();
+    
+    $scope.goToSocialLogin = function(provider) {
+      $window.location.assign(provider.url);
+    }
+
+    $scope.$watch('waid', function(waid){
+      if (waid.account && waid.application) {
+        $scope.getProviders();
+      }
+    }, true);
   })
   .controller('WAIDRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
     $scope.show = {};

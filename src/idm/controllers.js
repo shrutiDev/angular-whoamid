@@ -230,14 +230,23 @@ angular.module('waid.idm.controllers', ['waid.core.services',])
     $scope.loadEmailList();
     
   })
-  .controller('WAIDSocialCtrl', function ($scope, $location, waidService) {
+  .controller('WAIDSocialCtrl', function ($scope, $location, waidService, $window) {
     $scope.providers = [];
     $scope.getProviders = function() {
       waidService.socialProviderListGet().then(function(data){
         $scope.providers = data;
       });
     }
-    $scope.getProviders();
+    
+    $scope.goToSocialLogin = function(provider) {
+      $window.location.assign(provider.url);
+    }
+
+    $scope.$watch('waid', function(waid){
+      if (waid.account && waid.application) {
+        $scope.getProviders();
+      }
+    }, true);
   })
   .controller('WAIDRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
     $scope.show = {};

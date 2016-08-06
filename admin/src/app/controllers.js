@@ -1,19 +1,30 @@
 'use strict';
 
 angular.module('waid.admin.controllers', ['waid'])
-  .controller('WAIDAdminCtrl', function ($scope, waidService, growl, $location, $uibModal) {
+  .controller('WAIDAdminCtrl', function ($scope, $rootScope, waidService, growl, $location, $uibModal, $cookies, $location, $window) {
     $scope.account = '';
+
+    $scope.changeAccount = function() {
+      $scope.account = '';
+      $scope.waid.clearAccount();
+    }
+
     $scope.goToAccount = function(){
       if($scope.account.length > 0) {
         waidService.publicAccountGet($scope.account).then(function(data){
           //$window.location.href = '/admin/' + data.slug + '/';
-          $scope.waid.accountId = data.id;
-          $scope.waid.applicationId = data.main_application_id;
+          var application = data.main_application;
+          delete data.main_application
 
-          waidService.accountId = $scope.waid.accountId;
-          waidService.applicationId = $scope.waid.applicationId 
+          $scope.waid.account = data;
+          $scope.waid.application = application;
+
+          $cookies.putObject('account', $scope.waid.account);
+          $cookies.putObject('application', $scope.waid.application);
         }, function(data){
           growl.addErrorMessage("Geen geldige account.");
+          $cookies.remove('account');
+          $cookies.remove('application');
         });
       }
     }
@@ -31,6 +42,21 @@ angular.module('waid.admin.controllers', ['waid'])
         }
       });
     };
+    
+    $scope.$on('waid.services.admin.account.get.error', function(event, data) {
+      growl.addErrorMessage("Geen permissie om in deze admin in te loggen.");
+      $scope.waid.clearUser();
+      // TODO : Fix this buggy refresh
+      $window.location.href = '/'
+    });
+
+    $scope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
+      $location.path('/');
+    });
+
+    $scope.$on('waid.services.application.userLogoutAll.post.ok', function(event, data) {
+      $location.path('/');
+    });
 
     $scope.$on('waid.services.admin.application.patch.ok', function(event, data) {
       growl.addSuccessMessage("Applicatie gegevens zijn opgeslagen.");
@@ -40,8 +66,21 @@ angular.module('waid.admin.controllers', ['waid'])
       growl.addSuccessMessage("Account gegevens zijn opgeslagen.");
     });
 
+    $scope.$on('waid.services.application.userAutoLogin.get.ok', function(event, data) {
+      // Validate access to account
+      waidService.adminAccountGet();
+    });
+    $rootScope.$on('waid.services.application.userLogin.post.ok', function(event, data) {
+      // Validate access to account
+      waidService.adminAccountGet();
+    });
+
     $scope.$watch('waid', function(waid){
-      if (waid.user){
+      if (typeof waid != "undefined" && $scope.account == '' && $scope.waid.account) {
+        $scope.account = $scope.waid.account.slug;
+      }
+
+      if (typeof waid != "undefined" && waid.user){
         if($location.path() != '/page/overview/') {
           $location.path('/page/overview/');
         }
@@ -51,6 +90,9 @@ angular.module('waid.admin.controllers', ['waid'])
         }
       }
     }, true);
+
+
+    
   })
   .controller('WAIDCreateAccountCtrl', function ($scope, $uibModalInstance, Slug, waidService, account) {
       $scope.errors = [];

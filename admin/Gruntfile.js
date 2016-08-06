@@ -1,25 +1,32 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-
         // Watch command
         watch: {
             grunt: { files: ['Gruntfile.js'] },
-            js: { 
-                files: 'src/**/*.js',
-                tasks: ['uglify']
+            jswaid: { 
+                files: 'src/angular-whoamid/dist/*.js',
+                tasks: ['concat', 'uglify']
             },
-            css: { 
-                files: 'src/**/*.css',
-                tasks: ['cssmin']
+            js: { 
+                files: '/src/app/**/*.js',
+                tasks: ['concat', 'uglify']
             },
             concat: { 
-                files: 'src/**/*.js',
+                files: 'src/app/**/*.js',
                 tasks: ['concat']
             },
             templates: { 
                 files: 'src/app/**/*.html',
                 tasks: ['ngtemplates']
+            },
+            csswaid: { 
+                files: 'src/angular-whoamid/dist/*.css',
+                tasks: ['cssmin']
+            },
+            css: { 
+                files: 'src/app/**/*.css',
+                tasks: ['cssmin']
             }
         },
         ngtemplates:  {
@@ -45,11 +52,11 @@ module.exports = function (grunt) {
               'public/static/css/main.css': [
                  // Build waid sources
                 'src/bower_components/font-awesome/css/font-awesome.min.css',
-                'src/bower_components/angular-growl/build/angular-growl.min.css',
                 'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
-
+                'src/bower_components/angular-growl/build/angular-growl.min.css',
                 'src/angular-whoamid/dist/waid.css',
                 'src/main.css',
+                
               ]
             }
           }
@@ -140,9 +147,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-angular-templates');
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['uglify', 'ngtemplates', 'cssmin', 'concat', 'copy', 'watch']);
+    grunt.registerTask('default', ['uglify', 'ngtemplates', 'concat', 'cssmin', 'copy', 'watch']);
 }

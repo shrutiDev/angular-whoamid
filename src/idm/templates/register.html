@@ -24,7 +24,7 @@
         </label>
       </div>
       <div class="alert alert-danger" ng-repeat="error in errors.terms_and_conditions_check"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-      <div class="alert alert-danger" ng-repeat="error in errors.__all__"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+      <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
       <button ng-disabled="!model.terms_and_conditions_check" type="submit" class="btn btn-primary" ng-click="register()">Registreren</button>
     </form>
   </div>
