@@ -46,8 +46,9 @@ angular.module('waid.admin.controllers', ['waid'])
     $scope.$on('waid.services.admin.account.get.error', function(event, data) {
       growl.addErrorMessage("Geen permissie om in deze admin in te loggen.");
       $scope.waid.clearUser();
+      $location.path('/');
       // TODO : Fix this buggy refresh
-      $window.location.href = '/'
+      $window.location.href = '/';
     });
 
     $scope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
@@ -66,17 +67,15 @@ angular.module('waid.admin.controllers', ['waid'])
       growl.addSuccessMessage("Account gegevens zijn opgeslagen.");
     });
 
-    $scope.$on('waid.services.application.userAutoLogin.get.ok', function(event, data) {
-      // Validate access to account
-      waidService.adminAccountGet();
-    });
-    $rootScope.$on('waid.services.application.userLogin.post.ok', function(event, data) {
-      // Validate access to account
-      waidService.adminAccountGet();
-    });
-
+    $scope.adminAccountChecked = false;
+    
     $scope.$watch('waid', function(waid){
-      if (typeof waid != "undefined" && $scope.account == '' && $scope.waid.account) {
+      if ($scope.adminAccountChecked == false && typeof waid != "undefined" && waid.account && waid.user) {
+         waidService.adminAccountGet();
+         $scope.adminAccountChecked = true;
+      }
+
+      if (typeof waid != "undefined" && $scope.waid.user && $scope.waid.account) {
         $scope.account = $scope.waid.account.slug;
       }
 

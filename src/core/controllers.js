@@ -61,7 +61,7 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
           });
         }
         
-        
+
       }
     }, true);
 
@@ -115,15 +115,15 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
     $scope.clearAccount = function() {
       $cookies.remove('account');
       $cookies.remove('application');
-      $scope.waid.account = false;
-      $scope.waid.application = false;
-      $scope.waid.user = false;
+      $rootScope.waid.account = false;
+      $rootScope.waid.application = false;
+      $rootScope.waid.user = false;
       waidService._clearAuthorizationData();
     }
 
 
     $scope.clearUser = function() {
-      $scope.waid.user = false;
+      $rootScope.waid.user = false;
       waidService._clearAuthorizationData();
     }
 
@@ -260,10 +260,9 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
     });
 
     $scope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
-
       $rootScope.waid.user = data;
-      console.log($rootScope.waid);
     });
+    
     $scope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
       // Reload profile info
       if (data.profile_status.indexOf('profile_ok') !== -1) {

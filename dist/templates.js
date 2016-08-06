@@ -104,7 +104,41 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
 
   $templateCache.put('/core/templates/core.html',
-    " <div growl></div>"
+    " <div growl></div>\n" +
+    " <style>\n" +
+    " .loading {\n" +
+    "    position: fixed;\n" +
+    "    left: 0px;\n" +
+    "    top: 0px;\n" +
+    "    width: 100%;\n" +
+    "    height: 100%;\n" +
+    "    z-index: 9999999999;\n" +
+    "    overflow: hidden;\n" +
+    "}\n" +
+    ".loader {\n" +
+    "    left: 50%;\n" +
+    "    -ms-transform: translateX(-50%);\n" +
+    "    -moz-transform: translateX(-50%);\n" +
+    "    -webkit-transform: translateX(-50%);\n" +
+    "    transform: translateX(-50%);\n" +
+    "    font-size: 10px;\n" +
+    "\n" +
+    "}\n" +
+    ".loader, .loader:after {\n" +
+    "    border-radius: 50%;\n" +
+    "    width: 8em;\n" +
+    "    height: 8em;\n" +
+    "    display: block;\n" +
+    "    position: absolute;\n" +
+    "    top: 50%;\n" +
+    "    margin-top: -4.05em;\n" +
+    "}\n" +
+    "</style>\n" +
+    " <div class=\"loading\" ng-show=\"waid.isLoading\">\n" +
+    " 	<div class=\"loader\">\n" +
+    " 		<i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\"></i>\n" +
+    " 	</div>\n" +
+    " </div>"
   );
 
 

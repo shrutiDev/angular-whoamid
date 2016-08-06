@@ -7,6 +7,7 @@ angular.module('waid.core.services', ['app'])
         'token':null,
         'authenticated':false,
         'fp':'',
+        'running':new Array(),
         'request': function(args) {
             var that = this;
             
@@ -36,6 +37,8 @@ angular.module('waid.core.services', ['app'])
                 params = params,
                 data = args.data || {};
 
+            that.running.push(url);
+            
             // Fire the request, as configured.
             $http({
                 url: url,
@@ -44,8 +47,29 @@ angular.module('waid.core.services', ['app'])
                 params: params,
                 data: data
             }).success(angular.bind(this,function(data, status, headers, config) {
+                //$rootScope.waid.isLoading = false;
+                var index = this.running.indexOf(url);
+                if (index > -1) {
+                    this.running.splice(index, 1);
+                    if(this.running.length > 0) {
+                        $rootScope.waid.isLoading = false;
+                    } else {
+                        $rootScope.waid.isLoading = true;
+                    }
+                }
+                
                 deferred.resolve(data, status);
             })).error(angular.bind(this,function(data, status, headers, config) {
+                var index = this.running.indexOf(url);
+                if (index > -1) {
+                    this.running.splice(index, 1);
+                    if(this.running.length > 0) {
+                        $rootScope.waid.isLoading = false;
+                    } else {
+                        $rootScope.waid.isLoading = true;
+                    }
+                }
+
                 // Set request status
                 if(data){
                     data.status = status;

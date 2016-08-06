@@ -35730,6 +35730,7 @@ angular.module('waid.core.services', ['app'])
         'token':null,
         'authenticated':false,
         'fp':'',
+        'running':new Array(),
         'request': function(args) {
             var that = this;
             
@@ -35759,6 +35760,8 @@ angular.module('waid.core.services', ['app'])
                 params = params,
                 data = args.data || {};
 
+            that.running.push(url);
+            
             // Fire the request, as configured.
             $http({
                 url: url,
@@ -35767,8 +35770,29 @@ angular.module('waid.core.services', ['app'])
                 params: params,
                 data: data
             }).success(angular.bind(this,function(data, status, headers, config) {
+                //$rootScope.waid.isLoading = false;
+                var index = this.running.indexOf(url);
+                if (index > -1) {
+                    this.running.splice(index, 1);
+                    if(this.running.length > 0) {
+                        $rootScope.waid.isLoading = false;
+                    } else {
+                        $rootScope.waid.isLoading = true;
+                    }
+                }
+                
                 deferred.resolve(data, status);
             })).error(angular.bind(this,function(data, status, headers, config) {
+                var index = this.running.indexOf(url);
+                if (index > -1) {
+                    this.running.splice(index, 1);
+                    if(this.running.length > 0) {
+                        $rootScope.waid.isLoading = false;
+                    } else {
+                        $rootScope.waid.isLoading = true;
+                    }
+                }
+
                 // Set request status
                 if(data){
                     data.status = status;
@@ -36105,7 +36129,7 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
           });
         }
         
-        
+
       }
     }, true);
 
@@ -36159,15 +36183,15 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
     $scope.clearAccount = function() {
       $cookies.remove('account');
       $cookies.remove('application');
-      $scope.waid.account = false;
-      $scope.waid.application = false;
-      $scope.waid.user = false;
+      $rootScope.waid.account = false;
+      $rootScope.waid.application = false;
+      $rootScope.waid.user = false;
       waidService._clearAuthorizationData();
     }
 
 
     $scope.clearUser = function() {
-      $scope.waid.user = false;
+      $rootScope.waid.user = false;
       waidService._clearAuthorizationData();
     }
 
@@ -36304,10 +36328,9 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
     });
 
     $scope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
-
       $rootScope.waid.user = data;
-      console.log($rootScope.waid);
     });
+    
     $scope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
       // Reload profile info
       if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -36950,7 +36973,41 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
 
   $templateCache.put('/core/templates/core.html',
-    " <div growl></div>"
+    " <div growl></div>\n" +
+    " <style>\n" +
+    " .loading {\n" +
+    "    position: fixed;\n" +
+    "    left: 0px;\n" +
+    "    top: 0px;\n" +
+    "    width: 100%;\n" +
+    "    height: 100%;\n" +
+    "    z-index: 9999999999;\n" +
+    "    overflow: hidden;\n" +
+    "}\n" +
+    ".loader {\n" +
+    "    left: 50%;\n" +
+    "    -ms-transform: translateX(-50%);\n" +
+    "    -moz-transform: translateX(-50%);\n" +
+    "    -webkit-transform: translateX(-50%);\n" +
+    "    transform: translateX(-50%);\n" +
+    "    font-size: 10px;\n" +
+    "\n" +
+    "}\n" +
+    ".loader, .loader:after {\n" +
+    "    border-radius: 50%;\n" +
+    "    width: 8em;\n" +
+    "    height: 8em;\n" +
+    "    display: block;\n" +
+    "    position: absolute;\n" +
+    "    top: 50%;\n" +
+    "    margin-top: -4.05em;\n" +
+    "}\n" +
+    "</style>\n" +
+    " <div class=\"loading\" ng-show=\"waid.isLoading\">\n" +
+    " 	<div class=\"loader\">\n" +
+    " 		<i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\"></i>\n" +
+    " 	</div>\n" +
+    " </div>"
   );
 
 
@@ -37632,8 +37689,9 @@ angular.module('waid.admin.controllers', ['waid'])
     $scope.$on('waid.services.admin.account.get.error', function(event, data) {
       growl.addErrorMessage("Geen permissie om in deze admin in te loggen.");
       $scope.waid.clearUser();
+      $location.path('/');
       // TODO : Fix this buggy refresh
-      $window.location.href = '/'
+      $window.location.href = '/';
     });
 
     $scope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
@@ -37652,17 +37710,15 @@ angular.module('waid.admin.controllers', ['waid'])
       growl.addSuccessMessage("Account gegevens zijn opgeslagen.");
     });
 
-    $scope.$on('waid.services.application.userAutoLogin.get.ok', function(event, data) {
-      // Validate access to account
-      waidService.adminAccountGet();
-    });
-    $rootScope.$on('waid.services.application.userLogin.post.ok', function(event, data) {
-      // Validate access to account
-      waidService.adminAccountGet();
-    });
-
+    $scope.adminAccountChecked = false;
+    
     $scope.$watch('waid', function(waid){
-      if (typeof waid != "undefined" && $scope.account == '' && $scope.waid.account) {
+      if ($scope.adminAccountChecked == false && typeof waid != "undefined" && waid.account && waid.user) {
+         waidService.adminAccountGet();
+         $scope.adminAccountChecked = true;
+      }
+
+      if (typeof waid != "undefined" && $scope.waid.user && $scope.waid.account) {
         $scope.account = $scope.waid.account.slug;
       }
 
