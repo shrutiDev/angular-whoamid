@@ -44,13 +44,18 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       'application': false
     };
 
-
-
+    $scope.checkLoading = function(){
+      if(waidService.running.length > 0) {
+          return true;
+      } 
+      return false;
+    }
     $rootScope.waid.account = {'id':angular.isDefined($scope.accountId) ? $scope.accountId : false};
     $rootScope.waid.application = {'id':angular.isDefined($scope.applicationId) ? $scope.applicationId : false};
 
 
     $rootScope.$watch('waid', function(waid){
+
       if (typeof waid != "undefined" && waid.account && waid.application) {
         waidService.authenticate();
 
@@ -66,7 +71,6 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
     }, true);
 
     $scope.initRetrieveData = function(accountId, applicationId) {
-      console.log('Ja');
       waidService.publicAccountGet(accountId).then(function(){
         var application = data.main_application;
         delete data.main_application
@@ -87,9 +91,7 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
           try {
             $rootScope.waid.account = $cookies.getObject('account');
             $rootScope.waid.application = $cookies.getObject('application');
-            console.log($rootScope.waid.account);
           } catch(err) {
-            console.log('Error');
             $scope.initRetrieveData($scope.accountId, $scope.applicationId);
           }
         } else {
@@ -262,7 +264,7 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
     $scope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
       $rootScope.waid.user = data;
     });
-    
+
     $scope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
       // Reload profile info
       if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -274,7 +276,6 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       $scope.closeCompleteProfileModal();
       if(data.profile_status.indexOf('email_is_not_verified') !== -1) {
           growl.addErrorMessage("Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.",  {ttl: -1});
-          console.log('Do....');
       }
     });
 

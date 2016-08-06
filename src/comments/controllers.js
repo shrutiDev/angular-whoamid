@@ -75,7 +75,6 @@ angular.module('waid.comments.controllers', ['waid.core.services',])
 
     $scope.post = function(){
       waidService.userCommentsPost($scope.comment).then(function(data){
-        console.log(data);
         $scope.comment.comment = '';
         $scope.loadComments();
       })

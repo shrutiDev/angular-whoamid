@@ -134,7 +134,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    margin-top: -4.05em;\n" +
     "}\n" +
     "</style>\n" +
-    " <div class=\"loading\" ng-show=\"waid.isLoading\">\n" +
+    " <div class=\"loading\" ng-show=\"checkLoading()\">\n" +
     " 	<div class=\"loader\">\n" +
     " 		<i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\"></i>\n" +
     " 	</div>\n" +

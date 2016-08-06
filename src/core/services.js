@@ -36,7 +36,7 @@ angular.module('waid.core.services', ['app'])
                 method = args.method || "GET",
                 params = params,
                 data = args.data || {};
-
+            
             that.running.push(url);
             
             // Fire the request, as configured.
@@ -51,25 +51,13 @@ angular.module('waid.core.services', ['app'])
                 var index = this.running.indexOf(url);
                 if (index > -1) {
                     this.running.splice(index, 1);
-                    if(this.running.length > 0) {
-                        $rootScope.waid.isLoading = false;
-                    } else {
-                        $rootScope.waid.isLoading = true;
-                    }
                 }
-                
                 deferred.resolve(data, status);
             })).error(angular.bind(this,function(data, status, headers, config) {
                 var index = this.running.indexOf(url);
                 if (index > -1) {
                     this.running.splice(index, 1);
-                    if(this.running.length > 0) {
-                        $rootScope.waid.isLoading = false;
-                    } else {
-                        $rootScope.waid.isLoading = true;
-                    }
                 }
-
                 // Set request status
                 if(data){
                     data.status = status;
