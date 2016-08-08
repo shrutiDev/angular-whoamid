@@ -32,6 +32,7 @@ waid.config.setConfig('api', {
 waid.config.setConfig('core', {
   'templates':{
     'core': '/core/templates/core.html',
+    'emoticonsModal':'/core/templates/emoticons-modal.html'
   }
 });
 

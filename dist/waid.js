@@ -99,6 +99,7 @@ waid.config.setConfig('api', {
 waid.config.setConfig('core', {
   'templates':{
     'core': '/core/templates/core.html',
+    'emoticonsModal':'/core/templates/emoticons-modal.html'
   }
 });
 
@@ -382,7 +383,7 @@ angular.module('waid.core.services', ['app'])
             return this._makeRequest('PATCH', this._getAdminUrl("/application/" + data.id + "/"), 'admin.application', data);
         },
         'publicAccountGet': function(account) {
-            return this._makeRequest('GET', this._getPublicUrl("/account/" + account + "/"), 'admin.account');   
+            return this._makeRequest('GET', this._getPublicUrl("/account/" + account + "/"), 'public.account');   
         },
         'publicAccountCreatePost': function(data) {
             data.redirect_to_url = $location.absUrl() + 'admin/' + data.slug + '/';
@@ -449,6 +450,11 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       $uibModalInstance.dismiss('close');
     };
   })
+  .controller('WAIDCoreEmoticonModalCtrl', function($scope, $rootScope){
+    $scope.addEmoticon = function(emoticon) {
+      $scope.text = emoticon;
+    }
+  })
   .controller('WAIDCoreCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log,  $uibModal, $cookies) {
     // Assume user is not logged in until we hear otherwise
     $rootScope.waid = {
@@ -470,6 +476,12 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       'openTermsAndConditionsModal' : function() {
         $scope.openTermsAndConditionsModal();
       },
+      'openEmoticonsModal':function(text) {
+        $scope.openEmoticonsModal();
+      },
+      'closeEmoticonsModal':function(text){
+        $scope.closeEmoticonsModal();
+      },
       'getTranslation': function(module, key) {
       	if (typeof waid.config[module].translations[key] != 'undefined') {
       		return waid.config[module].translations[key];
@@ -481,6 +493,10 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       },
       'clearUser': function(){
         $scope.clearUser();
+      },
+      'getConfig': function(key) {
+        console.log(key);
+        return waid.config.getConfig(key);
       },
       'user': false,
       'account': false,
@@ -572,17 +588,27 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       waidService._clearAuthorizationData();
     }
 
+    $scope.openEmoticonsModal = function (text) {
+       $scope.openEmoticonsModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waid.config.getConfig('core.templates.emoticonsModal'),
+        controller: 'WAIDCoreEmoticonModalCtrl',
+        size: 'lg'
+      });
+    };
+
+    $scope.closeEmoticonsModal = function () {
+      if ($scope.openEmoticonsModalInstance) {
+        $scope.openEmoticonsModalInstance.dismiss('close');
+      }
+    }
+
     $scope.openTermsAndConditionsModal = function (template) {
        $scope.openTermsAndConditionsModalInstance = $uibModal.open({
         animation: true,
         templateUrl: waid.config.getConfig('idm.templates.termsAndConditionsModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg',
-        resolve: {
-          application: function () {
-            return $scope.application;
-          }
-        }
+        size: 'lg'
       });
     };
 

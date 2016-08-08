@@ -272,7 +272,7 @@ angular.module('waid.core.services', ['app'])
             return this._makeRequest('PATCH', this._getAdminUrl("/application/" + data.id + "/"), 'admin.application', data);
         },
         'publicAccountGet': function(account) {
-            return this._makeRequest('GET', this._getPublicUrl("/account/" + account + "/"), 'admin.account');   
+            return this._makeRequest('GET', this._getPublicUrl("/account/" + account + "/"), 'public.account');   
         },
         'publicAccountCreatePost': function(data) {
             data.redirect_to_url = $location.absUrl() + 'admin/' + data.slug + '/';
