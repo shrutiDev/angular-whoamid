@@ -1,6 +1,7 @@
 angular.module('waid', [
   'waid.templates',
 
+  'waid.core.strategy',
   'waid.core.services',
   'waid.core.controllers',
   'waid.core.directives',

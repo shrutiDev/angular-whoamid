@@ -35,18 +35,20 @@ module.exports = function (grunt) {
             }
           }
         },
-        ngtemplates:  {
-          options: {
-            prefix: '/',
-            bootstrap: function(module, script) {
+        ngtemplates: {
+          bootstrap:{
+            options: {
+              prefix: '/',
+              bootstrap: function(module, script) {
                 return 'angular.module(\'waid.templates\',[]).run([\'$templateCache\', function($templateCache) { ' + "\n" + script + '}]);';
-            }
-          },
-          app: {
+              },
+              url:    function(url) { return url.replace('bootstrap3/', ''); }
+            },
             cwd: 'src/',
-            src:      '**/templates/**.html',
-            dest:     'dist/templates.js'
-          }
+            src:      '**/bootstrap3/templates/**.html',
+            dest:     'dist/bootstrap3-templates.js'
+          },
+         
         },
 
         copy: {
@@ -67,10 +69,12 @@ module.exports = function (grunt) {
 
                 'src/core/config.js',
                 'src/core/translations.js',
+                
                 'src/core/services.js',
                 'src/core/controllers.js',
                 'src/core/directives.js',
-
+                'src/core/bootstrap3/strategy.js',
+                
                 'src/idm/config.js',
                 'src/idm/translations.js',
                 'src/idm/controllers.js',
@@ -92,16 +96,10 @@ module.exports = function (grunt) {
                 mangle: false,
                 beautify: false
             },
-            buildScriptjs: { // Put here all your files that you want to be loaded in the header of the ps-framework
+            buildScriptjs: { 
                 src: [
                     // Build waid
-                    'src/waid.js',
-                    'src/core/config.js',
-                    'src/core/services.js',
-                    'src/idm/config.js',
-                    'src/idm/translations.js',
-                    'src/idm/controllers.js',
-                    'src/idm/directives.js'
+                    'dist/waid.js',
                 ],
                 dest: 'dist/waid.min.js'
             }

@@ -113,7 +113,7 @@ module.exports = function (grunt) {
                     // Build waid
                     
                     'src/angular-whoamid/dist/waid.js',
-                    'src/angular-whoamid/dist/templates.js',
+                    'src/angular-whoamid/dist/bootstrap3-templates.js',
 
                     //'src/angular-whoamid/dist/waid-noconflict.js',
                     // Build demo
