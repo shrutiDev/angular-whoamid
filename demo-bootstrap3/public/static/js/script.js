@@ -9322,6 +9322,7 @@ var waid = new waid();
 angular.module('waid', [
   'waid.templates',
 
+  'waid.core',
   'waid.core.strategy',
   'waid.core.services',
   'waid.core.controllers',
@@ -9333,6 +9334,62 @@ angular.module('waid', [
   'waid.comments.controllers',
   'waid.comments.directives'
 ])
+'use strict';
+angular.module('waid.core', [])
+  .service('waidCore', function ($rootScope, waidCoreStrategy, waidService) {
+    var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
+
+    // Assume user is not logged in until we hear otherwise
+
+    waid.logout = function() {
+        waidService.userLogoutPost();
+    };
+    waid.logoutAll = function() {
+        waidService.userLogoutAllPost();
+    };
+    waid.openLoginAndRegisterHomeModal = function() {
+        waidCoreStrategy.openLoginAndRegisterHomeModal();
+    };
+    waid.openUserProfileHomeModal = function() {
+        waidCoreStrategy.openUserProfileHomeModal();
+    };
+    waid.openLostLoginModal = function() {
+        this.closeAllModals();
+        waidCoreStrategy.openLostLoginModal();
+    };
+    waid.openTermsAndConditionsModal = function() {
+        waidCoreStrategy.openTermsAndConditionsModal();
+    };
+    waid.openEmoticonsModal = function(text) {
+        waidCoreStrategy.openEmoticonsModal(text);
+    };
+    waid.closeEmoticonsModal =  function(){
+        waidCoreStrategy.closeEmoticonsModal();
+    };
+    waid.closeAllModals = function(){
+        waidCoreStrategy.closeUserProfileModal();
+        waidCoreStrategy.closeLoginAndRegisterModal();
+        waidCoreStrategy.closeLostLoginModal();
+        waidCoreStrategy.closeTermsAndConditionsModal();
+    };
+    waid.getTranslation = function(module, key) {
+        if (typeof waid.config[module].translations[key] != 'undefined') {
+            return waid.config[module].translations[key];
+        } 
+        return 'Unknown key `' + key + '` for module `' + module + '`';
+    };
+
+    waid.getConfig = function(key) {
+        return waid.config.getConfig(key);
+    };
+
+    waid.user = false;
+    waid.account = false;
+    waid.application = false;
+
+    return waid;
+  });
+
 waid.config.setConfig('api', {
   'environment' : {
     'development':{
@@ -9710,6 +9767,7 @@ angular.module('waid.core.services', ['app'])
     return service;
   });
 
+
 'use strict';
 
 angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.controllers', 'waid.core.strategy'])
@@ -9723,58 +9781,15 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       $scope.text = emoticon;
     }
   })
-  .controller('WAIDCoreCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log,  waidCoreStrategy, $cookies) {
-    // Assume user is not logged in until we hear otherwise
-    $rootScope.waid = {
-      'logout' : function() {
-        waidService.userLogoutPost();
-      },
-      'logoutAll' : function() {
-        waidService.userLogoutAllPost();
-      },
-      'openLoginAndRegisterHomeModal' : function() {
-        waidCoreStrategy.openLoginAndRegisterHomeModal();
-      },
-      'openUserProfileHomeModal' : function() {
-        waidCoreStrategy.openUserProfileHomeModal();
-      },
-      'openLostLoginModal' : function() {
-        this.closeAllModals();
-        waidCoreStrategy.openLostLoginModal();
-      },
-      'openTermsAndConditionsModal' : function() {
-        waidCoreStrategy.openTermsAndConditionsModal();
-      },
-      'openEmoticonsModal':function(text) {
-        waidCoreStrategy.openEmoticonsModal(text);
-      },
-      'closeEmoticonsModal':function(){
-        waidCoreStrategy.closeEmoticonsModal();
-      },
-      'closeAllModals':function(){
-        waidCoreStrategy.closeUserProfileModal();
-        waidCoreStrategy.closeLoginAndRegisterModal();
-        waidCoreStrategy.closeLostLoginModal();
-        waidCoreStrategy.closeTermsAndConditionsModal();
-      },
-      'getTranslation': function(module, key) {
-      	if (typeof waid.config[module].translations[key] != 'undefined') {
-      		return waid.config[module].translations[key];
-      	} 
-      	return 'Unknown key `' + key + '` for module `' + module + '`';
-      },
-      'clearAccount': function() {
+  .controller('WAIDCoreCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log, waidCore, $cookies) {
+    
+    $rootScope.waid = waidCore;
+
+    $rootScope.waid.clearAccount = function() {
         $scope.clearAccount();
-      },
-      'clearUser': function(){
+    };
+    $rootScope.waid.clearUser = function(){
         $scope.clearUser();
-      },
-      'getConfig': function(key) {
-        return waid.config.getConfig(key);
-      },
-      'user': false,
-      'account': false,
-      'application': false
     };
 
     $scope.checkLoading = function(){
@@ -9783,6 +9798,7 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       } 
       return false;
     }
+
     $rootScope.waid.account = {'id':angular.isDefined($scope.accountId) ? $scope.accountId : false};
     $rootScope.waid.application = {'id':angular.isDefined($scope.applicationId) ? $scope.applicationId : false};
 

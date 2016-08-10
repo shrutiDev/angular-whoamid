@@ -330,3 +330,4 @@ angular.module('waid.core.services', ['app'])
     service.initialize();
     return service;
   });
+

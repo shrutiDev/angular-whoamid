@@ -66,7 +66,7 @@ module.exports = function (grunt) {
                 'src/waid.js',
 
                 'src/core/app.js',
-
+                'src/core/waid.js',
                 'src/core/config.js',
                 'src/core/translations.js',
                 
@@ -74,7 +74,7 @@ module.exports = function (grunt) {
                 'src/core/controllers.js',
                 'src/core/directives.js',
                 'src/core/bootstrap3/strategy.js',
-                
+
                 'src/idm/config.js',
                 'src/idm/translations.js',
                 'src/idm/controllers.js',
