@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('waid.comments.controllers', ['waid.core.services',])
-  .controller('WAIDCommentsCtrl', function($scope, $rootScope, waidService, $q) {
+angular.module('waid.comments.controllers', ['waid.core', 'waid.core.strategy'])
+  .controller('WAIDCommentsCtrl', function($scope, $rootScope, waidService, $q, waidCoreStrategy) {
     $scope.ordering =  angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
     $scope.orderingEnabled =  angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
     $scope.threadId =  angular.isDefined($scope.threadId) ? $scope.threadId : 'currenturl';

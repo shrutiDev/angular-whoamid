@@ -1,26 +1,32 @@
 'use strict';
 
-angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.controllers', 'waid.core.strategy'])
-  .controller('WAIDCoreDefaultModalCtrl', function ($scope, $location, waidService,  $uibModalInstance) {
+angular.module('waid.core.controllers', ['waid.core', 'waid.core.services', 'waid.idm.controllers', 'waid.core.strategy'])
+  .controller('WAIDCoreDefaultModalCtrl', function ($scope, $location, waidService, waidCore, waidCoreStrategy, $uibModalInstance) {
     $scope.close = function () {
       $uibModalInstance.dismiss('close');
     };
   })
   .controller('WAIDCoreEmoticonModalCtrl', function($scope, $rootScope){
-    $scope.addEmoticon = function(emoticon) {
-      $scope.text = emoticon;
+    $scope.emoticons = {
+      'people':['😄','😆','😊','😃','😏','😍','😘','😚','😳','😌','😆','😁','😉','😜','😝','😀','😗','😙','😛','😴','😟','😦','😧','😮','😬','😕','😯','😑','😒','😅','😓','😥','😩','😔','😞','😖','😨','😰','😣','😢','😭','😂','😲','😱','😫','😠','😡','😤','😪','😋','😷','😎','😵','👿','😈','😐','😶','😇','👽','💛','💙','💜','❤','💚','💔','💓','💗','💕','💞','💘','💖','✨','⭐','🌟','💫','💥','💥','💢','❗','❓','❕','❔','💤','💨','💦','🎶','🎵','🔥','💩','💩','💩','👍','👍','👎','👎','👌','👊','👊','✊','✌','👋','✋','✋','👐','☝','👇','👈','👉','🙌','🙏','👆','👏','💪','🏃','🏃','👫','👪','👬','👭','💃','👯','🙆','🙅','💁','🙋','👰','🙎','🙍','🙇','💏','💑','💆','💇','💅','👦','👧','👩','👨','👶','👵','👴','👱','👲','👳','👷','👮','👼','👸','😺','😸','😻','😽','😼','🙀','😿','😹','😾','👹','👺','🙈','🙉','🙊','💂','💀','🐾','👄','💋','💧','👂','👀','👃','👅','💌','👤','👥','💬','💭'],
+      'nature':['☀','☂','☁','❄','☃','⚡','🌀','🌁','🌊','🐱','🐶','🐭','🐹','🐰','🐺','🐸','🐯','🐨','🐻','🐷','🐽','🐮','🐗','🐵','🐒','🐴','🐎','🐫','🐑','🐘','🐼','🐍','🐦','🐤','🐥','🐣','🐔','🐧','🐢','🐛','🐝','🐜','🐞','🐌','🐙','🐠','🐟','🐳','🐋','🐬','🐄','🐏','🐀','🐃','🐅','🐇','🐉','🐐','🐓','🐕','🐖','🐁','🐂','🐲','🐡','🐊','🐪','🐆','🐈','🐩','🐾','💐','🌸','🌷','🍀','🌹','🌻','🌺','🍁','🍃','🍂','🌿','🍄','🌵','🌴','🌲','🌳','🌰','🌱','🌼','🌾','🐚','🌐','🌞','🌝','🌚','🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘','🌜','🌛','🌙','🌍','🌎','🌏','🌋','🌌','⛅'],
+      'objects':['🎍','💝','🎎','🎒','🎓','🎏','🎆','🎇','🎐','🎑','🎃','👻','🎅','🎄','🎁','🔔','🔕','🎋','🎉','🎊','🎈','🔮','💿','📀','💾','📷','📹','🎥','💻','📺','📱','☎','☎','📞','📟','📠','💽','📼','🔉','🔈','🔇','📢','📣','⌛','⏳','⏰','⌚','📻','📡','➿','🔍','🔎','🔓','🔒','🔏','🔐','🔑','💡','🔦','🔆','🔅','🔌','🔋','📲','✉','📫','📮','🛀','🛁','🚿','🚽','🔧','🔩','🔨','💺','💰','💴','💵','💷','💶','💳','💸','📧','📥','📤','✉','📨','📯','📪','📬','📭','📦','🚪','🚬','💣','🔫','🔪','💊','💉','📄','📃','📑','📊','📈','📉','📜','📋','📆','📅','📇','📁','📂','✂','📌','📎','✒','✏','📏','📐','📕','📗','📘','📙','📓','📔','📒','📚','🔖','📛','🔬','🔭','📰','🏈','🏀','⚽','⚾','🎾','🎱','🏉','🎳','⛳','🚵','🚴','🏇','🏂','🏊','🏄','🎿','♠','♥','♣','♦','💎','💍','🏆','🎼','🎹','🎻','👾','🎮','🃏','🎴','🎲','🎯','🀄','🎬','📝','📝','📖','🎨','🎤','🎧','🎺','🎷','🎸','👞','👡','👠','💄','👢','👕','👕','👔','👚','👗','🎽','👖','👘','👙','🎀','🎩','👑','👒','👞','🌂','💼','👜','👝','👛','👓','🎣','☕','🍵','🍶','🍼','🍺','🍻','🍸','🍹','🍷','🍴','🍕','🍔','🍟','🍗','🍖','🍝','🍛','🍤','🍱','🍣','🍥','🍙','🍘','🍚','🍜','🍲','🍢','🍡','🍳','🍞','🍩','🍮','🍦','🍨','🍧','🎂','🍰','🍪','🍫','🍬','🍭','🍯','🍎','🍏','🍊','🍋','🍒','🍇','🍉','🍓','🍑','🍈','🍌','🍐','🍍','🍠','🍆','🍅','🌽'],
+      'places':['🏠','🏡','🏫','🏢','🏣','🏥','🏦','🏪','🏩','🏨','💒','⛪','🏬','🏤','🌇','🌆','🏯','🏰','⛺','🏭','🗼','🗾','🗻','🌄','🌅','🌠','🗽','🌉','🎠','🌈','🎡','⛲','🎢','🚢','🚤','⛵','⛵','🚣','⚓','🚀','✈','🚁','🚂','🚊','🚞','🚲','🚡','🚟','🚠','🚜','🚙','🚘','🚗','🚗','🚕','🚖','🚛','🚌','🚍','🚨','🚓','🚔','🚒','🚑','🚐','🚚','🚋','🚉','🚆','🚅','🚄','🚈','🚝','🚃','🚎','🎫','⛽','🚦','🚥','⚠','🚧','🔰','🏧','🎰','🚏','💈','♨','🏁','🎌','🏮','🗿','🎪','🎭','📍','🚩']
     }
   })
-  .controller('WAIDCoreCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log, waidCore, $cookies) {
+  .controller('WAIDCoreCtrl', function ($scope, waidCore, $rootScope, $location, $window, waidService, growl, $routeParams, $log, waidCore, $cookies) {
     
-    $rootScope.waid = waidCore;
+    // $rootScope.waid.getTranslation = function(module, key) {
+    //   config_key = module + '.translations.' + key
+    //   return waid.config.getConfig(config_key);
+    // }
 
-    $rootScope.waid.clearAccount = function() {
-        $scope.clearAccount();
-    };
-    $rootScope.waid.clearUser = function(){
-        $scope.clearUser();
-    };
+    // waidCore.config = angular.isDefined($rootScope.config) ? $rootScope.config : false;
+    // console.log($rootScope.config);
+    waidCore.account = {'id':angular.isDefined($rootScope.accountId) ? $rootScope.accountId : false};
+    waidCore.application = {'id':angular.isDefined($rootScope.applicationId) ? $rootScope.applicationId : false};
+    
+    console.log(waidCore);
 
     $scope.checkLoading = function(){
       if(waidService.running.length > 0) {
@@ -29,25 +35,8 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       return false;
     }
 
-    $rootScope.waid.account = {'id':angular.isDefined($scope.accountId) ? $scope.accountId : false};
-    $rootScope.waid.application = {'id':angular.isDefined($scope.applicationId) ? $scope.applicationId : false};
+    
 
-
-    $rootScope.$watch('waid', function(waid){
-
-      if (typeof waid != "undefined" && waid.account && waid.application) {
-        waidService.authenticate();
-
-        var waidAlCode = $location.search().waidAlCode; 
-        if (waidAlCode) {
-          waidService.userAutoLoginGet(waidAlCode).then(function(data) {
-            $location.search('waidAlCode', null);
-          });
-        }
-        
-
-      }
-    }, true);
 
     $scope.initRetrieveData = function(accountId, applicationId) {
       waidService.publicAccountGet(accountId).then(function(){
@@ -93,21 +82,6 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       }
     }
 
-    $scope.clearAccount = function() {
-      $cookies.remove('account');
-      $cookies.remove('application');
-      $rootScope.waid.account = false;
-      $rootScope.waid.application = false;
-      $rootScope.waid.user = false;
-      waidService._clearAuthorizationData();
-    }
-
-
-    $scope.clearUser = function() {
-      $rootScope.waid.user = false;
-      waidService._clearAuthorizationData();
-    }
-
     $rootScope.authenticated = false;
 
     $rootScope.$on('waid.services.authenticate.ok', function(event, data) {
@@ -118,13 +92,13 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       
       if (typeof data.profile_status != "undefined" && data.profile_status.length > 0) {
         if(data.profile_status.indexOf('profile_ok') !== -1) {
-           growl.addSuccessMessage(waid.config.getConfig('core.translations.growlLoggedInSucces'));
-           $rootScope.waid.closeAllModals();
+           growl.addSuccessMessage(waidCore.config.getConfig('core.translations.growlLoggedInSucces'));
+           waidCore.closeAllModals();
         }
 
         if(typeof data.profile_status != "undefined" && data.profile_status.indexOf('missing_profile_data') !== -1) {
-          $rootScope.waid.closeAllModals();
-          $rootScope.openCompleteProfileModal();
+          waidCore.closeAllModals();
+          waidCore.openCompleteProfileModal();
         }
       }
     };
@@ -141,19 +115,23 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
     });
 
     $rootScope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
-      $rootScope.authenticated = false;
-      $rootScope.waid.user = false;
-      $rootScope.waid.closeAllModals();
+      waidCore.authenticated = false;
+      waidCore.user = false;
+      waidCore.closeAllModals();
     });
 
     $rootScope.$on('waid.services.application.userLogoutAll.post.ok', function(event, data) {
-      $rootScope.authenticated = false;
-      $rootScope.waid.user = false;
-      $rootScope.waid.closeAllModals();
+      waidCore.authenticated = false;
+      waidCore.user = false;
+      waidCore.closeAllModals();
+    });
+
+    $rootScope.$on('waid.services.application.userRegister.post.ok', function(event, data) {
+      waidCore.closeAllModals();
     });
 
     $scope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
-      $rootScope.waid.user = data;
+      waidCore.user = data;
     });
 
     $scope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
@@ -184,7 +162,7 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
 
      $scope.$on('waid.services.application.userLostLogin.post.ok', function(event, data) {
       growl.addSuccessMessage("Instructies om in te loggen zijn naar jouw e-mail gestuurd.");
-      $rootScope.waid.closeAllModals();
+      waidCore.closeAllModals();
     });
     $scope.$on('waid.services.application.userRegister.post.ok', function(event, data) {
       growl.addSuccessMessage("Geregistreerd als nieuwe gebruiker! Controleer je mail om de account te verifieren.",  {ttl: -1});

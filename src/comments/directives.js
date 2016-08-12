@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('waid.comments.directives', ['waid.comments.controllers',])
-  .directive('waidComments', function () {
+angular.module('waid.comments.directives', ['waid.core', 'waid.comments.controllers',])
+  .directive('waidComments', function (waidCore) {
   return {
     restrict: 'E',
       scope: {
@@ -11,15 +11,15 @@ angular.module('waid.comments.directives', ['waid.comments.controllers',])
       },
       controller: 'WAIDCommentsCtrl',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.getConfig('comments.templates.commentsHome')
+        return attrs.templateUrl || waidCore.config.getConfig('comments.templates.commentsHome')
       }
     }
   })
-  .directive('waidCommentsOrderButton', function () {
+  .directive('waidCommentsOrderButton', function (waidCore) {
   return {
     restrict: 'E',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.getConfig('comments.templates.commentsOrderButton')
+        return attrs.templateUrl || waidCore.config.getConfig('comments.templates.commentsOrderButton')
       }
     }
   });

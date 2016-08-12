@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('waid.idm.controllers', ['waid.core.services',])
+angular.module('waid.idm.controllers', ['waid.core',])
 
   .controller('ClientSocialError', function ($scope, $rootScope, growl, $routeParams, $location) {
     growl.addErrorMessage(config.errorCodes[$routeParams.error]);
@@ -143,6 +143,9 @@ angular.module('waid.idm.controllers', ['waid.core.services',])
     $scope.save = function(){
       $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
       waidService.userProfilePatch($scope.model).then(function(data) {
+        var dateParts = data.date_of_birth.split('-')
+        data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+        $scope.model = data;
         $scope.errors = [];
       }, function(data) {
         $scope.errors = data;

@@ -56,7 +56,7 @@ module.exports = function (grunt) {
                 'src/bower_components/angular-growl/build/angular-growl.min.css',
                 'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
 
-                'src/angular-whoamid/dist/waid.css',
+                'src/angular-whoamid/dist/waid-bootstrap3.css',
                 // // 'src/bower_components/angular-isotope/styles/style.css',
                 // 'src/main.css'
               ]
@@ -81,11 +81,11 @@ module.exports = function (grunt) {
                     // browser fingerprinting
                     'src/bower_components/fingerprintjs2/fingerprint2.js',
                     // 
-                    'src/bower_components/jquery/dist/jquery.min.js',
+                    'src/bower_components/jquery/dist/jquery.js',
                     // Bootstrap libs
                     'src/bower_components/bootstrap/dist/js/bootstrap.js',
                     // Base angular resource
-                    'src/bower_components/angular/angular.min.js',
+                    'src/bower_components/angular/angular.js',
                     'src/bower_components/angular-resource/angular-resource.js',
                     'src/bower_components/angular-cookies/angular-cookies.js',
                     'src/bower_components/angular-sanitize/angular-sanitize.js',
@@ -94,10 +94,10 @@ module.exports = function (grunt) {
                     // Growl
                     'src/bower_components/angular-growl/build/angular-growl.js',
                     // ui bootstrap
-                    'src/bower_components/angular-bootstrap/ui-bootstrap.min.js',
-                    'src/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+                    'src/bower_components/angular-bootstrap/ui-bootstrap.js',
+                    'src/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
                     // Confirm modal
-                    'src/bower_components/angular-confirm-modal/angular-confirm.min.js',
+                    'src/bower_components/angular-confirm-modal/angular-confirm.js',
                     // Create slugs
                     'src/bower_components/angular-slugify/angular-slugify.js',
                     // dynamic textarea
@@ -112,8 +112,8 @@ module.exports = function (grunt) {
 
                     // Build waid
                     
-                    'src/angular-whoamid/dist/waid.js',
-                    'src/angular-whoamid/dist/bootstrap3-templates.js',
+                    'src/angular-whoamid/dist/waid-bootstrap3.js',
+                    'src/angular-whoamid/dist/waid-bootstrap3-templates.js',
 
                     //'src/angular-whoamid/dist/waid-noconflict.js',
                     // Build demo

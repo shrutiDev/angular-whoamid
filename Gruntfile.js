@@ -29,14 +29,15 @@ module.exports = function (grunt) {
           },
           target: {
             files: {
-              'dist/waid.css': [
-                'src/waid.css'
+              'dist/waid-bootstrap3.css': [
+                'src/waid.css',
+                'src/core/bootstrap3/css/main.css'
               ]
             }
           }
         },
         ngtemplates: {
-          bootstrap:{
+          bootstrap3:{
             options: {
               prefix: '/',
               bootstrap: function(module, script) {
@@ -46,7 +47,7 @@ module.exports = function (grunt) {
             },
             cwd: 'src/',
             src:      '**/bootstrap3/templates/**.html',
-            dest:     'dist/bootstrap3-templates.js'
+            dest:     'dist/waid-bootstrap3-templates.js'
           },
          
         },
@@ -61,47 +62,41 @@ module.exports = function (grunt) {
         },
 
         concat: {
-          default:{
+          bootstrap3:{
               src: [
-                'src/waid.js',
-
                 'src/core/app.js',
-                'src/core/waid.js',
-                'src/core/config.js',
-                'src/core/translations.js',
+                'src/core/core.js',
                 
                 'src/core/services.js',
                 'src/core/controllers.js',
                 'src/core/directives.js',
                 'src/core/bootstrap3/strategy.js',
-
-                'src/idm/config.js',
-                'src/idm/translations.js',
+                
                 'src/idm/controllers.js',
                 'src/idm/directives.js',
 
-                'src/comments/config.js',
-                'src/comments/translations.js',
                 'src/comments/controllers.js',
                 'src/comments/directives.js',
                 
               ],
-              dest: 'dist/waid.js'
+              dest: 'dist/waid-bootstrap3.js'
           }
         },
         // Javascript compression
         uglify: {
-            options: {
-                compress: false,
-                mangle: false,
-                beautify: false
-            },
-            buildScriptjs: { 
-                src: [
-                    // Build waid
-                    'dist/waid.js',
-                ],
-                dest: 'dist/waid.min.js'
+            bootstrap3:{
+                options: {
+                    compress: false,
+                    mangle: false,
+                    beautify: false
+                },
+                buildScriptjs: { 
+                    src: [
+                        // Build waid
+                        'dist/waid-bootstrap3.js',
+                    ],
+                    dest: 'dist/waid-bootstrap3.min.js'
+                }
             }
         }
 

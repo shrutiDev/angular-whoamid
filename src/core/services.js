@@ -1,6 +1,6 @@
 'use strict';
-angular.module('waid.core.services', ['app'])
-  .service('waidService', function idm($q, $http, $cookies, $rootScope, $location, Slug) {
+angular.module('waid.core.services', ['waid.core'])
+  .service('waidService', function idm($q, $http, $cookies, $rootScope, $location, Slug, waidCore) {
     var service = {
         'API_URL': '',
         'apiVersion': 'v1',
@@ -123,10 +123,10 @@ angular.module('waid.core.services', ['app'])
             return deferred.promise;
         },
         '_getAdminUrl': function(url) {
-            return '/admin/' + this.apiVersion + '/' + $rootScope.waid.account.id + url;
+            return '/admin/' + this.apiVersion + '/' + waidCore.account.id + url;
         },
         '_getAppUrl': function(url) {
-            return '/application/' + this.apiVersion + '/' + $rootScope.waid.account.id + '/' + $rootScope.waid.application.id + url;
+            return '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + url;
         },
         '_getPublicUrl': function(url) {
             return '/public/' + this.apiVersion + url;
@@ -147,6 +147,7 @@ angular.module('waid.core.services', ['app'])
             return this._makeRequest('GET', this._getAppUrl("/user/complete-profile/"), 'application.userCompleteProfile');
         },
         'userLoginPost': function(data) {
+            this._clearAuthorizationData();
             var that = this
             return this._makeRequest('POST', this._getAppUrl("/user/login/"), 'application.userLogin', data).then(function(data){
                 that._login(data.token);
@@ -155,12 +156,14 @@ angular.module('waid.core.services', ['app'])
         },
         'userAutoLoginGet': function(code) {
             var that = this
+            this._clearAuthorizationData();
             return this._makeRequest('GET', this._getAppUrl("/user/autologin/" + code + '/'), 'application.userAutoLogin').then(function(data){
                 that._login(data.token);
                 return data;
             });
         },
         'userLostLoginPost': function(data) {
+            this._clearAuthorizationData();
             return this._makeRequest('POST', this._getAppUrl("/user/lost-login/"), 'application.userLostLogin', data);
         },
         'userLogoutPost': function() {
@@ -168,13 +171,17 @@ angular.module('waid.core.services', ['app'])
             return this._makeRequest('POST', this._getAppUrl("/user/logout/"), 'application.userLogout').then(function(data){
                 that._clearAuthorizationData();
                 return data;
+            }, function(data){
+                that._clearAuthorizationData();
             });
         },
         'userLogoutAllPost': function() {
             var that = this
+            
             return this._makeRequest('POST', this._getAppUrl("/user/logout-all/"), 'application.userLogoutAll').then(function(data){
-                that._clearAuthorizationData();
                 return data;
+            }, function(data){
+                this._clearAuthorizationData();
             });
         },
         'userProfileGet': function() {
@@ -303,19 +310,19 @@ angular.module('waid.core.services', ['app'])
             return deferred.promise;  
         },
         'getAccountId':function() {
-            return $rootScope.waid.account.id;
+            return waidCore.account.id;
         },
         'initialize': function(url){
             var that = this;
 
             if (window.location.port == '8000'){
-              this.API_URL = waid.config.getConfig('api.environment.development.url');
+              this.API_URL = waidCore.config.getConfig('api.environment.development.url');
             } else if (window.location.port == '8001') {
-              this.API_URL = waid.config.getConfig('api.environment.test.url');
+              this.API_URL = waidCore.config.getConfig('api.environment.test.url');
             } else if (window.location.port == '8002') {
-              this.API_URL = waid.config.getConfig('api.environment.staging.url');
+              this.API_URL = waidCore.config.getConfig('api.environment.staging.url');
             } else {
-              this.API_URL = waid.config.getConfig('api.environment.production.url');
+              this.API_URL = waidCore.config.getConfig('api.environment.production.url');
             }
 
             new Fingerprint2().get(function(result, components){

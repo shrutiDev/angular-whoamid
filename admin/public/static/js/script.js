@@ -35611,63 +35611,11 @@ return b.html(a),b.text().length<=e}}}}).directive("taMinText",function(){return
 	// Expose the plugin class so it can be modified
 	window.Stellar = Plugin;
 }(jQuery, this, document));
-function config() {
-  this.config = {};
-
-  this.mergeRecursive = function(obj1, obj2) {
-    for (var p in obj2) {
-      try {
-        // Property in destination object set; update its value.
-        if ( obj2[p].constructor==Object ) {
-          obj1[p] = this.mergeRecursive(obj1[p], obj2[p]);
-        } else {
-          obj1[p] = obj2[p];
-        }
-      } catch(e) {
-        obj1[p] = obj2[p];
-      }
-    }
-    return obj1;
-  }
-
-  this.patchConfig = function(key, config) {
-    this[key] = this.mergeRecursive(this[key], config)
-  }
-
-  this.setConfig = function(key, config) {
-    this[key] = config;
-  }
-
-  this.getConfig = function(key) {
-    parts = key.split('.')
-    if (parts.length > 0) {
-      var config = this;
-      for (var i=0; i < parts.length; i++) {
-        if (typeof config[parts[i]] !== 'undefined') {
-      	  if (typeof config[parts[i]] == 'object') {
-      	  	// set new config
-      	  	config = config[parts[i]];
-      	  	continue;
-      	  } else {
-      	  	return config[parts[i]]
-      	  }
-        } else {
-          return false;
-        }
-      }
-    }
-    return this[key];
-  }
-}
-
-function waid() {
-  this.config = new config();
-}
-
-var waid = new waid();
 angular.module('waid', [
   'waid.templates',
 
+  'waid.core',
+  'waid.core.strategy',
   'waid.core.services',
   'waid.core.controllers',
   'waid.core.directives',
@@ -35677,54 +35625,222 @@ angular.module('waid', [
 
   'waid.comments.controllers',
   'waid.comments.directives'
-])
-waid.config.setConfig('api', {
-  'environment' : {
-    'development':{
-      'url': 'http://dev.whoamid.com:8000/nl/api'
+]).run(function(waidCore) {
+  
+  waidCore.config.setConfig('api', {
+    'environment' : {
+      'development':{
+        'url': 'http://dev.whoamid.com:8000/nl/api'
+      },
+      'test':{
+        'url': 'http://test.whoamid.com:8001/nl/api'
+      },
+      'staging':{
+        'url': 'http://test.whoamid.com:8002/nl/api'
+      },
+      'production':{
+        'url': 'http://eu.whoamid.com/nl/api'
+      }
     },
-    'test':{
-      'url': 'http://test.whoamid.com:8001/nl/api'
-    },
-    'staging':{
-      'url': 'http://test.whoamid.com:8002/nl/api'
-    },
-    'production':{
-      'url': 'http://eu.whoamid.com/nl/api'
+    // 'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
+    // 'applicationId' : 'c7d23002-da7d-4ad3-a665-9ae9de276c9e',
+    'errorCodes':{
+      'auth-cancelled' : 'Authentication was canceled by the user.',
+      'auth-failed' : 'Authentication failed for some reason.',
+      'auth-unknown-error' : 'An unknown error stoped the authentication process.',
+      'auth-missing-parameter' : 'A needed parameter to continue the process was missing, usually raised by the services that need some POST data like myOpenID.',
+      'auth-state-missing' : 'The state parameter is missing from the server response.',
+      'auth-state-forbidden' : 'The state parameter returned by the server is not the one sent.',
+      'auth-token-error' : 'Unauthorized or access token error, it was invalid, impossible to authenticate or user removed permissions to it.',
+      'auth-already-associated' : 'A different user has already associated the social account that the current user is trying to associate.',
+      'system-error' : 'System error, failed for some reason.'
     }
-  },
-  // 'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
-  // 'applicationId' : 'c7d23002-da7d-4ad3-a665-9ae9de276c9e',
-  'errorCodes':{
-    'auth-cancelled' : 'Authentication was canceled by the user.',
-    'auth-failed' : 'Authentication failed for some reason.',
-    'auth-unknown-error' : 'An unknown error stoped the authentication process.',
-    'auth-missing-parameter' : 'A needed parameter to continue the process was missing, usually raised by the services that need some POST data like myOpenID.',
-    'auth-state-missing' : 'The state parameter is missing from the server response.',
-    'auth-state-forbidden' : 'The state parameter returned by the server is not the one sent.',
-    'auth-token-error' : 'Unauthorized or access token error, it was invalid, impossible to authenticate or user removed permissions to it.',
-    'auth-already-associated' : 'A different user has already associated the social account that the current user is trying to associate.',
-    'system-error' : 'System error, failed for some reason.'
-  }
+  });
+
+
+  waidCore.config.setConfig('core', {
+    'templates':{
+      'core': '/core/templates/core.html',
+      'emoticonsModal':'/core/templates/emoticons-modal.html'
+    }
+  });
+
+
+  waidCore.config.setConfig('comments', {
+    'templates':{
+      'commentsHome': '/comments/templates/comments-home.html',
+      'commentsOrderButton': '/comments/templates/comments-order-button.html'
+    }
+  });
+
+  waidCore.config.setConfig('idm', {
+    'templates':{
+      'userProfileNavbar':'/idm/templates/user-profile-navbar.html',
+      'userProfileStatusButton': '/idm/templates/user-profile-status-button.html',
+      'termsAndConditionsModal': '/idm/templates/terms-and-conditions-modal.html',
+      'completeProfile': '/idm/templates/complete-profile.html',
+      'lostLoginModal': '/idm/templates/lost-login-modal.html',
+      'loginAndRegisterModal':'/idm/templates/login-and-register-modal.html',
+      'userProfileModal':'/idm/templates/user-profile-modal.html'
+    }
+  });
+
+  waidCore.config.patchConfig('comments', {
+    'translations':{
+      'title':'Comments',
+      'notLoggedInText':'Om comments te plaatsen dien je een account te hebben, login of registreer je snel!',
+      'postCommentButton':'Plaats comment',
+      'actionDropdownTitle':'Opties',
+      'editCommentTitle':'Aanpassen',
+      'markCommentSpamTitle':'Markeer als spam',
+      'commentMarkedAsSpam':'Gemarkeerd als spam!',
+      'deleteCommentTitle':'Verwijderen',
+      'confirmDeleteContentBody': 'Weet u zeker dat je de comment wilt verwijderen?',
+      'confirmDeleteContentTitle':'Comment verwijderen?',
+      'updateCommentButton':'Aanpassen',
+      'voteOrderNewestFirst':'Nieuwste eerst',
+      'voteOrderOldestFirst':'Oudste eerst',
+      'voteOrderTopFirst':'Top comments'
+    }
+  });
+
+  waidCore.config.patchConfig('core', {
+    'translations':{
+      'growlLoggedInSucces': "Succesvol ingelogd.",
+      'emoticons':{
+        'people':'Mensen',
+        'nature':'Natuur',
+        'objects':'Objecten',
+        'places':'Plaatsen'
+      }
+    }
+   });
+  console.log(waidCore);
 });
 
 
-waid.config.setConfig('core', {
-  'templates':{
-    'core': '/core/templates/core.html',
-    'emoticonsModal':'/core/templates/emoticons-modal.html'
-  }
-});
 
-
-waid.config.patchConfig('core', {
-  'translations':{
-  	'growlLoggedInSucces': "Succesvol ingelogd."
-  }
- });
 'use strict';
-angular.module('waid.core.services', ['app'])
-  .service('waidService', function idm($q, $http, $cookies, $rootScope, $location, Slug) {
+angular.module('waid.core', [])
+  .service('waidCore', function ($rootScope) {
+    var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
+
+
+    waid.config = {};
+    waid.config.mergeRecursive = function(obj1, obj2) {
+        for (var p in obj2) {
+          try {
+            // Property in destination object set; update its value.
+            if ( obj2[p].constructor==Object ) {
+              obj1[p] = this.mergeRecursive(obj1[p], obj2[p]);
+            } else {
+              obj1[p] = obj2[p];
+            }
+          } catch(e) {
+            obj1[p] = obj2[p];
+          }
+        }
+        return obj1;
+    }
+
+    waid.config.patchConfig = function(key, config) {
+        this[key] = this.mergeRecursive(this[key], config)
+    }
+
+    waid.config.setConfig = function(key, config) {
+        this[key] = config;
+    }
+
+    waid.config.getConfig = function(key) {
+        parts = key.split('.')
+        if (parts.length > 0) {
+          var config = this;
+          for (var i=0; i < parts.length; i++) {
+            if (typeof config[parts[i]] !== 'undefined') {
+              if (typeof config[parts[i]] == 'object') {
+                // set new config
+                config = config[parts[i]];
+                continue;
+              } else {
+                return config[parts[i]]
+              }
+            } else {
+              return false;
+            }
+          }
+        }
+        return this[key];
+    }
+    
+
+
+    // waid.config = {};
+
+    // Assume user is not logged in until we hear otherwise
+
+    // waid.openLoginAndRegisterHomeModal = function() {
+    //     waidCoreStrategy.openLoginAndRegisterHomeModal();
+    // };
+    // waid.openUserProfileHomeModal = function() {
+    //     waidCoreStrategy.openUserProfileHomeModal();
+    // };
+    // waid.openLostLoginModal = function() {
+    //     this.closeAllModals();
+    //     waidCoreStrategy.openLostLoginModal();
+    // };
+    // waid.openTermsAndConditionsModal = function() {
+    //     waidCoreStrategy.openTermsAndConditionsModal();
+    // };
+    // waid.openEmoticonsModal = function(text) {
+    //     waidCoreStrategy.openEmoticonsModal(text);
+    // };
+    // waid.closeEmoticonsModal =  function(){
+    //     waidCoreStrategy.closeEmoticonsModal();
+    // };
+    // waid.closeAllModals = function(){
+    //     waidCoreStrategy.closeUserProfileModal();
+    //     waidCoreStrategy.closeLoginAndRegisterModal();
+    //     waidCoreStrategy.closeLostLoginModal();
+    //     waidCoreStrategy.closeTermsAndConditionsModal();
+    // };
+    waid.getTranslation = function(module, key) {
+        if (typeof waid.config[module].translations[key] != 'undefined') {
+            return waid.config[module].translations[key];
+        } 
+        return 'Unknown key `' + key + '` for module `' + module + '`';
+    };
+
+    waid.clearAccount = function() {
+        $cookies.remove('account');
+        $cookies.remove('application');
+        $rootScope.waid.account = false;
+        $rootScope.waid.application = false;
+        $rootScope.waid.user = false;
+        // waidService._clearAuthorizationData();
+    };
+
+    waid.clearUser = function(){
+         $rootScope.waid.user = false;
+         // waidService._clearAuthorizationData();
+    };
+  
+    waid.utils = {};
+
+
+    waid.user = false;
+    waid.account = false;
+    waid.application = false;
+    waid.isInit = false;
+
+
+    $rootScope.waid = waid;
+
+    return waid;
+  });
+
+'use strict';
+angular.module('waid.core.services', ['waid.core'])
+  .service('waidService', function idm($q, $http, $cookies, $rootScope, $location, Slug, waidCore) {
     var service = {
         'API_URL': '',
         'apiVersion': 'v1',
@@ -35847,10 +35963,10 @@ angular.module('waid.core.services', ['app'])
             return deferred.promise;
         },
         '_getAdminUrl': function(url) {
-            return '/admin/' + this.apiVersion + '/' + $rootScope.waid.account.id + url;
+            return '/admin/' + this.apiVersion + '/' + waidCore.account.id + url;
         },
         '_getAppUrl': function(url) {
-            return '/application/' + this.apiVersion + '/' + $rootScope.waid.account.id + '/' + $rootScope.waid.application.id + url;
+            return '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + url;
         },
         '_getPublicUrl': function(url) {
             return '/public/' + this.apiVersion + url;
@@ -35871,6 +35987,7 @@ angular.module('waid.core.services', ['app'])
             return this._makeRequest('GET', this._getAppUrl("/user/complete-profile/"), 'application.userCompleteProfile');
         },
         'userLoginPost': function(data) {
+            this._clearAuthorizationData();
             var that = this
             return this._makeRequest('POST', this._getAppUrl("/user/login/"), 'application.userLogin', data).then(function(data){
                 that._login(data.token);
@@ -35879,12 +35996,14 @@ angular.module('waid.core.services', ['app'])
         },
         'userAutoLoginGet': function(code) {
             var that = this
+            this._clearAuthorizationData();
             return this._makeRequest('GET', this._getAppUrl("/user/autologin/" + code + '/'), 'application.userAutoLogin').then(function(data){
                 that._login(data.token);
                 return data;
             });
         },
         'userLostLoginPost': function(data) {
+            this._clearAuthorizationData();
             return this._makeRequest('POST', this._getAppUrl("/user/lost-login/"), 'application.userLostLogin', data);
         },
         'userLogoutPost': function() {
@@ -35892,13 +36011,17 @@ angular.module('waid.core.services', ['app'])
             return this._makeRequest('POST', this._getAppUrl("/user/logout/"), 'application.userLogout').then(function(data){
                 that._clearAuthorizationData();
                 return data;
+            }, function(data){
+                that._clearAuthorizationData();
             });
         },
         'userLogoutAllPost': function() {
             var that = this
+            
             return this._makeRequest('POST', this._getAppUrl("/user/logout-all/"), 'application.userLogoutAll').then(function(data){
-                that._clearAuthorizationData();
                 return data;
+            }, function(data){
+                this._clearAuthorizationData();
             });
         },
         'userProfileGet': function() {
@@ -36027,19 +36150,19 @@ angular.module('waid.core.services', ['app'])
             return deferred.promise;  
         },
         'getAccountId':function() {
-            return $rootScope.waid.account.id;
+            return waidCore.account.id;
         },
         'initialize': function(url){
             var that = this;
 
             if (window.location.port == '8000'){
-              this.API_URL = waid.config.getConfig('api.environment.development.url');
+              this.API_URL = waidCore.config.getConfig('api.environment.development.url');
             } else if (window.location.port == '8001') {
-              this.API_URL = waid.config.getConfig('api.environment.test.url');
+              this.API_URL = waidCore.config.getConfig('api.environment.test.url');
             } else if (window.location.port == '8002') {
-              this.API_URL = waid.config.getConfig('api.environment.staging.url');
+              this.API_URL = waidCore.config.getConfig('api.environment.staging.url');
             } else {
-              this.API_URL = waid.config.getConfig('api.environment.production.url');
+              this.API_URL = waidCore.config.getConfig('api.environment.production.url');
             }
 
             new Fingerprint2().get(function(result, components){
@@ -36055,66 +36178,36 @@ angular.module('waid.core.services', ['app'])
     return service;
   });
 
+
 'use strict';
 
-angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.controllers'])
-  .controller('WAIDCoreDefaultModalCtrl', function ($scope, $location, waidService,  $uibModalInstance) {
+angular.module('waid.core.controllers', ['waid.core', 'waid.core.services', 'waid.idm.controllers', 'waid.core.strategy'])
+  .controller('WAIDCoreDefaultModalCtrl', function ($scope, $location, waidService, waidCore, waidCoreStrategy, $uibModalInstance) {
     $scope.close = function () {
       $uibModalInstance.dismiss('close');
     };
   })
   .controller('WAIDCoreEmoticonModalCtrl', function($scope, $rootScope){
-    $scope.addEmoticon = function(emoticon) {
-      $scope.text = emoticon;
+    $scope.emoticons = {
+      'people':['😄','😆','😊','😃','😏','😍','😘','😚','😳','😌','😆','😁','😉','😜','😝','😀','😗','😙','😛','😴','😟','😦','😧','😮','😬','😕','😯','😑','😒','😅','😓','😥','😩','😔','😞','😖','😨','😰','😣','😢','😭','😂','😲','😱','😫','😠','😡','😤','😪','😋','😷','😎','😵','👿','😈','😐','😶','😇','👽','💛','💙','💜','❤','💚','💔','💓','💗','💕','💞','💘','💖','✨','⭐','🌟','💫','💥','💥','💢','❗','❓','❕','❔','💤','💨','💦','🎶','🎵','🔥','💩','💩','💩','👍','👍','👎','👎','👌','👊','👊','✊','✌','👋','✋','✋','👐','☝','👇','👈','👉','🙌','🙏','👆','👏','💪','🏃','🏃','👫','👪','👬','👭','💃','👯','🙆','🙅','💁','🙋','👰','🙎','🙍','🙇','💏','💑','💆','💇','💅','👦','👧','👩','👨','👶','👵','👴','👱','👲','👳','👷','👮','👼','👸','😺','😸','😻','😽','😼','🙀','😿','😹','😾','👹','👺','🙈','🙉','🙊','💂','💀','🐾','👄','💋','💧','👂','👀','👃','👅','💌','👤','👥','💬','💭'],
+      'nature':['☀','☂','☁','❄','☃','⚡','🌀','🌁','🌊','🐱','🐶','🐭','🐹','🐰','🐺','🐸','🐯','🐨','🐻','🐷','🐽','🐮','🐗','🐵','🐒','🐴','🐎','🐫','🐑','🐘','🐼','🐍','🐦','🐤','🐥','🐣','🐔','🐧','🐢','🐛','🐝','🐜','🐞','🐌','🐙','🐠','🐟','🐳','🐋','🐬','🐄','🐏','🐀','🐃','🐅','🐇','🐉','🐐','🐓','🐕','🐖','🐁','🐂','🐲','🐡','🐊','🐪','🐆','🐈','🐩','🐾','💐','🌸','🌷','🍀','🌹','🌻','🌺','🍁','🍃','🍂','🌿','🍄','🌵','🌴','🌲','🌳','🌰','🌱','🌼','🌾','🐚','🌐','🌞','🌝','🌚','🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘','🌜','🌛','🌙','🌍','🌎','🌏','🌋','🌌','⛅'],
+      'objects':['🎍','💝','🎎','🎒','🎓','🎏','🎆','🎇','🎐','🎑','🎃','👻','🎅','🎄','🎁','🔔','🔕','🎋','🎉','🎊','🎈','🔮','💿','📀','💾','📷','📹','🎥','💻','📺','📱','☎','☎','📞','📟','📠','💽','📼','🔉','🔈','🔇','📢','📣','⌛','⏳','⏰','⌚','📻','📡','➿','🔍','🔎','🔓','🔒','🔏','🔐','🔑','💡','🔦','🔆','🔅','🔌','🔋','📲','✉','📫','📮','🛀','🛁','🚿','🚽','🔧','🔩','🔨','💺','💰','💴','💵','💷','💶','💳','💸','📧','📥','📤','✉','📨','📯','📪','📬','📭','📦','🚪','🚬','💣','🔫','🔪','💊','💉','📄','📃','📑','📊','📈','📉','📜','📋','📆','📅','📇','📁','📂','✂','📌','📎','✒','✏','📏','📐','📕','📗','📘','📙','📓','📔','📒','📚','🔖','📛','🔬','🔭','📰','🏈','🏀','⚽','⚾','🎾','🎱','🏉','🎳','⛳','🚵','🚴','🏇','🏂','🏊','🏄','🎿','♠','♥','♣','♦','💎','💍','🏆','🎼','🎹','🎻','👾','🎮','🃏','🎴','🎲','🎯','🀄','🎬','📝','📝','📖','🎨','🎤','🎧','🎺','🎷','🎸','👞','👡','👠','💄','👢','👕','👕','👔','👚','👗','🎽','👖','👘','👙','🎀','🎩','👑','👒','👞','🌂','💼','👜','👝','👛','👓','🎣','☕','🍵','🍶','🍼','🍺','🍻','🍸','🍹','🍷','🍴','🍕','🍔','🍟','🍗','🍖','🍝','🍛','🍤','🍱','🍣','🍥','🍙','🍘','🍚','🍜','🍲','🍢','🍡','🍳','🍞','🍩','🍮','🍦','🍨','🍧','🎂','🍰','🍪','🍫','🍬','🍭','🍯','🍎','🍏','🍊','🍋','🍒','🍇','🍉','🍓','🍑','🍈','🍌','🍐','🍍','🍠','🍆','🍅','🌽'],
+      'places':['🏠','🏡','🏫','🏢','🏣','🏥','🏦','🏪','🏩','🏨','💒','⛪','🏬','🏤','🌇','🌆','🏯','🏰','⛺','🏭','🗼','🗾','🗻','🌄','🌅','🌠','🗽','🌉','🎠','🌈','🎡','⛲','🎢','🚢','🚤','⛵','⛵','🚣','⚓','🚀','✈','🚁','🚂','🚊','🚞','🚲','🚡','🚟','🚠','🚜','🚙','🚘','🚗','🚗','🚕','🚖','🚛','🚌','🚍','🚨','🚓','🚔','🚒','🚑','🚐','🚚','🚋','🚉','🚆','🚅','🚄','🚈','🚝','🚃','🚎','🎫','⛽','🚦','🚥','⚠','🚧','🔰','🏧','🎰','🚏','💈','♨','🏁','🎌','🏮','🗿','🎪','🎭','📍','🚩']
     }
   })
-  .controller('WAIDCoreCtrl', function ($scope, $rootScope, $location, $window, waidService, growl, $routeParams, $log,  $uibModal, $cookies) {
-    // Assume user is not logged in until we hear otherwise
-    $rootScope.waid = {
-      'logout' : function() {
-        waidService.userLogoutPost();
-      },
-      'logoutAll' : function() {
-        waidService.userLogoutAllPost();
-      },
-      'openLoginAndRegisterHomeModal' : function() {
-        $scope.openLoginAndRegisterHomeModal();
-      },
-      'openUserProfileHomeModal' : function() {
-        $scope.openUserProfileHomeModal();
-      },
-      'openLostLoginModal' : function() {
-        $scope.openLostLoginModal();
-      },
-      'openTermsAndConditionsModal' : function() {
-        $scope.openTermsAndConditionsModal();
-      },
-      'openEmoticonsModal':function(text) {
-        $scope.openEmoticonsModal();
-      },
-      'closeEmoticonsModal':function(text){
-        $scope.closeEmoticonsModal();
-      },
-      'getTranslation': function(module, key) {
-      	if (typeof waid.config[module].translations[key] != 'undefined') {
-      		return waid.config[module].translations[key];
-      	} 
-      	return 'Unknown key `' + key + '` for module `' + module + '`';
-      },
-      'clearAccount': function() {
-        $scope.clearAccount();
-      },
-      'clearUser': function(){
-        $scope.clearUser();
-      },
-      'getConfig': function(key) {
-        console.log(key);
-        return waid.config.getConfig(key);
-      },
-      'user': false,
-      'account': false,
-      'application': false
-    };
+  .controller('WAIDCoreCtrl', function ($scope, waidCore, $rootScope, $location, $window, waidService, growl, $routeParams, $log, waidCore, $cookies) {
+    
+    // $rootScope.waid.getTranslation = function(module, key) {
+    //   config_key = module + '.translations.' + key
+    //   return waid.config.getConfig(config_key);
+    // }
+
+    // waidCore.config = angular.isDefined($rootScope.config) ? $rootScope.config : false;
+    // console.log($rootScope.config);
+    waidCore.account = {'id':angular.isDefined($rootScope.accountId) ? $rootScope.accountId : false};
+    waidCore.application = {'id':angular.isDefined($rootScope.applicationId) ? $rootScope.applicationId : false};
+    
+    console.log(waidCore);
 
     $scope.checkLoading = function(){
       if(waidService.running.length > 0) {
@@ -36122,25 +36215,9 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       } 
       return false;
     }
-    $rootScope.waid.account = {'id':angular.isDefined($scope.accountId) ? $scope.accountId : false};
-    $rootScope.waid.application = {'id':angular.isDefined($scope.applicationId) ? $scope.applicationId : false};
 
+    
 
-    $rootScope.$watch('waid', function(waid){
-
-      if (typeof waid != "undefined" && waid.account && waid.application) {
-        waidService.authenticate();
-
-        var waidAlCode = $location.search().waidAlCode; 
-        if (waidAlCode) {
-          waidService.userAutoLoginGet(waidAlCode).then(function(data) {
-            $location.search('waidAlCode', null);
-          });
-        }
-        
-
-      }
-    }, true);
 
     $scope.initRetrieveData = function(accountId, applicationId) {
       waidService.publicAccountGet(accountId).then(function(){
@@ -36186,119 +36263,6 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       }
     }
 
-    $scope.clearAccount = function() {
-      $cookies.remove('account');
-      $cookies.remove('application');
-      $rootScope.waid.account = false;
-      $rootScope.waid.application = false;
-      $rootScope.waid.user = false;
-      waidService._clearAuthorizationData();
-    }
-
-
-    $scope.clearUser = function() {
-      $rootScope.waid.user = false;
-      waidService._clearAuthorizationData();
-    }
-
-    $scope.openEmoticonsModal = function (text) {
-       $scope.openEmoticonsModalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: waid.config.getConfig('core.templates.emoticonsModal'),
-        controller: 'WAIDCoreEmoticonModalCtrl',
-        size: 'lg'
-      });
-    };
-
-    $scope.closeEmoticonsModal = function () {
-      if ($scope.openEmoticonsModalInstance) {
-        $scope.openEmoticonsModalInstance.dismiss('close');
-      }
-    }
-
-    $scope.openTermsAndConditionsModal = function (template) {
-       $scope.openTermsAndConditionsModalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: waid.config.getConfig('idm.templates.termsAndConditionsModal'),
-        controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
-      });
-    };
-
-    $scope.closeTermsAndConditionsModal = function () {
-      if ($scope.openTermsAndConditionsModalInstance) {
-        $scope.openTermsAndConditionsModalInstance.dismiss('close');
-      }
-    }
-
-    $scope.openCompleteProfileModal = function () {
-      $scope.openCompleteProfileModalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: waid.config.getConfig('idm.templates.completeProfile'),
-        controller: 'WAIDCompleteProfileCtrl',
-        size: 'lg'
-      });
-    }
-
-    $scope.closeCompleteProfileModal = function () {
-      if ($scope.openCompleteProfileModalInstance) {
-        $scope.openCompleteProfileModalInstance.dismiss('close');
-      }
-    }
-
-    $scope.openLostLoginModal = function () {
-      $scope.closeAllModals();
-      $scope.lostLoginModalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: waid.config.getConfig('idm.templates.lostLoginModal'),
-        controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
-      });
-    }
-
-    $scope.closeLostLoginModal = function() {
-      if ($scope.lostLoginModalInstance) {
-        $scope.lostLoginModalInstance.dismiss('close');
-      }
-    }
-
-    $scope.openLoginAndRegisterHomeModal = function () {
-      $scope.loginAndRegisterHomeModalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: waid.config.getConfig('idm.templates.loginAndRegisterModal'),
-        controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
-      });
-    }
-
-    $scope.closeLoginAndRegisterModal = function() {
-       if ($scope.loginAndRegisterHomeModalInstance) {
-        $scope.loginAndRegisterHomeModalInstance.dismiss('close');
-      }
-    }
-
-    $scope.openUserProfileHomeModal = function () {
-      $scope.userProfileHomeModalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: waid.config.getConfig('idm.templates.userProfileModal'),
-        controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
-      });
-    }
-
-    $scope.closeUserProfileModal = function() {
-      if ($scope.userProfileHomeModalInstance) {
-        $scope.userProfileHomeModalInstance.dismiss('close');
-      }
-    }
-  
-    $scope.closeAllModals = function(){
-      $scope.closeUserProfileModal();
-      $scope.closeLoginAndRegisterModal();
-      $scope.closeLostLoginModal();
-      $scope.closeTermsAndConditionsModal();
-    }
-
     $rootScope.authenticated = false;
 
     $rootScope.$on('waid.services.authenticate.ok', function(event, data) {
@@ -36309,13 +36273,13 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
       
       if (typeof data.profile_status != "undefined" && data.profile_status.length > 0) {
         if(data.profile_status.indexOf('profile_ok') !== -1) {
-           growl.addSuccessMessage(waid.config.getConfig('core.translations.growlLoggedInSucces'));
-           $scope.closeAllModals();
+           growl.addSuccessMessage(waidCore.config.getConfig('core.translations.growlLoggedInSucces'));
+           waidCore.closeAllModals();
         }
 
         if(typeof data.profile_status != "undefined" && data.profile_status.indexOf('missing_profile_data') !== -1) {
-          $scope.closeAllModals();
-          $scope.openCompleteProfileModal();
+          waidCore.closeAllModals();
+          waidCore.openCompleteProfileModal();
         }
       }
     };
@@ -36332,19 +36296,23 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
     });
 
     $rootScope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
-      $rootScope.authenticated = false;
-      $rootScope.waid.user = false;
-      $scope.closeAllModals();
+      waidCore.authenticated = false;
+      waidCore.user = false;
+      waidCore.closeAllModals();
     });
 
     $rootScope.$on('waid.services.application.userLogoutAll.post.ok', function(event, data) {
-      $rootScope.authenticated = false;
-      $rootScope.waid.user = false;
-      $scope.closeAllModals();
+      waidCore.authenticated = false;
+      waidCore.user = false;
+      waidCore.closeAllModals();
+    });
+
+    $rootScope.$on('waid.services.application.userRegister.post.ok', function(event, data) {
+      waidCore.closeAllModals();
     });
 
     $scope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
-      $rootScope.waid.user = data;
+      waidCore.user = data;
     });
 
     $scope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
@@ -36375,7 +36343,7 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
 
      $scope.$on('waid.services.application.userLostLogin.post.ok', function(event, data) {
       growl.addSuccessMessage("Instructies om in te loggen zijn naar jouw e-mail gestuurd.");
-      $scope.closeAllModals();
+      waidCore.closeAllModals();
     });
     $scope.$on('waid.services.application.userRegister.post.ok', function(event, data) {
       growl.addSuccessMessage("Geregistreerd als nieuwe gebruiker! Controleer je mail om de account te verifieren.",  {ttl: -1});
@@ -36387,40 +36355,155 @@ angular.module('waid.core.controllers', ['waid.core.services', 'waid.idm.control
   });
 'use strict';
 
-angular.module('waid.core.directives', ['waid.core.controllers',])
-  .directive('waid', function () {
+angular.module('waid.core.directives', ['waid.core', 'waid.core.controllers',])
+  .directive('waid', function (waidCore) {
   return {
   	scope:{
+      'config':'@',
   		'applicationId':'@',
   		'accountId':'@'
   	},
     restrict: 'E',
       controller: 'WAIDCoreCtrl',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.core.templates.core
+        return attrs.templateUrl || waidCore.config.core.templates.core
       }
     }
   });
-waid.config.setConfig('idm', {
-  'templates':{
-    'userProfileNavbar':'/idm/templates/user-profile-navbar.html',
-    'userProfileStatusButton': '/idm/templates/user-profile-status-button.html',
-    'termsAndConditionsModal': '/idm/templates/terms-and-conditions-modal.html',
-    'completeProfile': '/idm/templates/complete-profile.html',
-    'lostLoginModal': '/idm/templates/lost-login-modal.html',
-    'loginAndRegisterModal':'/idm/templates/login-and-register-modal.html',
-    'userProfileModal':'/idm/templates/user-profile-modal.html'
-  },
-  'translations':{
+'use strict';
+angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
+  .service('waidCoreStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location) {
+    var emoticonsModalInstance = null;
+    var termsAndConditionsModalInstance = null;
+    var completeProfileModalInstance = null;
+    var lostLoginModalInstance = null;
+    var loginAndRegisterHomeModalInstance = null;
+    var userProfileHomeModalInstance = null;
 
-  }});
-waid.config.patchConfig('idm', {
-  'translations':{
 
-  }});
+    waidCore.logout = function() {
+       waidService.userLogoutPost();
+    };
+    
+    waidCore.logoutAll = function() {
+      waidService.userLogoutAllPost();
+    };
+
+    waidCore.addEmoticon = function(emoticon) {
+      var input = document.getElementById(this.targetId);
+      input.value = [input.value.slice(0, input.selectionStart), emoticon, input.value.slice(input.selectionStart)].join('');
+      input.focus();
+      $rootScope.waid.closeEmoticonsModal();
+    }
+
+    waidCore.closeAllModals = function() {
+      this.closeEmoticonsModal();
+      this.closeTermsAndConditionsModal();
+      this.closeCompleteProfileModal();
+      this.closeLostLoginModal();
+      this.closeLoginAndRegisterModal();
+      this.closeUserProfileModal();
+    };
+    waidCore.openEmoticonsModal = function (targetId) {
+      this.targetId = targetId;
+      emoticonsModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waidCore.config.getConfig('core.templates.emoticonsModal'),
+        controller: 'WAIDCoreEmoticonModalCtrl',
+        size: 'lg'
+      });
+    };
+    waidCore.closeEmoticonsModal = function () {
+      if (emoticonsModalInstance) {
+        emoticonsModalInstance.dismiss('close');
+      }
+    };
+    waidCore.openTermsAndConditionsModal = function (template) {
+       termsAndConditionsModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waidCore.config.getConfig('idm.templates.termsAndConditionsModal'),
+        controller: 'WAIDCoreDefaultModalCtrl',
+        size: 'lg'
+      });
+    };
+    waidCore.closeTermsAndConditionsModal = function () {
+      if (termsAndConditionsModalInstance) {
+        termsAndConditionsModalInstance.dismiss('close');
+      }
+    };
+    waidCore.openCompleteProfileModal = function () {
+      completeProfileModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waidCore.config.getConfig('idm.templates.completeProfile'),
+        controller: 'WAIDCompleteProfileCtrl',
+        size: 'lg'
+      });
+    };
+    waidCore.closeCompleteProfileModal = function () {
+      if (completeProfileModalInstance) {
+        completeProfileModalInstance.dismiss('close');
+      }
+    };
+    waidCore.openLostLoginModal = function () {
+      lostLoginModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waidCore.config.getConfig('idm.templates.lostLoginModal'),
+        controller: 'WAIDCoreDefaultModalCtrl',
+        size: 'lg'
+      });
+    };
+    waidCore.closeLostLoginModal = function() {
+      if (lostLoginModalInstance) {
+        lostLoginModalInstance.dismiss('close');
+      }
+    };
+    waidCore.openLoginAndRegisterHomeModal = function () {
+      loginAndRegisterHomeModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waidCore.config.getConfig('idm.templates.loginAndRegisterModal'),
+        controller: 'WAIDCoreDefaultModalCtrl',
+        size: 'lg'
+      });
+    };
+    waidCore.closeLoginAndRegisterModal = function() {
+       if (loginAndRegisterHomeModalInstance) {
+        loginAndRegisterHomeModalInstance.dismiss('close');
+      }
+    };
+    waidCore.openUserProfileHomeModal = function () {
+      userProfileHomeModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waidCore.config.getConfig('idm.templates.userProfileModal'),
+        controller: 'WAIDCoreDefaultModalCtrl',
+        size: 'lg'
+      });
+    };
+    waidCore.closeUserProfileModal = function() {
+      if (userProfileHomeModalInstance) {
+        userProfileHomeModalInstance.dismiss('close');
+      }
+    }
+
+    $rootScope.$watch('waid', function(waid){
+      if (typeof waid != "undefined" && !waid.isInit) {
+        if (waid.account && waid.application) {
+          waid.isInit = true;
+          waidService.authenticate();
+          var waidAlCode = $location.search().waidAlCode; 
+          if (waidAlCode) {
+            waidService.userAutoLoginGet(waidAlCode).then(function(data) {
+              $location.search('waidAlCode', null);
+            });
+          }
+        }
+      }
+    }, true);
+
+  });
+
 'use strict';
 
-angular.module('waid.idm.controllers', ['waid.core.services',])
+angular.module('waid.idm.controllers', ['waid.core',])
 
   .controller('ClientSocialError', function ($scope, $rootScope, growl, $routeParams, $location) {
     growl.addErrorMessage(config.errorCodes[$routeParams.error]);
@@ -36563,6 +36646,9 @@ angular.module('waid.idm.controllers', ['waid.core.services',])
     $scope.save = function(){
       $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
       waidService.userProfilePatch($scope.model).then(function(data) {
+        var dateParts = data.date_of_birth.split('-')
+        data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+        $scope.model = data;
         $scope.errors = [];
       }, function(data) {
         $scope.errors = data;
@@ -36729,51 +36815,27 @@ angular.module('waid.idm.controllers', ['waid.core.services',])
 
 'use strict';
 
-angular.module('waid.idm.directives', ['waid.idm.controllers',])
-  .directive('waidUserProfileNavbar', function () {
+angular.module('waid.idm.directives', ['waid.core', 'waid.idm.controllers',])
+  .directive('waidUserProfileNavbar', function (waidCore) {
   return {
     restrict: 'E',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.idm.templates.userProfileNavbar
+        return attrs.templateUrl || waidCore.config.idm.templates.userProfileNavbar
       }
     }
   })
-  .directive('waidUserProfileStatusButton', function () {
+  .directive('waidUserProfileStatusButton', function (waidCore) {
   return {
     restrict: 'E',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.idm.templates.userProfileStatusButton
+        return attrs.templateUrl || waidCore.config.idm.templates.userProfileStatusButton
       }
     }
   });
-waid.config.setConfig('comments', {
-  'templates':{
-    'commentsHome': '/comments/templates/comments-home.html',
-    'commentsOrderButton': '/comments/templates/comments-order-button.html'
-  }
-});
-waid.config.patchConfig('comments', {
-  'translations':{
-  	'title':'Comments',
-  	'notLoggedInText':'Om comments te plaatsen dien je een account te hebben, login of registreer je snel!',
-  	'postCommentButton':'Plaats comment',
-  	'actionDropdownTitle':'Opties',
-  	'editCommentTitle':'Aanpassen',
-  	'markCommentSpamTitle':'Markeer als spam',
-  	'commentMarkedAsSpam':'Gemarkeerd als spam!',
-  	'deleteCommentTitle':'Verwijderen',
-  	'confirmDeleteContentBody': 'Weet u zeker dat je de comment wilt verwijderen?',
-  	'confirmDeleteContentTitle':'Comment verwijderen?',
-  	'updateCommentButton':'Aanpassen',
-  	'voteOrderNewestFirst':'Nieuwste eerst',
-  	'voteOrderOldestFirst':'Oudste eerst',
-  	'voteOrderTopFirst':'Top comments'
-  }
-});
 'use strict';
 
-angular.module('waid.comments.controllers', ['waid.core.services',])
-  .controller('WAIDCommentsCtrl', function($scope, $rootScope, waidService, $q) {
+angular.module('waid.comments.controllers', ['waid.core', 'waid.core.strategy'])
+  .controller('WAIDCommentsCtrl', function($scope, $rootScope, waidService, $q, waidCoreStrategy) {
     $scope.ordering =  angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
     $scope.orderingEnabled =  angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
     $scope.threadId =  angular.isDefined($scope.threadId) ? $scope.threadId : 'currenturl';
@@ -36858,8 +36920,8 @@ angular.module('waid.comments.controllers', ['waid.core.services',])
 
 'use strict';
 
-angular.module('waid.comments.directives', ['waid.comments.controllers',])
-  .directive('waidComments', function () {
+angular.module('waid.comments.directives', ['waid.core', 'waid.comments.controllers',])
+  .directive('waidComments', function (waidCore) {
   return {
     restrict: 'E',
       scope: {
@@ -36869,15 +36931,15 @@ angular.module('waid.comments.directives', ['waid.comments.controllers',])
       },
       controller: 'WAIDCommentsCtrl',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.getConfig('comments.templates.commentsHome')
+        return attrs.templateUrl || waidCore.config.getConfig('comments.templates.commentsHome')
       }
     }
   })
-  .directive('waidCommentsOrderButton', function () {
+  .directive('waidCommentsOrderButton', function (waidCore) {
   return {
     restrict: 'E',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.getConfig('comments.templates.commentsOrderButton')
+        return attrs.templateUrl || waidCore.config.getConfig('comments.templates.commentsOrderButton')
       }
     }
   });
@@ -36901,13 +36963,14 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          \n" +
     "        </div>\n" +
     "        <div class=\"media-body\">\n" +
-    "          <textarea class=\"form-control\" rows=\"3\" ng-model=\"comment.comment\" msd-elastic></textarea><br />\n" +
+    "          <textarea class=\"form-control\" rows=\"3\" ng-model=\"comment.comment\" id=\"add_comment\" msd-elastic></textarea><br />\n" +
     "          <button type=\"button\" class=\"btn btn-default btn-xs pull-right\" ng-click=\"post()\">\n" +
     "              <span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span> {{ waid.getTranslation('comments', 'postCommentButton') }}\n" +
     "          </button> \n" +
-    "          <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"waid.openEmoticonsModal(comment.comment)\">\n" +
-    "              😄 Emoticon toevoegen\n" +
+    "          <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"waid.openEmoticonsModal('add_comment')\">\n" +
+    "              😄&nbsp;Emoticon toevoegen\n" +
     "          </button> \n" +
+    "          {{ currentEmoticonComment }}\n" +
     "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
@@ -36955,12 +37018,12 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          </small>\n" +
     "        </div>\n" +
     "        <div ng-show=\"comment.is_edit\">\n" +
-    "          <textarea class=\"form-control\" rows=\"1\" msd-elastic ng-model=\"comment.comment_formatted\"></textarea>\n" +
+    "          <textarea class=\"form-control\" rows=\"1\" msd-elastic id=\"edit_comment_{{ comment.id }}\"ng-model=\"comment.comment_formatted\"></textarea>\n" +
     "          <p style=\"margin-top:10px;\">\n" +
     "          <button type=\"button\" class=\"btn btn-default btn-xs pull-right\" ng-click=\"updateComment(comment)\">\n" +
     "            <span class=\"glyphicon glyphicon-check\" aria-hidden=\"true\"></span> {{ waid.getTranslation('comments', 'updateCommentButton') }}\n" +
     "          </button>\n" +
-    "          <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"waid.openEmoticonsModal(comment.comment_formatted)\">\n" +
+    "          <button type=\"button\" class=\"btn btn-default btn-xs pull-left\"\" ng-click=\"waid.openEmoticonsModal('edit_comment_' + comment.id)\">\n" +
     "              😄 Emoticon toevoegen\n" +
     "          </button>\n" +
     "          </p>\n" +
@@ -36994,14 +37057,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/core/templates/core.html',
     " \n" +
-    "<div style=\"background-color:black:width:200px;height:200px;\">ba</div>\n" +
-    " <div growl></div>\n" +
+    "<div growl></div>\n" +
     "\n" +
-    " <div class=\"loading\" ng-show=\"checkLoading()\">\n" +
-    " 	<div class=\"loader\">\n" +
-    " 		<i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\"></i>\n" +
-    " 	</div>\n" +
-    " </div>\n"
+    "<div class=\"loading\" ng-show=\"checkLoading()\">\n" +
+    "  <div class=\"loader\">\n" +
+    "    <i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\"></i>\n" +
+    "  </div>\n" +
+    "</div>\n"
   );
 
 
@@ -37010,1313 +37072,15 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  <h3 class=\"modal-title\">Emoticons</h3>\n" +
     "</div>\n" +
     "<div class=\"modal-body\">\n" +
-    "<h4>People</h4>\n" +
-    "😄\n" +
-    "😆\n" +
-    "😊\n" +
-    "😃\n" +
-    "😏\n" +
-    "😍\n" +
-    "😘\n" +
-    "😚\n" +
-    "😳\n" +
-    "😌\n" +
-    "😆\n" +
-    "😁\n" +
-    "😉\n" +
-    "😜\n" +
-    "😝\n" +
-    "😀\n" +
-    "😗\n" +
-    "😙\n" +
-    "😛\n" +
-    "😴\n" +
-    "😟\n" +
-    "😦\n" +
-    "😧\n" +
-    "😮\n" +
-    "😬\n" +
-    "😕\n" +
-    "😯\n" +
-    "😑\n" +
-    "😒\n" +
-    "😅\n" +
-    "😓\n" +
-    "😥\n" +
-    "😩\n" +
-    "😔\n" +
-    "😞\n" +
-    "😖\n" +
-    "😨\n" +
-    "😰\n" +
-    "😣\n" +
-    "😢\n" +
-    "😭\n" +
-    "😂\n" +
-    "😲\n" +
-    "😱\n" +
-    "😫\n" +
-    "😠\n" +
-    "😡\n" +
-    "😤\n" +
-    "😪\n" +
-    "😋\n" +
-    "😷\n" +
-    "😎\n" +
-    "😵\n" +
-    "👿\n" +
-    "😈\n" +
-    "😐\n" +
-    "😶\n" +
-    "😇\n" +
-    "👽\n" +
-    "💛\n" +
-    "💙\n" +
-    "💜\n" +
-    "❤\n" +
-    "💚\n" +
-    "💔\n" +
-    "💓\n" +
-    "💗\n" +
-    "💕\n" +
-    "💞\n" +
-    "💘\n" +
-    "💖\n" +
-    "✨\n" +
-    "⭐\n" +
-    "🌟\n" +
-    "💫\n" +
-    "💥\n" +
-    "💥\n" +
-    "💢\n" +
-    "❗\n" +
-    "❓\n" +
-    "❕\n" +
-    "❔\n" +
-    "💤\n" +
-    "💨\n" +
-    "💦\n" +
-    "🎶\n" +
-    "🎵\n" +
-    "🔥\n" +
-    "💩\n" +
-    "💩\n" +
-    "💩\n" +
-    "👍\n" +
-    "👍\n" +
-    "👎\n" +
-    "👎\n" +
-    "👌\n" +
-    "👊\n" +
-    "👊\n" +
-    "✊\n" +
-    "✌\n" +
-    "👋\n" +
-    "✋\n" +
-    "✋\n" +
-    "👐\n" +
-    "☝\n" +
-    "👇\n" +
-    "👈\n" +
-    "👉\n" +
-    "🙌\n" +
-    "🙏\n" +
-    "👆\n" +
-    "👏\n" +
-    "💪\n" +
-    "🏃\n" +
-    "🏃\n" +
-    "👫\n" +
-    "👪\n" +
-    "👬\n" +
-    "👭\n" +
-    "💃\n" +
-    "👯\n" +
-    "🙆\n" +
-    "🙅\n" +
-    "💁\n" +
-    "🙋\n" +
-    "👰\n" +
-    "🙎\n" +
-    "🙍\n" +
-    "🙇\n" +
-    "💏\n" +
-    "💑\n" +
-    "💆\n" +
-    "💇\n" +
-    "💅\n" +
-    "👦\n" +
-    "👧\n" +
-    "👩\n" +
-    "👨\n" +
-    "👶\n" +
-    "👵\n" +
-    "👴\n" +
-    "👱\n" +
-    "👲\n" +
-    "👳\n" +
-    "👷\n" +
-    "👮\n" +
-    "👼\n" +
-    "👸\n" +
-    "😺\n" +
-    "😸\n" +
-    "😻\n" +
-    "😽\n" +
-    "😼\n" +
-    "🙀\n" +
-    "😿\n" +
-    "😹\n" +
-    "😾\n" +
-    "👹\n" +
-    "👺\n" +
-    "🙈\n" +
-    "🙉\n" +
-    "🙊\n" +
-    "💂\n" +
-    "💀\n" +
-    "🐾\n" +
-    "👄\n" +
-    "💋\n" +
-    "💧\n" +
-    "👂\n" +
-    "👀\n" +
-    "👃\n" +
-    "👅\n" +
-    "💌\n" +
-    "👤\n" +
-    "👥\n" +
-    "💬\n" +
-    "💭\n" +
-    "<h4>Nature</h4>\n" +
-    "☀\n" +
-    "☂\n" +
-    "☁\n" +
-    "❄\n" +
-    "☃\n" +
-    "⚡\n" +
-    "🌀\n" +
-    "🌁\n" +
-    "🌊\n" +
-    "🐱\n" +
-    "🐶\n" +
-    "🐭\n" +
-    "🐹\n" +
-    "🐰\n" +
-    "🐺\n" +
-    "🐸\n" +
-    "🐯\n" +
-    "🐨\n" +
-    "🐻\n" +
-    "🐷\n" +
-    "🐽\n" +
-    "🐮\n" +
-    "🐗\n" +
-    "🐵\n" +
-    "🐒\n" +
-    "🐴\n" +
-    "🐎\n" +
-    "🐫\n" +
-    "🐑\n" +
-    "🐘\n" +
-    "🐼\n" +
-    "🐍\n" +
-    "🐦\n" +
-    "🐤\n" +
-    "🐥\n" +
-    "🐣\n" +
-    "🐔\n" +
-    "🐧\n" +
-    "🐢\n" +
-    "🐛\n" +
-    "🐝\n" +
-    "🐜\n" +
-    "🐞\n" +
-    "🐌\n" +
-    "🐙\n" +
-    "🐠\n" +
-    "🐟\n" +
-    "🐳\n" +
-    "🐋\n" +
-    "🐬\n" +
-    "🐄\n" +
-    "🐏\n" +
-    "🐀\n" +
-    "🐃\n" +
-    "🐅\n" +
-    "🐇\n" +
-    "🐉\n" +
-    "🐐\n" +
-    "🐓\n" +
-    "🐕\n" +
-    "🐖\n" +
-    "🐁\n" +
-    "🐂\n" +
-    "🐲\n" +
-    "🐡\n" +
-    "🐊\n" +
-    "🐪\n" +
-    "🐆\n" +
-    "🐈\n" +
-    "🐩\n" +
-    "🐾\n" +
-    "💐\n" +
-    "🌸\n" +
-    "🌷\n" +
-    "🍀\n" +
-    "🌹\n" +
-    "🌻\n" +
-    "🌺\n" +
-    "🍁\n" +
-    "🍃\n" +
-    "🍂\n" +
-    "🌿\n" +
-    "🍄\n" +
-    "🌵\n" +
-    "🌴\n" +
-    "🌲\n" +
-    "🌳\n" +
-    "🌰\n" +
-    "🌱\n" +
-    "🌼\n" +
-    "🌾\n" +
-    "🐚\n" +
-    "🌐\n" +
-    "🌞\n" +
-    "🌝\n" +
-    "🌚\n" +
-    "🌑\n" +
-    "🌒\n" +
-    "🌓\n" +
-    "🌔\n" +
-    "🌕\n" +
-    "🌖\n" +
-    "🌗\n" +
-    "🌘\n" +
-    "🌜\n" +
-    "🌛\n" +
-    "🌙\n" +
-    "🌍\n" +
-    "🌎\n" +
-    "🌏\n" +
-    "🌋\n" +
-    "🌌\n" +
-    "⛅\n" +
-    "<h4>Objects</h4>\n" +
-    "🎍\n" +
-    "💝\n" +
-    "🎎\n" +
-    "🎒\n" +
-    "🎓\n" +
-    "🎏\n" +
-    "🎆\n" +
-    "🎇\n" +
-    "🎐\n" +
-    "🎑\n" +
-    "🎃\n" +
-    "👻\n" +
-    "🎅\n" +
-    "🎄\n" +
-    "🎁\n" +
-    "🔔\n" +
-    "🔕\n" +
-    "🎋\n" +
-    "🎉\n" +
-    "🎊\n" +
-    "🎈\n" +
-    "🔮\n" +
-    "💿\n" +
-    "📀\n" +
-    "💾\n" +
-    "📷\n" +
-    "📹\n" +
-    "🎥\n" +
-    "💻\n" +
-    "📺\n" +
-    "📱\n" +
-    "☎\n" +
-    "☎\n" +
-    "📞\n" +
-    "📟\n" +
-    "📠\n" +
-    "💽\n" +
-    "📼\n" +
-    "🔉\n" +
-    "🔈\n" +
-    "🔇\n" +
-    "📢\n" +
-    "📣\n" +
-    "⌛\n" +
-    "⏳\n" +
-    "⏰\n" +
-    "⌚\n" +
-    "📻\n" +
-    "📡\n" +
-    "➿\n" +
-    "🔍\n" +
-    "🔎\n" +
-    "🔓\n" +
-    "🔒\n" +
-    "🔏\n" +
-    "🔐\n" +
-    "🔑\n" +
-    "💡\n" +
-    "🔦\n" +
-    "🔆\n" +
-    "🔅\n" +
-    "🔌\n" +
-    "🔋\n" +
-    "📲\n" +
-    "✉\n" +
-    "📫\n" +
-    "📮\n" +
-    "🛀\n" +
-    "🛁\n" +
-    "🚿\n" +
-    "🚽\n" +
-    "🔧\n" +
-    "🔩\n" +
-    "🔨\n" +
-    "💺\n" +
-    "💰\n" +
-    "💴\n" +
-    "💵\n" +
-    "💷\n" +
-    "💶\n" +
-    "💳\n" +
-    "💸\n" +
-    "📧\n" +
-    "📥\n" +
-    "📤\n" +
-    "✉\n" +
-    "📨\n" +
-    "📯\n" +
-    "📪\n" +
-    "📬\n" +
-    "📭\n" +
-    "📦\n" +
-    "🚪\n" +
-    "🚬\n" +
-    "💣\n" +
-    "🔫\n" +
-    "🔪\n" +
-    "💊\n" +
-    "💉\n" +
-    "📄\n" +
-    "📃\n" +
-    "📑\n" +
-    "📊\n" +
-    "📈\n" +
-    "📉\n" +
-    "📜\n" +
-    "📋\n" +
-    "📆\n" +
-    "📅\n" +
-    "📇\n" +
-    "📁\n" +
-    "📂\n" +
-    "✂\n" +
-    "📌\n" +
-    "📎\n" +
-    "✒\n" +
-    "✏\n" +
-    "📏\n" +
-    "📐\n" +
-    "📕\n" +
-    "📗\n" +
-    "📘\n" +
-    "📙\n" +
-    "📓\n" +
-    "📔\n" +
-    "📒\n" +
-    "📚\n" +
-    "🔖\n" +
-    "📛\n" +
-    "🔬\n" +
-    "🔭\n" +
-    "📰\n" +
-    "🏈\n" +
-    "🏀\n" +
-    "⚽\n" +
-    "⚾\n" +
-    "🎾\n" +
-    "🎱\n" +
-    "🏉\n" +
-    "🎳\n" +
-    "⛳\n" +
-    "🚵\n" +
-    "🚴\n" +
-    "🏇\n" +
-    "🏂\n" +
-    "🏊\n" +
-    "🏄\n" +
-    "🎿\n" +
-    "♠\n" +
-    "♥\n" +
-    "♣\n" +
-    "♦\n" +
-    "💎\n" +
-    "💍\n" +
-    "🏆\n" +
-    "🎼\n" +
-    "🎹\n" +
-    "🎻\n" +
-    "👾\n" +
-    "🎮\n" +
-    "🃏\n" +
-    "🎴\n" +
-    "🎲\n" +
-    "🎯\n" +
-    "🀄\n" +
-    "🎬\n" +
-    "📝\n" +
-    "📝\n" +
-    "📖\n" +
-    "🎨\n" +
-    "🎤\n" +
-    "🎧\n" +
-    "🎺\n" +
-    "🎷\n" +
-    "🎸\n" +
-    "👞\n" +
-    "👡\n" +
-    "👠\n" +
-    "💄\n" +
-    "👢\n" +
-    "👕\n" +
-    "👕\n" +
-    "👔\n" +
-    "👚\n" +
-    "👗\n" +
-    "🎽\n" +
-    "👖\n" +
-    "👘\n" +
-    "👙\n" +
-    "🎀\n" +
-    "🎩\n" +
-    "👑\n" +
-    "👒\n" +
-    "👞\n" +
-    "🌂\n" +
-    "💼\n" +
-    "👜\n" +
-    "👝\n" +
-    "👛\n" +
-    "👓\n" +
-    "🎣\n" +
-    "☕\n" +
-    "🍵\n" +
-    "🍶\n" +
-    "🍼\n" +
-    "🍺\n" +
-    "🍻\n" +
-    "🍸\n" +
-    "🍹\n" +
-    "🍷\n" +
-    "🍴\n" +
-    "🍕\n" +
-    "🍔\n" +
-    "🍟\n" +
-    "🍗\n" +
-    "🍖\n" +
-    "🍝\n" +
-    "🍛\n" +
-    "🍤\n" +
-    "🍱\n" +
-    "🍣\n" +
-    "🍥\n" +
-    "🍙\n" +
-    "🍘\n" +
-    "🍚\n" +
-    "🍜\n" +
-    "🍲\n" +
-    "🍢\n" +
-    "🍡\n" +
-    "🍳\n" +
-    "🍞\n" +
-    "🍩\n" +
-    "🍮\n" +
-    "🍦\n" +
-    "🍨\n" +
-    "🍧\n" +
-    "🎂\n" +
-    "🍰\n" +
-    "🍪\n" +
-    "🍫\n" +
-    "🍬\n" +
-    "🍭\n" +
-    "🍯\n" +
-    "🍎\n" +
-    "🍏\n" +
-    "🍊\n" +
-    "🍋\n" +
-    "🍒\n" +
-    "🍇\n" +
-    "🍉\n" +
-    "🍓\n" +
-    "🍑\n" +
-    "🍈\n" +
-    "🍌\n" +
-    "🍐\n" +
-    "🍍\n" +
-    "🍠\n" +
-    "🍆\n" +
-    "🍅\n" +
-    "🌽\n" +
-    "<h4>Places</h4>\n" +
-    "🏠\n" +
-    "🏡\n" +
-    "🏫\n" +
-    "🏢\n" +
-    "🏣\n" +
-    "🏥\n" +
-    "🏦\n" +
-    "🏪\n" +
-    "🏩\n" +
-    "🏨\n" +
-    "💒\n" +
-    "⛪\n" +
-    "🏬\n" +
-    "🏤\n" +
-    "🌇\n" +
-    "🌆\n" +
-    "🏯\n" +
-    "🏰\n" +
-    "⛺\n" +
-    "🏭\n" +
-    "🗼\n" +
-    "🗾\n" +
-    "🗻\n" +
-    "🌄\n" +
-    "🌅\n" +
-    "🌠\n" +
-    "🗽\n" +
-    "🌉\n" +
-    "🎠\n" +
-    "🌈\n" +
-    "🎡\n" +
-    "⛲\n" +
-    "🎢\n" +
-    "🚢\n" +
-    "🚤\n" +
-    "⛵\n" +
-    "⛵\n" +
-    "🚣\n" +
-    "⚓\n" +
-    "🚀\n" +
-    "✈\n" +
-    "🚁\n" +
-    "🚂\n" +
-    "🚊\n" +
-    "🚞\n" +
-    "🚲\n" +
-    "🚡\n" +
-    "🚟\n" +
-    "🚠\n" +
-    "🚜\n" +
-    "🚙\n" +
-    "🚘\n" +
-    "🚗\n" +
-    "🚗\n" +
-    "🚕\n" +
-    "🚖\n" +
-    "🚛\n" +
-    "🚌\n" +
-    "🚍\n" +
-    "🚨\n" +
-    "🚓\n" +
-    "🚔\n" +
-    "🚒\n" +
-    "🚑\n" +
-    "🚐\n" +
-    "🚚\n" +
-    "🚋\n" +
-    "🚉\n" +
-    "🚆\n" +
-    "🚅\n" +
-    "🚄\n" +
-    "🚈\n" +
-    "🚝\n" +
-    "🚃\n" +
-    "🚎\n" +
-    "🎫\n" +
-    "⛽\n" +
-    "🚦\n" +
-    "🚥\n" +
-    "⚠\n" +
-    "🚧\n" +
-    "🔰\n" +
-    "🏧\n" +
-    "🎰\n" +
-    "🚏\n" +
-    "💈\n" +
-    "♨\n" +
-    "🏁\n" +
-    "🎌\n" +
-    "🏮\n" +
-    "🗿\n" +
-    "🎪\n" +
-    "🎭\n" +
-    "📍\n" +
-    "🚩\n" +
+    "<div ng-repeat=\"(key, group) in emoticons\">\n" +
+    "	<h4>{{ waid.getTranslation('core', 'emoticons.' + key) }}</h4>\n" +
+    "	<p>\n" +
+    "	<span class=\"emoticon_select\" ng-repeat=\"emoticon in group track by $index\" ng-click=\"waid.addEmoticon(emoticon)\">{{ emoticon }}</span>\n" +
+    "	</p>\n" +
+    "</div>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"close()\">Sluiten</button>\n" +
-    "</div>\n"
-  );
-
-
-  $templateCache.put('/core/templates/emoticons.html',
-    "<div class=\"emoticons\" style=\"font-size:20px;\">\n" +
-    "<h4>People</h4>\n" +
-    "😄\n" +
-    "😆\n" +
-    "😊\n" +
-    "😃\n" +
-    "😏\n" +
-    "😍\n" +
-    "😘\n" +
-    "😚\n" +
-    "😳\n" +
-    "😌\n" +
-    "😆\n" +
-    "😁\n" +
-    "😉\n" +
-    "😜\n" +
-    "😝\n" +
-    "😀\n" +
-    "😗\n" +
-    "😙\n" +
-    "😛\n" +
-    "😴\n" +
-    "😟\n" +
-    "😦\n" +
-    "😧\n" +
-    "😮\n" +
-    "😬\n" +
-    "😕\n" +
-    "😯\n" +
-    "😑\n" +
-    "😒\n" +
-    "😅\n" +
-    "😓\n" +
-    "😥\n" +
-    "😩\n" +
-    "😔\n" +
-    "😞\n" +
-    "😖\n" +
-    "😨\n" +
-    "😰\n" +
-    "😣\n" +
-    "😢\n" +
-    "😭\n" +
-    "😂\n" +
-    "😲\n" +
-    "😱\n" +
-    "😫\n" +
-    "😠\n" +
-    "😡\n" +
-    "😤\n" +
-    "😪\n" +
-    "😋\n" +
-    "😷\n" +
-    "😎\n" +
-    "😵\n" +
-    "👿\n" +
-    "😈\n" +
-    "😐\n" +
-    "😶\n" +
-    "😇\n" +
-    "👽\n" +
-    "💛\n" +
-    "💙\n" +
-    "💜\n" +
-    "❤\n" +
-    "💚\n" +
-    "💔\n" +
-    "💓\n" +
-    "💗\n" +
-    "💕\n" +
-    "💞\n" +
-    "💘\n" +
-    "💖\n" +
-    "✨\n" +
-    "⭐\n" +
-    "🌟\n" +
-    "💫\n" +
-    "💥\n" +
-    "💥\n" +
-    "💢\n" +
-    "❗\n" +
-    "❓\n" +
-    "❕\n" +
-    "❔\n" +
-    "💤\n" +
-    "💨\n" +
-    "💦\n" +
-    "🎶\n" +
-    "🎵\n" +
-    "🔥\n" +
-    "💩\n" +
-    "💩\n" +
-    "💩\n" +
-    "👍\n" +
-    "👍\n" +
-    "👎\n" +
-    "👎\n" +
-    "👌\n" +
-    "👊\n" +
-    "👊\n" +
-    "✊\n" +
-    "✌\n" +
-    "👋\n" +
-    "✋\n" +
-    "✋\n" +
-    "👐\n" +
-    "☝\n" +
-    "👇\n" +
-    "👈\n" +
-    "👉\n" +
-    "🙌\n" +
-    "🙏\n" +
-    "👆\n" +
-    "👏\n" +
-    "💪\n" +
-    "🏃\n" +
-    "🏃\n" +
-    "👫\n" +
-    "👪\n" +
-    "👬\n" +
-    "👭\n" +
-    "💃\n" +
-    "👯\n" +
-    "🙆\n" +
-    "🙅\n" +
-    "💁\n" +
-    "🙋\n" +
-    "👰\n" +
-    "🙎\n" +
-    "🙍\n" +
-    "🙇\n" +
-    "💏\n" +
-    "💑\n" +
-    "💆\n" +
-    "💇\n" +
-    "💅\n" +
-    "👦\n" +
-    "👧\n" +
-    "👩\n" +
-    "👨\n" +
-    "👶\n" +
-    "👵\n" +
-    "👴\n" +
-    "👱\n" +
-    "👲\n" +
-    "👳\n" +
-    "👷\n" +
-    "👮\n" +
-    "👼\n" +
-    "👸\n" +
-    "😺\n" +
-    "😸\n" +
-    "😻\n" +
-    "😽\n" +
-    "😼\n" +
-    "🙀\n" +
-    "😿\n" +
-    "😹\n" +
-    "😾\n" +
-    "👹\n" +
-    "👺\n" +
-    "🙈\n" +
-    "🙉\n" +
-    "🙊\n" +
-    "💂\n" +
-    "💀\n" +
-    "🐾\n" +
-    "👄\n" +
-    "💋\n" +
-    "💧\n" +
-    "👂\n" +
-    "👀\n" +
-    "👃\n" +
-    "👅\n" +
-    "💌\n" +
-    "👤\n" +
-    "👥\n" +
-    "💬\n" +
-    "💭\n" +
-    "<h4>Nature</h4>\n" +
-    "☀\n" +
-    "☂\n" +
-    "☁\n" +
-    "❄\n" +
-    "☃\n" +
-    "⚡\n" +
-    "🌀\n" +
-    "🌁\n" +
-    "🌊\n" +
-    "🐱\n" +
-    "🐶\n" +
-    "🐭\n" +
-    "🐹\n" +
-    "🐰\n" +
-    "🐺\n" +
-    "🐸\n" +
-    "🐯\n" +
-    "🐨\n" +
-    "🐻\n" +
-    "🐷\n" +
-    "🐽\n" +
-    "🐮\n" +
-    "🐗\n" +
-    "🐵\n" +
-    "🐒\n" +
-    "🐴\n" +
-    "🐎\n" +
-    "🐫\n" +
-    "🐑\n" +
-    "🐘\n" +
-    "🐼\n" +
-    "🐍\n" +
-    "🐦\n" +
-    "🐤\n" +
-    "🐥\n" +
-    "🐣\n" +
-    "🐔\n" +
-    "🐧\n" +
-    "🐢\n" +
-    "🐛\n" +
-    "🐝\n" +
-    "🐜\n" +
-    "🐞\n" +
-    "🐌\n" +
-    "🐙\n" +
-    "🐠\n" +
-    "🐟\n" +
-    "🐳\n" +
-    "🐋\n" +
-    "🐬\n" +
-    "🐄\n" +
-    "🐏\n" +
-    "🐀\n" +
-    "🐃\n" +
-    "🐅\n" +
-    "🐇\n" +
-    "🐉\n" +
-    "🐐\n" +
-    "🐓\n" +
-    "🐕\n" +
-    "🐖\n" +
-    "🐁\n" +
-    "🐂\n" +
-    "🐲\n" +
-    "🐡\n" +
-    "🐊\n" +
-    "🐪\n" +
-    "🐆\n" +
-    "🐈\n" +
-    "🐩\n" +
-    "🐾\n" +
-    "💐\n" +
-    "🌸\n" +
-    "🌷\n" +
-    "🍀\n" +
-    "🌹\n" +
-    "🌻\n" +
-    "🌺\n" +
-    "🍁\n" +
-    "🍃\n" +
-    "🍂\n" +
-    "🌿\n" +
-    "🍄\n" +
-    "🌵\n" +
-    "🌴\n" +
-    "🌲\n" +
-    "🌳\n" +
-    "🌰\n" +
-    "🌱\n" +
-    "🌼\n" +
-    "🌾\n" +
-    "🐚\n" +
-    "🌐\n" +
-    "🌞\n" +
-    "🌝\n" +
-    "🌚\n" +
-    "🌑\n" +
-    "🌒\n" +
-    "🌓\n" +
-    "🌔\n" +
-    "🌕\n" +
-    "🌖\n" +
-    "🌗\n" +
-    "🌘\n" +
-    "🌜\n" +
-    "🌛\n" +
-    "🌙\n" +
-    "🌍\n" +
-    "🌎\n" +
-    "🌏\n" +
-    "🌋\n" +
-    "🌌\n" +
-    "⛅\n" +
-    "<h4>Objects</h4>\n" +
-    "🎍\n" +
-    "💝\n" +
-    "🎎\n" +
-    "🎒\n" +
-    "🎓\n" +
-    "🎏\n" +
-    "🎆\n" +
-    "🎇\n" +
-    "🎐\n" +
-    "🎑\n" +
-    "🎃\n" +
-    "👻\n" +
-    "🎅\n" +
-    "🎄\n" +
-    "🎁\n" +
-    "🔔\n" +
-    "🔕\n" +
-    "🎋\n" +
-    "🎉\n" +
-    "🎊\n" +
-    "🎈\n" +
-    "🔮\n" +
-    "💿\n" +
-    "📀\n" +
-    "💾\n" +
-    "📷\n" +
-    "📹\n" +
-    "🎥\n" +
-    "💻\n" +
-    "📺\n" +
-    "📱\n" +
-    "☎\n" +
-    "☎\n" +
-    "📞\n" +
-    "📟\n" +
-    "📠\n" +
-    "💽\n" +
-    "📼\n" +
-    "🔉\n" +
-    "🔈\n" +
-    "🔇\n" +
-    "📢\n" +
-    "📣\n" +
-    "⌛\n" +
-    "⏳\n" +
-    "⏰\n" +
-    "⌚\n" +
-    "📻\n" +
-    "📡\n" +
-    "➿\n" +
-    "🔍\n" +
-    "🔎\n" +
-    "🔓\n" +
-    "🔒\n" +
-    "🔏\n" +
-    "🔐\n" +
-    "🔑\n" +
-    "💡\n" +
-    "🔦\n" +
-    "🔆\n" +
-    "🔅\n" +
-    "🔌\n" +
-    "🔋\n" +
-    "📲\n" +
-    "✉\n" +
-    "📫\n" +
-    "📮\n" +
-    "🛀\n" +
-    "🛁\n" +
-    "🚿\n" +
-    "🚽\n" +
-    "🔧\n" +
-    "🔩\n" +
-    "🔨\n" +
-    "💺\n" +
-    "💰\n" +
-    "💴\n" +
-    "💵\n" +
-    "💷\n" +
-    "💶\n" +
-    "💳\n" +
-    "💸\n" +
-    "📧\n" +
-    "📥\n" +
-    "📤\n" +
-    "✉\n" +
-    "📨\n" +
-    "📯\n" +
-    "📪\n" +
-    "📬\n" +
-    "📭\n" +
-    "📦\n" +
-    "🚪\n" +
-    "🚬\n" +
-    "💣\n" +
-    "🔫\n" +
-    "🔪\n" +
-    "💊\n" +
-    "💉\n" +
-    "📄\n" +
-    "📃\n" +
-    "📑\n" +
-    "📊\n" +
-    "📈\n" +
-    "📉\n" +
-    "📜\n" +
-    "📋\n" +
-    "📆\n" +
-    "📅\n" +
-    "📇\n" +
-    "📁\n" +
-    "📂\n" +
-    "✂\n" +
-    "📌\n" +
-    "📎\n" +
-    "✒\n" +
-    "✏\n" +
-    "📏\n" +
-    "📐\n" +
-    "📕\n" +
-    "📗\n" +
-    "📘\n" +
-    "📙\n" +
-    "📓\n" +
-    "📔\n" +
-    "📒\n" +
-    "📚\n" +
-    "🔖\n" +
-    "📛\n" +
-    "🔬\n" +
-    "🔭\n" +
-    "📰\n" +
-    "🏈\n" +
-    "🏀\n" +
-    "⚽\n" +
-    "⚾\n" +
-    "🎾\n" +
-    "🎱\n" +
-    "🏉\n" +
-    "🎳\n" +
-    "⛳\n" +
-    "🚵\n" +
-    "🚴\n" +
-    "🏇\n" +
-    "🏂\n" +
-    "🏊\n" +
-    "🏄\n" +
-    "🎿\n" +
-    "♠\n" +
-    "♥\n" +
-    "♣\n" +
-    "♦\n" +
-    "💎\n" +
-    "💍\n" +
-    "🏆\n" +
-    "🎼\n" +
-    "🎹\n" +
-    "🎻\n" +
-    "👾\n" +
-    "🎮\n" +
-    "🃏\n" +
-    "🎴\n" +
-    "🎲\n" +
-    "🎯\n" +
-    "🀄\n" +
-    "🎬\n" +
-    "📝\n" +
-    "📝\n" +
-    "📖\n" +
-    "🎨\n" +
-    "🎤\n" +
-    "🎧\n" +
-    "🎺\n" +
-    "🎷\n" +
-    "🎸\n" +
-    "👞\n" +
-    "👡\n" +
-    "👠\n" +
-    "💄\n" +
-    "👢\n" +
-    "👕\n" +
-    "👕\n" +
-    "👔\n" +
-    "👚\n" +
-    "👗\n" +
-    "🎽\n" +
-    "👖\n" +
-    "👘\n" +
-    "👙\n" +
-    "🎀\n" +
-    "🎩\n" +
-    "👑\n" +
-    "👒\n" +
-    "👞\n" +
-    "🌂\n" +
-    "💼\n" +
-    "👜\n" +
-    "👝\n" +
-    "👛\n" +
-    "👓\n" +
-    "🎣\n" +
-    "☕\n" +
-    "🍵\n" +
-    "🍶\n" +
-    "🍼\n" +
-    "🍺\n" +
-    "🍻\n" +
-    "🍸\n" +
-    "🍹\n" +
-    "🍷\n" +
-    "🍴\n" +
-    "🍕\n" +
-    "🍔\n" +
-    "🍟\n" +
-    "🍗\n" +
-    "🍖\n" +
-    "🍝\n" +
-    "🍛\n" +
-    "🍤\n" +
-    "🍱\n" +
-    "🍣\n" +
-    "🍥\n" +
-    "🍙\n" +
-    "🍘\n" +
-    "🍚\n" +
-    "🍜\n" +
-    "🍲\n" +
-    "🍢\n" +
-    "🍡\n" +
-    "🍳\n" +
-    "🍞\n" +
-    "🍩\n" +
-    "🍮\n" +
-    "🍦\n" +
-    "🍨\n" +
-    "🍧\n" +
-    "🎂\n" +
-    "🍰\n" +
-    "🍪\n" +
-    "🍫\n" +
-    "🍬\n" +
-    "🍭\n" +
-    "🍯\n" +
-    "🍎\n" +
-    "🍏\n" +
-    "🍊\n" +
-    "🍋\n" +
-    "🍒\n" +
-    "🍇\n" +
-    "🍉\n" +
-    "🍓\n" +
-    "🍑\n" +
-    "🍈\n" +
-    "🍌\n" +
-    "🍐\n" +
-    "🍍\n" +
-    "🍠\n" +
-    "🍆\n" +
-    "🍅\n" +
-    "🌽\n" +
-    "<h4>Places</h4>\n" +
-    "🏠\n" +
-    "🏡\n" +
-    "🏫\n" +
-    "🏢\n" +
-    "🏣\n" +
-    "🏥\n" +
-    "🏦\n" +
-    "🏪\n" +
-    "🏩\n" +
-    "🏨\n" +
-    "💒\n" +
-    "⛪\n" +
-    "🏬\n" +
-    "🏤\n" +
-    "🌇\n" +
-    "🌆\n" +
-    "🏯\n" +
-    "🏰\n" +
-    "⛺\n" +
-    "🏭\n" +
-    "🗼\n" +
-    "🗾\n" +
-    "🗻\n" +
-    "🌄\n" +
-    "🌅\n" +
-    "🌠\n" +
-    "🗽\n" +
-    "🌉\n" +
-    "🎠\n" +
-    "🌈\n" +
-    "🎡\n" +
-    "⛲\n" +
-    "🎢\n" +
-    "🚢\n" +
-    "🚤\n" +
-    "⛵\n" +
-    "⛵\n" +
-    "🚣\n" +
-    "⚓\n" +
-    "🚀\n" +
-    "✈\n" +
-    "🚁\n" +
-    "🚂\n" +
-    "🚊\n" +
-    "🚞\n" +
-    "🚲\n" +
-    "🚡\n" +
-    "🚟\n" +
-    "🚠\n" +
-    "🚜\n" +
-    "🚙\n" +
-    "🚘\n" +
-    "🚗\n" +
-    "🚗\n" +
-    "🚕\n" +
-    "🚖\n" +
-    "🚛\n" +
-    "🚌\n" +
-    "🚍\n" +
-    "🚨\n" +
-    "🚓\n" +
-    "🚔\n" +
-    "🚒\n" +
-    "🚑\n" +
-    "🚐\n" +
-    "🚚\n" +
-    "🚋\n" +
-    "🚉\n" +
-    "🚆\n" +
-    "🚅\n" +
-    "🚄\n" +
-    "🚈\n" +
-    "🚝\n" +
-    "🚃\n" +
-    "🚎\n" +
-    "🎫\n" +
-    "⛽\n" +
-    "🚦\n" +
-    "🚥\n" +
-    "⚠\n" +
-    "🚧\n" +
-    "🔰\n" +
-    "🏧\n" +
-    "🎰\n" +
-    "🚏\n" +
-    "💈\n" +
-    "♨\n" +
-    "🏁\n" +
-    "🎌\n" +
-    "🏮\n" +
-    "🗿\n" +
-    "🎪\n" +
-    "🎭\n" +
-    "📍\n" +
-    "🚩\n" +
+    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeEmoticonsModal()\">Sluiten</button>\n" +
     "</div>\n"
   );
 
@@ -38546,7 +37310,6 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          <dt>Niet leuk</dt>\n" +
     "          <dd>{{ model.dislike_tags }}</dd>\n" +
     "        </dl>\n" +
-    "      \n" +
     "      </div>\n" +
     "\n" +
     "      <div>\n" +
@@ -38559,7 +37322,6 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          </dt>\n" +
     "          <dd>{{ email.email }}</dd>\n" +
     "        </dl>\n" +
-    "        \n" +
     "      </div>\n" +
     "\n" +
     "      <div>\n" +
@@ -38679,13 +37441,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "        <form>\n" +
     "          <div class=\"form-group\">\n" +
     "            <label for=\"like_taks\">Wat vind je leuk?</label>\n" +
-    "            <textarea class=\"form-control\" rows=\"3\" id=\"like_tags\" ng-model=\"model.like_tags\"></textarea>\n" +
+    "            <textarea class=\"form-control\" rows=\"3\" id=\"like_tags\" ng-model=\"model.like_tags\" msd-elastic></textarea>\n" +
     "            <p class=\"help-block\">Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.</p>\n" +
     "          </div>\n" +
     "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.like_tags\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "          <div class=\"form-group\">\n" +
     "            <label for=\"dislike_tags\">Wat vind je echt niet leuk?</label>\n" +
-    "            <textarea class=\"form-control\" rows=\"3\" id=\"dislike_tags\" ng-model=\"model.dislike_tags\"></textarea>\n" +
+    "            <textarea class=\"form-control\" rows=\"3\" id=\"dislike_tags\" ng-model=\"model.dislike_tags\" msd-elastic></textarea>\n" +
     "            <p class=\"help-block\">Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.</p>\n" +
     "          </div>\n" +
     "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.dislike_tags\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +

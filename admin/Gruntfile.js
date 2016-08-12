@@ -54,7 +54,7 @@ module.exports = function (grunt) {
                 'src/bower_components/font-awesome/css/font-awesome.min.css',
                 'src/bower_components/angular-growl/build/angular-growl.min.css',
                 'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
-                'src/angular-whoamid/dist/waid.css',
+                'src/angular-whoamid/dist/waid-bootstrap3.css',
                 'src/main.css',
                 
               ]
@@ -112,8 +112,8 @@ module.exports = function (grunt) {
 
                     // Build waid
                     
-                    'src/angular-whoamid/dist/waid.js',
-                    'src/angular-whoamid/dist/templates.js',
+                    'src/angular-whoamid/dist/waid-bootstrap3.js',
+                    'src/angular-whoamid/dist/waid-bootstrap3-templates.js',
 
                     //'src/angular-whoamid/dist/waid-noconflict.js',
                     // Build demo

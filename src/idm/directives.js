@@ -1,19 +1,19 @@
 'use strict';
 
-angular.module('waid.idm.directives', ['waid.idm.controllers',])
-  .directive('waidUserProfileNavbar', function () {
+angular.module('waid.idm.directives', ['waid.core', 'waid.idm.controllers',])
+  .directive('waidUserProfileNavbar', function (waidCore) {
   return {
     restrict: 'E',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.idm.templates.userProfileNavbar
+        return attrs.templateUrl || waidCore.config.idm.templates.userProfileNavbar
       }
     }
   })
-  .directive('waidUserProfileStatusButton', function () {
+  .directive('waidUserProfileStatusButton', function (waidCore) {
   return {
     restrict: 'E',
       templateUrl: function(elem,attrs) {
-        return attrs.templateUrl || waid.config.idm.templates.userProfileStatusButton
+        return attrs.templateUrl || waidCore.config.idm.templates.userProfileStatusButton
       }
     }
   });

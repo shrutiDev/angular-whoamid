@@ -30,7 +30,6 @@
           <dt>Niet leuk</dt>
           <dd>{{ model.dislike_tags }}</dd>
         </dl>
-      
       </div>
 
       <div>
@@ -43,7 +42,6 @@
           </dt>
           <dd>{{ email.email }}</dd>
         </dl>
-        
       </div>
 
       <div>
@@ -163,13 +161,13 @@
         <form>
           <div class="form-group">
             <label for="like_taks">Wat vind je leuk?</label>
-            <textarea class="form-control" rows="3" id="like_tags" ng-model="model.like_tags"></textarea>
+            <textarea class="form-control" rows="3" id="like_tags" ng-model="model.like_tags" msd-elastic></textarea>
             <p class="help-block">Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.</p>
           </div>
           <div class="alert alert-danger" ng-repeat="error in errors.like_tags"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
           <div class="form-group">
             <label for="dislike_tags">Wat vind je echt niet leuk?</label>
-            <textarea class="form-control" rows="3" id="dislike_tags" ng-model="model.dislike_tags"></textarea>
+            <textarea class="form-control" rows="3" id="dislike_tags" ng-model="model.dislike_tags" msd-elastic></textarea>
             <p class="help-block">Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.</p>
           </div>
           <div class="alert alert-danger" ng-repeat="error in errors.dislike_tags"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
