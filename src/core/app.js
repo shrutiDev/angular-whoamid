@@ -12,8 +12,8 @@ angular.module('waid', [
 
   'waid.comments.controllers',
   'waid.comments.directives'
-]).run(function(waidCore) {
-  
+]).run(function(waidCore, waidCoreStrategy, waidService) {
+    
   waidCore.config.setConfig('api', {
     'environment' : {
       'development':{
@@ -102,7 +102,8 @@ angular.module('waid', [
       }
     }
    });
-  console.log(waidCore);
+
+  waidService.initialize();
 });
 
 

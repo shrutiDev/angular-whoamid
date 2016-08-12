@@ -1,0 +1,8 @@
+div.growl {
+    z-index: 9999999999;
+}
+
+.emoticon_select {
+	cursor:pointer;;
+	padding:10px;
+}

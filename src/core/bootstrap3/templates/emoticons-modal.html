@@ -3,7 +3,7 @@
 </div>
 <div class="modal-body">
 <div ng-repeat="(key, group) in emoticons">
-	<h4>{{ waid.getTranslation('core', 'emoticons.' + key) }}</h4>
+	<h4>{{ waid.config.getConfig('core.translations.emoticons.' + key) }}</h4>
 	<p>
 	<span class="emoticon_select" ng-repeat="emoticon in group track by $index" ng-click="waid.addEmoticon(emoticon)">{{ emoticon }}</span>
 	</p>

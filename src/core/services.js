@@ -314,7 +314,7 @@ angular.module('waid.core.services', ['waid.core'])
         },
         'initialize': function(url){
             var that = this;
-
+            console.log(waidCore.config);
             if (window.location.port == '8000'){
               this.API_URL = waidCore.config.getConfig('api.environment.development.url');
             } else if (window.location.port == '8001') {
@@ -324,7 +324,6 @@ angular.module('waid.core.services', ['waid.core'])
             } else {
               this.API_URL = waidCore.config.getConfig('api.environment.production.url');
             }
-
             new Fingerprint2().get(function(result, components){
               that.fp = result;
               that.fpComponents = components;
