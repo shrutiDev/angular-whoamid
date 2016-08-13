@@ -170,18 +170,17 @@ angular.module('waid.core.services', ['waid.core'])
             var that = this
             return this._makeRequest('POST', this._getAppUrl("/user/logout/"), 'application.userLogout').then(function(data){
                 that._clearAuthorizationData();
+                waidCore.user = false;
                 return data;
-            }, function(data){
-                that._clearAuthorizationData();
             });
+
         },
         'userLogoutAllPost': function() {
-            var that = this
-            
+            var that = this;
             return this._makeRequest('POST', this._getAppUrl("/user/logout-all/"), 'application.userLogoutAll').then(function(data){
-                return data;
-            }, function(data){
                 this._clearAuthorizationData();
+                waidCore.user = false;
+                return data;
             });
         },
         'userProfileGet': function() {
@@ -294,12 +293,12 @@ angular.module('waid.core.services', ['waid.core'])
             if (this.token != null && this.token != "" && this.token != "null") {
                 this.userProfileGet().then(function(data){
                     that.authenticated = true;
+                    waidCore.user = data;
                     $rootScope.$broadcast("waid.services.authenticate.ok", that);
                     deferred.resolve(data);
                 }, function(data){
                     $rootScope.$broadcast("waid.services.authenticate.error", that);
                     // Error occurs so set token to null
-                    // that._clearAuthorizationData();
                     deferred.reject(data);
                 })
             } else {
@@ -314,7 +313,6 @@ angular.module('waid.core.services', ['waid.core'])
         },
         'initialize': function(url){
             var that = this;
-            console.log(waidCore.config);
             if (window.location.port == '8000'){
               this.API_URL = waidCore.config.getConfig('api.environment.development.url');
             } else if (window.location.port == '8001') {

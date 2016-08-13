@@ -161,6 +161,13 @@ angular.module('waid.core', [])
         return this[key];
     }
 
+    waid.isAuthenticated = function() {
+        if (waid.user && waid.account && waid.application) {
+            return true;
+        }
+        return false;
+    }
+
     // waid.config = {};
 
     // Assume user is not logged in until we hear otherwise
@@ -203,13 +210,8 @@ angular.module('waid.core', [])
         $rootScope.waid.account = false;
         $rootScope.waid.application = false;
         $rootScope.waid.user = false;
-        // waidService._clearAuthorizationData();
     };
 
-    waid.clearUser = function(){
-         $rootScope.waid.user = false;
-         // waidService._clearAuthorizationData();
-    };
   
     waid.utils = {};
 
@@ -221,6 +223,7 @@ angular.module('waid.core', [])
 
     $rootScope.waid = waid;
     
+
     return waid;
   });
 
@@ -396,18 +399,17 @@ angular.module('waid.core.services', ['waid.core'])
             var that = this
             return this._makeRequest('POST', this._getAppUrl("/user/logout/"), 'application.userLogout').then(function(data){
                 that._clearAuthorizationData();
+                waidCore.user = false;
                 return data;
-            }, function(data){
-                that._clearAuthorizationData();
             });
+
         },
         'userLogoutAllPost': function() {
-            var that = this
-            
+            var that = this;
             return this._makeRequest('POST', this._getAppUrl("/user/logout-all/"), 'application.userLogoutAll').then(function(data){
-                return data;
-            }, function(data){
                 this._clearAuthorizationData();
+                waidCore.user = false;
+                return data;
             });
         },
         'userProfileGet': function() {
@@ -520,12 +522,12 @@ angular.module('waid.core.services', ['waid.core'])
             if (this.token != null && this.token != "" && this.token != "null") {
                 this.userProfileGet().then(function(data){
                     that.authenticated = true;
+                    waidCore.user = data;
                     $rootScope.$broadcast("waid.services.authenticate.ok", that);
                     deferred.resolve(data);
                 }, function(data){
                     $rootScope.$broadcast("waid.services.authenticate.error", that);
                     // Error occurs so set token to null
-                    // that._clearAuthorizationData();
                     deferred.reject(data);
                 })
             } else {
@@ -540,7 +542,6 @@ angular.module('waid.core.services', ['waid.core'])
         },
         'initialize': function(url){
             var that = this;
-            console.log(waidCore.config);
             if (window.location.port == '8000'){
               this.API_URL = waidCore.config.getConfig('api.environment.development.url');
             } else if (window.location.port == '8001') {
@@ -758,6 +759,7 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       }
     }
 
+    // TODO : Move outside this strategy
     var initRetrieveData = function(accountId, applicationId) {
       waidService.publicAccountGet(accountId).then(function(){
         var application = data.main_application;
@@ -825,6 +827,7 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         }, 1000);
       }
       $scope.closeCompleteProfileModal();
+
       if(data.profile_status.indexOf('email_is_not_verified') !== -1) {
           growl.addErrorMessage("Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.",  {ttl: -1});
       }
@@ -855,17 +858,11 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       waidCore.closeAllModals();
     });
 
-    $rootScope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
-      waidCore.user = data;
-    });
-
     $rootScope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
-      waidCore.user = false;
       waidCore.closeAllModals();
     });
 
     $rootScope.$on('waid.services.application.userLogoutAll.post.ok', function(event, data) {
-      waidCore.user = false;
       waidCore.closeAllModals();
     });
 
@@ -876,6 +873,7 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
     $rootScope.$on('waid.services.application.userLogin.post.ok', function(event, data) {
       waidCore.loginCheck(data);
     });
+
 
   });
 
@@ -979,6 +977,8 @@ angular.module('waid.idm.controllers', ['waid.core',])
 
   .controller('WAIDUserProfileMainCtrl', function ($scope, $rootScope, $location, waidService, $filter, $timeout) {
     $scope.model = {};
+    $scope.errors = [];
+    
     $scope.isUploading = false;
     $scope.dateOptions = {
       dateDisabled: false,

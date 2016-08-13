@@ -98,6 +98,8 @@ angular.module('waid.idm.controllers', ['waid.core',])
 
   .controller('WAIDUserProfileMainCtrl', function ($scope, $rootScope, $location, waidService, $filter, $timeout) {
     $scope.model = {};
+    $scope.errors = [];
+    
     $scope.isUploading = false;
     $scope.dateOptions = {
       dateDisabled: false,

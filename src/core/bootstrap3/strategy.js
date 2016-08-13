@@ -130,6 +130,7 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       }
     }
 
+    // TODO : Move outside this strategy
     var initRetrieveData = function(accountId, applicationId) {
       waidService.publicAccountGet(accountId).then(function(){
         var application = data.main_application;
@@ -197,6 +198,7 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         }, 1000);
       }
       $scope.closeCompleteProfileModal();
+
       if(data.profile_status.indexOf('email_is_not_verified') !== -1) {
           growl.addErrorMessage("Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.",  {ttl: -1});
       }
@@ -227,17 +229,11 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       waidCore.closeAllModals();
     });
 
-    $rootScope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
-      waidCore.user = data;
-    });
-
     $rootScope.$on('waid.services.application.userLogout.post.ok', function(event, data) {
-      waidCore.user = false;
       waidCore.closeAllModals();
     });
 
     $rootScope.$on('waid.services.application.userLogoutAll.post.ok', function(event, data) {
-      waidCore.user = false;
       waidCore.closeAllModals();
     });
 
@@ -248,5 +244,6 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
     $rootScope.$on('waid.services.application.userLogin.post.ok', function(event, data) {
       waidCore.loginCheck(data);
     });
+
 
   });

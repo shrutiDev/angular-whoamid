@@ -352,6 +352,10 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          <dt>Geslacht</dt>\n" +
     "          <dd><span ng-show=\"model.gender=='F'\">Vrouw</span><span ng-show=\"model.gender=='M'\">Male</span></dd>\n" +
     "        </dl>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Nickname</dt>\n" +
+    "          <dd>{{ model.display_name }}</dd>\n" +
+    "        </dl>\n" +
     "      </div>\n" +
     "      \n" +
     "      <div>\n" +
@@ -447,6 +451,12 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "      <div>\n" +
     "        <h3>Algemene gegevens</h3>\n" +
     "        <form>\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label for=\"username\">Weergave naam</label>\n" +
+    "            <input type=\"input\" class=\"form-control\" id=\"display_name\" placeholder=\"Weergave naam\" ng-model=\"model.display_name\">\n" +
+    "          </div>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.display_name\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "\n" +
     "          <div class=\"form-group\">\n" +
     "            <label for=\"date_of_birth\">Geboortedatum</label>\n" +
     "\n" +

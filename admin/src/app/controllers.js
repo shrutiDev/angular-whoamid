@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('waid.admin.controllers', ['waid'])
-  .controller('WAIDAdminCtrl', function ($scope, $rootScope, waidService, growl, $location, $uibModal, $cookies, $location, $window) {
+  .controller('WAIDAdminCtrl', function ($scope, $rootScope, waidCore, waidCoreStrategy, waidService, growl, $location, $uibModal, $cookies, $location, $window) {
     $scope.account = '';
 
     $scope.changeAccount = function() {
@@ -190,32 +190,6 @@ angular.module('waid.admin.controllers', ['waid'])
         $scope.errors = data;
       });
     }
-  })
-  .controller('AdminAgeGraphCtrl', function ($scope, $rootScope, $location, waidService) {
-    $scope.labels = ["0-10", "11-20", "21-30", "30-40", "50-60", "60-70", "70-80"];
-    $scope.data = [10, 500, 600, 50 ,20, 15, 10];
-  })
-  .controller('AdminRegistrationGraphCtrl', function ($scope, $rootScope, $location, waidService) {
-    $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-    $scope.series = ['2014', '2015', '2016'];
-    $scope.data = [
-      [10, 59, 80, 81, 56, 55, 40],
-      [28, 48, 40, 19, 86, 27, 90],
-      [90, 80, 20, 34, 30, 44, 99]
-    ];
-  })
-  .controller('AdminLoginGraphCtrl', function ($scope, $rootScope, $location, waidService) {
-    $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-    $scope.series = ['2014', '2015', '2016'];
-    $scope.data = [
-      [200, 80, 600, 500, 144, 210, 99],
-      [102, 20, 300, 400, 133, 220, 90],
-      [300, 200, 200, 150, 180, 230, 40]
-    ];
-  })
-  .controller('AdminGenderGraphCtrl', function ($scope, $rootScope, $location, waidService) {
-    $scope.labels = ["Man", "Vrouw", "Onbekend"];
-    $scope.data = [300, 500, 100];
   })
   .controller('AdminDashboardCtrl', function ($scope, $rootScope, $location, waidService) {
     $rootScope.currentMenu = 'dashboard';

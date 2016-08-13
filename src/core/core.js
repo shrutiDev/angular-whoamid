@@ -51,6 +51,13 @@ angular.module('waid.core', [])
         return this[key];
     }
 
+    waid.isAuthenticated = function() {
+        if (waid.user && waid.account && waid.application) {
+            return true;
+        }
+        return false;
+    }
+
     // waid.config = {};
 
     // Assume user is not logged in until we hear otherwise
@@ -93,13 +100,8 @@ angular.module('waid.core', [])
         $rootScope.waid.account = false;
         $rootScope.waid.application = false;
         $rootScope.waid.user = false;
-        // waidService._clearAuthorizationData();
     };
 
-    waid.clearUser = function(){
-         $rootScope.waid.user = false;
-         // waidService._clearAuthorizationData();
-    };
   
     waid.utils = {};
 
@@ -111,5 +113,6 @@ angular.module('waid.core', [])
 
     $rootScope.waid = waid;
     
+
     return waid;
   });
