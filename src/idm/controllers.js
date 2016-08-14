@@ -1,12 +1,7 @@
 'use strict';
 
 angular.module('waid.idm.controllers', ['waid.core',])
-
-  .controller('ClientSocialError', function ($scope, $rootScope, growl, $routeParams, $location) {
-    growl.addErrorMessage(config.errorCodes[$routeParams.error]);
-  }) 
-  
-  .controller('WAIDIdmUserProfileHomeCtrl', function($scope, waidService, $routeParams) {
+  .controller('WAIDIDMUserProfileHomeCtrl', function($scope, $rootScope, waidService, $routeParams) {
     $scope.currentProfilePage = 'overview';
 
     $scope.showProfilePage = function(page) {
@@ -20,14 +15,19 @@ angular.module('waid.idm.controllers', ['waid.core',])
     $scope.goToProfilePage = function(page) {
       $scope.currentProfilePage = page;
     }
+
+    $rootScope.$on('waid.services.application.userProfile.patch.ok', function(event, data) {
+      $scope.currentProfilePage = 'overview';
+    });
+
+    $rootScope.$on('waid.services.application.userProfile.put.ok', function(event, data) {
+      $scope.currentProfilePage = 'overview';
+    });
   })
-  .controller('WAIDCompleteProfileCtrl', function ($scope, $location, $window, waidService, $uibModalInstance) {
+  .controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
     $scope.mode = 'complete';
-    $scope.close = function () {
-      $uibModalInstance.dismiss('close');
-    };
   }) 
-  .controller('WAIDLoginCtrl', function ($scope, $location, waidService) {
+  .controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService) {
 
     $scope.model = {
       'username':'',
@@ -46,7 +46,7 @@ angular.module('waid.idm.controllers', ['waid.core',])
       );
     }
   })
-  .controller('WAIDLostLoginCtrl', function ($scope, $location, waidService) {
+  .controller('WAIDIDMLostLoginCtrl', function ($scope, $location, waidService) {
 
     $scope.model = {
       'email':'',
@@ -64,16 +64,8 @@ angular.module('waid.idm.controllers', ['waid.core',])
       );
     }
   }) 
-  .controller('WAIDUserProfileInterestsCtrl', function ($scope, $rootScope, $location, waidService) {
-    $scope.model = {};
-
-    waidService.userProfileGet().then(function(data) {
-      $scope.errors = [];
-      $scope.model = data;
-    }, function(data) {
-      $scope.errors = data;
-    });
-
+  .controller('WAIDIDMUserProfileInterestsCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
+    $scope.model = waidCore.user;
     $scope.save = function(){
       waidService.userProfilePatch($scope.model).then(function(data) {
         $scope.errors = [];
@@ -83,23 +75,18 @@ angular.module('waid.idm.controllers', ['waid.core',])
     }
   })
 
-  .controller('WAIDUserProfileOverviewCtrl', function ($scope, $rootScope, $location, waidService) {
-    waidService.userProfileGet().then(function(data) {
-      $scope.errors = [];
-      $scope.model = data;
-    }, function(data) {
-      $scope.errors = data;
-    });
-
+  .controller('WAIDIDMUserProfileOverviewCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
+    $scope.model = waidCore.user;
     waidService.userEmailListGet().then(function(data) {
         $scope.emails = data;
     });
   })
 
-  .controller('WAIDUserProfileMainCtrl', function ($scope, $rootScope, $location, waidService, $filter, $timeout) {
-    $scope.model = {};
+  .controller('WAIDIDMUserProfileMainCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter, $timeout) {
+    $scope.model = waidCore.user;
     $scope.errors = [];
-    
+    $scope.profileDate = false;
+
     $scope.isUploading = false;
     $scope.dateOptions = {
       dateDisabled: false,
@@ -120,7 +107,8 @@ angular.module('waid.idm.controllers', ['waid.core',])
     $scope.updateProfileInfo = function() {
       waidService.userProfileGet().then(function(data) {
         $scope.errors = [];
-        $scope.model = $scope.formatDataFromApi(data);
+        $scope.model = data;
+        waidCore.user = data;
       }, function(data) {
         $scope.errors = data;
       });
@@ -140,34 +128,26 @@ angular.module('waid.idm.controllers', ['waid.core',])
       })
     }
     $scope.save = function(){
-      if (typeof $scope.model.date_of_birth != 'undefined' && $scope.model.date_of_birth) {
-        $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
+      if (typeof $scope.profileDate != 'undefined' && $scope.profileDate) {
+        $scope.model.date_of_birth = $filter('date')($scope.profileDate, 'yyyy-MM-dd');
       }
       waidService.userProfilePatch($scope.model).then(function(data) {
-        // if(typeof data.date_of_birth != 'undefined' && data.date_of_birth) {
-        //   var dateParts = data.date_of_birth.split('-')
-        //   data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
-        // }
-        $scope.model = $scope.formatDataFromApi(data);
+        $scope.model = data;
+        waidCore.user = data;
         $scope.errors = [];
       }, function(data) {
         $scope.errors = data;
       });
     }
 
-    $scope.formatDataFromApi = function(data){
-      if (data.date_of_birth) {
-        var dateParts = data.date_of_birth.split('-')
-        data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
-        console.log(data);
-      }
-      return data;
-    }
+    // Format date string to javascript date
+    $scope.$watch('model.date_of_birth', function(date){
+      var dateParts = date.split('-')
+      $scope.profileDate = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+    });
 
-
-    $scope.updateProfileInfo();
   })
-  .controller('WAIDUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
+  .controller('WAIDIDMUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
     $scope.model = {};
 
     $scope.save = function(){
@@ -179,15 +159,8 @@ angular.module('waid.idm.controllers', ['waid.core',])
       });
     }
   })
-  .controller('WAIDUserProfileUsernameCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
-    //$scope.model = {};
-
-    waidService.userProfileGet().then(function(data) {
-      $scope.errors = [];
-      $scope.model = {'username':data.username};
-    }, function(data) {
-      $scope.errors = data;
-    });
+  .controller('WAIDIDMUserProfileUsernameCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter) {
+    $scope.model  = {'username': waidCore.user.username};
 
     $scope.save = function(){
       waidService.userUsernamePut($scope.model).then(function(data) {
@@ -197,7 +170,7 @@ angular.module('waid.idm.controllers', ['waid.core',])
       });
     }
   })
-  .controller('WAIDUserProfileEmailCtrl', function ($scope, $rootScope, $location, waidService) {
+  .controller('WAIDIDMUserProfileEmailCtrl', function ($scope, $rootScope, $location, waidService) {
     $scope.inactiveEmails = [];
     $scope.activeEmails = [];
 
@@ -247,7 +220,7 @@ angular.module('waid.idm.controllers', ['waid.core',])
     $scope.loadEmailList();
     
   })
-  .controller('WAIDSocialCtrl', function ($scope, $location, waidService, $window) {
+  .controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window) {
     $scope.providers = [];
     $scope.getProviders = function() {
       waidService.socialProviderListGet().then(function(data){
@@ -268,7 +241,7 @@ angular.module('waid.idm.controllers', ['waid.core',])
       }
     }, true);
   })
-  .controller('WAIDRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
+  .controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
     $scope.show = {};
     $scope.missingEmailVerification = false;
     if ($scope.modus == 'complete') {
@@ -309,7 +282,6 @@ angular.module('waid.idm.controllers', ['waid.core',])
           waidService.userCompleteProfilePost($scope.model)
             .then(function(data){
               $scope.model = {};
-              $scope.close();
             },function(data){
               $scope.errors = data;
             }

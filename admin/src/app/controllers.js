@@ -45,10 +45,10 @@ angular.module('waid.admin.controllers', ['waid'])
     
     $scope.$on('waid.services.admin.account.get.error', function(event, data) {
       growl.addErrorMessage("Geen permissie om in deze admin in te loggen.");
-      $scope.waid.clearUser();
-      $location.path('/');
-      // TODO : Fix this buggy refresh
-      $window.location.href = '/';
+      waidCore.logout();
+      // $location.path('/');
+      // // TODO : Fix this buggy refresh
+      // $window.location.href = '/';
     });
 
     $scope.$on('waid.services.application.userLogout.post.ok', function(event, data) {

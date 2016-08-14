@@ -1,25 +1,29 @@
 
-<div class="row" ng-controller="WAIDIdmUserProfileHomeCtrl">
+<div class="row" ng-controller="WAIDIDMUserProfileHomeCtrl">
   <div class="col-md-4">
     <ng-include src="'/idm/templates/user-profile-menu.html'"></ng-include>
   </div>      
   <div class="col-md-8">
 
-    <div ng-show="showProfilePage('overview')" ng-controller="WAIDUserProfileOverviewCtrl">
+    <div ng-show="showProfilePage('overview')" ng-controller="WAIDIDMUserProfileOverviewCtrl">
       <div>
         <a class="btn btn-default btn-xs pull-right" ng-click="goToProfilePage('main')">Algemene gegevens aanpassen</a>
         <h3>Overzicht</h3>
         <dl class="dl-horizontal">
-          <dt>Geboortedatum</dt>
-          <dd>{{ model.date_of_birth }}</dd>
-        </dl>
-        <dl class="dl-horizontal">
-          <dt>Geslacht</dt>
-          <dd><span ng-show="model.gender=='F'">Vrouw</span><span ng-show="model.gender=='M'">Male</span></dd>
+          <dt>Avatar</dt>
+          <dd><img ng-show="model.avatar_thumb_50_50" src="{{ model.avatar_thumb_50_50 }}"></dd>
         </dl>
         <dl class="dl-horizontal">
           <dt>Nickname</dt>
           <dd>{{ model.display_name }}</dd>
+        </dl>
+        <dl class="dl-horizontal">
+          <dt>Geboortedatum</dt>
+          <dd>{{ model.date_of_birth | date:'longDate' }}</dd>
+        </dl>
+        <dl class="dl-horizontal">
+          <dt>Geslacht</dt>
+          <dd><span ng-show="model.gender=='F'">{{ waid.config.getConfig('idm.translations.female') }}</span><span ng-show="model.gender=='M'">{{ waid.config.getConfig('idm.translations.male') }}</span></dd>
         </dl>
       </div>
       
@@ -65,7 +69,7 @@
     </div>
 
 
-    <div ng-show="showProfilePage('emails')" ng-controller="WAIDUserProfileEmailCtrl">
+    <div ng-show="showProfilePage('emails')" ng-controller="WAIDIDMUserProfileEmailCtrl">
       <div>
         <h3>E-Mail adresses</h3>
           <div class="input-group input-group-sm">
@@ -112,7 +116,7 @@
     </div>
 
 
-    <div ng-show="showProfilePage('main')" ng-controller="WAIDUserProfileMainCtrl">
+    <div ng-show="showProfilePage('main')" ng-controller="WAIDIDMUserProfileMainCtrl">
       <div>
         <h3>Algemene gegevens</h3>
         <form>
@@ -126,7 +130,7 @@
             <label for="date_of_birth">Geboortedatum</label>
 
             <div class="input-group">
-              <input type="text" class="form-control" id="date_of_birth" uib-datepicker-popup ng-model="model.date_of_birth" is-open="popup.opened" datepicker-options="dateOptions" close-text="Close" />
+              <input type="text" class="form-control" id="date_of_birth" uib-datepicker-popup ng-model="profileDate" is-open="popup.opened" datepicker-options="dateOptions" close-text="Close" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
@@ -137,10 +141,10 @@
           <div class="form-group">
             <label>Geslacht</label><br />
             <label class="radio-inline">
-              <input type="radio" ng-model="model.gender" value="M"> Male
+              <input type="radio" ng-model="model.gender" value="M"> {{ waid.config.getConfig('idm.translations.male') }}
             </label>
             <label class="radio-inline">
-              <input type="radio" ng-model="model.gender" value="F"> Vrouw
+              <input type="radio" ng-model="model.gender" value="F"> {{ waid.config.getConfig('idm.translations.female') }}
             </label>
           </div>
           <div class="alert alert-danger" ng-repeat="error in errors.gender"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
@@ -148,7 +152,7 @@
 
           <div class="form-group">
             <label>Avatar</label><br />
-            <img style="width:200px;" ng-show="model.avatar_thumb_50_50" src="{{ model.avatar_thumb_50_50 }}" />
+            <img ng-show="model.avatar_thumb_50_50" src="{{ model.avatar_thumb_50_50 }}" />
             <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
             <input type="file" class="form-control" id="avatar" placeholder="Avatar" onchange="angular.element(this).scope().uploadFile(this.files)">
             
@@ -163,7 +167,7 @@
 
     </div>
 
-    <div ng-show="showProfilePage('interests')" ng-controller="WAIDUserProfileInterestsCtrl">
+    <div ng-show="showProfilePage('interests')" ng-controller="WAIDIDMUserProfileInterestsCtrl">
       <div>
         <h3>Interesses</h3>
         <p>Om de kwaliteit en gebruiksvriendelijkheid te verbeteren willen we graag weten waar jouw interesses liggen.
@@ -187,7 +191,7 @@
     </div>
 
 
-    <div ng-show="showProfilePage('username')" ng-controller="WAIDUserProfileUsernameCtrl">
+    <div ng-show="showProfilePage('username')" ng-controller="WAIDIDMUserProfileUsernameCtrl">
       <div>
         <h3>Gebruikersnaam</h3>
         <form>
@@ -202,7 +206,7 @@
     </div>
 
 
-    <div ng-show="showProfilePage('password')" ng-controller="WAIDUserProfilePasswordCtrl">
+    <div ng-show="showProfilePage('password')" ng-controller="WAIDIDMUserProfilePasswordCtrl">
       <div>
         <h3>wachtwoord wijzigen</h3>
         <form>

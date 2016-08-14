@@ -66,15 +66,18 @@ module.exports = function (grunt) {
               src: [
                 'src/core/app.js',
                 'src/core/core.js',
+                'src/core/strategy.js',
                 
                 'src/core/services.js',
                 'src/core/controllers.js',
                 'src/core/directives.js',
                 'src/core/bootstrap3/strategy.js',
                 
+                'src/idm/app.js',
                 'src/idm/controllers.js',
                 'src/idm/directives.js',
 
+                'src/comments/app.js',
                 'src/comments/controllers.js',
                 'src/comments/directives.js',
                 

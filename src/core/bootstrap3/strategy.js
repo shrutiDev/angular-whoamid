@@ -1,6 +1,6 @@
 'use strict';
-angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
-  .service('waidCoreStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl) {
+angular.module('waid.core.app.strategy', ['waid.core', 'waid.core.services'])
+  .service('waidCoreAppStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl) {
     var emoticonsModalInstance = null;
     var termsAndConditionsModalInstance = null;
     var completeProfileModalInstance = null;
@@ -14,27 +14,6 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         return true;
       }
       return false;
-    }
-    waidCore.checkLoading = function(){
-      if(waidService.running.length > 0) {
-          return true;
-      } 
-      return false;
-    }
-
-    waidCore.logout = function() {
-       waidService.userLogoutPost();
-    };
-    
-    waidCore.logoutAll = function() {
-      waidService.userLogoutAllPost();
-    };
-
-    waidCore.addEmoticon = function(emoticon) {
-      var input = document.getElementById(this.targetId);
-      input.value = [input.value.slice(0, input.selectionStart), emoticon, input.value.slice(input.selectionStart)].join('');
-      input.focus();
-      $rootScope.waid.closeEmoticonsModal();
     }
 
     waidCore.closeAllModals = function() {
@@ -67,7 +46,6 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
        termsAndConditionsModalInstance = $uibModal.open({
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.termsAndConditionsModal'),
-        controller: 'WAIDCoreDefaultModalCtrl',
         size: 'lg',
         backdrop: 'static'
       });
@@ -99,7 +77,6 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       lostLoginModalInstance = $uibModal.open({
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.lostLoginModal'),
-        controller: 'WAIDCoreDefaultModalCtrl',
         size: 'lg',
         backdrop: 'static'
       });
@@ -115,7 +92,6 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       loginAndRegisterHomeModalInstance = $uibModal.open({
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.loginAndRegisterModal'),
-        controller: 'WAIDCoreDefaultModalCtrl',
         size: 'lg',
         backdrop: 'static'
       });
@@ -131,7 +107,6 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       userProfileHomeModalInstance = $uibModal.open({
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.userProfileModal'),
-        controller: 'WAIDCoreDefaultModalCtrl',
         size: 'lg',
         backdrop: 'static'
       });
@@ -142,65 +117,6 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         userProfileHomeModalInstance.dismiss('close');
       }
     }
-
-    // TODO : Move outside this strategy
-    var initRetrieveData = function(accountId, applicationId) {
-      waidService.publicAccountGet(accountId).then(function(){
-        var application = data.main_application;
-        delete data.main_application
-
-        waidCore.account = data;
-        // TODO retrieve full application info
-        waidCore.application = {'id':applicationId};
-
-        $cookies.putObject('account', waidCore.account);
-        $cookies.putObject('application', waidCore.application);
-      });
-    }
-    
-    waidCore.init = function() {
-      // Init if account and app are fixed
-      if (waidCore.account.id && waidCore.application.id) {
-        if ($cookies.getObject('account') && $cookies.getObject('application')) {
-          try {
-            waidCore.account = $cookies.getObject('account');
-            waidCore.application = $cookies.getObject('application');
-          } catch(err) {
-            initRetrieveData(waidCore.account.id, waidCore.application.id);
-          }
-        } else {
-          initRetrieveData(waidCore.account.id, waidCore.application.id);
-        }
-      } else {
-        // Try to set by cookie
-        if ($cookies.getObject('account') && $cookies.getObject('application')) {
-            try {
-              waidCore.account = $cookies.getObject('account');
-              waidCore.application = $cookies.getObject('application');
-            } catch(err) {
-              waidCore.clearAccount();
-              waidService._clearAuthorizationData();
-            }
-        } else {
-          waidCore.clearAccount();
-          waidService._clearAuthorizationData();
-        }
-      }
-    }
-
-    waidCore.loginCheck = function(data) {
-      if (typeof data.profile_status != "undefined" && data.profile_status.length > 0) {
-        if(data.profile_status.indexOf('profile_ok') !== -1) {
-           growl.addSuccessMessage(waidCore.config.getConfig('core.translations.growlLoggedInSucces'));
-           waidCore.closeAllModals();
-        }
-
-        if(typeof data.profile_status != "undefined" && data.profile_status.indexOf('missing_profile_data') !== -1) {
-          waidCore.closeAllModals();
-          waidCore.openCompleteProfileModal();
-        }
-      }
-    };
 
     $rootScope.$on('waid.services.request.error', function(event, data) {
       if (waidService.token && waidCore.checkIfModalIsOpen('completeProfile') == false) {
@@ -225,6 +141,16 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       }
     });
 
+    $rootScope.$on('waid.core.strategy.loginCheck.completeProfile', function(event, data) {
+      waidCore.closeAllModals();
+      waidCore.openCompleteProfileModal();
+    });
+
+    $rootScope.$on('waid.core.strategy.loginCheck.success', function(event, data) {
+      growl.addSuccessMessage(waidCore.config.getConfig('idm.translations.loggedin_success'));
+      waidCore.closeAllModals();
+    });
+          
     $rootScope.$on('waid.services.application.userEmail.post.ok', function(event, data) {
       growl.addSuccessMessage("Nieuw e-mail adres toegevoegd, controleer je mail om deze te verifieren.",  {ttl: -1});
     });

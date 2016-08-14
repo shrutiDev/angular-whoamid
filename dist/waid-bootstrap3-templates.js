@@ -175,7 +175,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  <ng-include src=\"'/idm/templates/register.html'\" ng-init=\"modus = 'complete'\"></ng-include>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "  <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.logout();\">Niet verdergaan en uitloggen</button>\n" +
+    "  <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.logout()\">Niet verdergaan en uitloggen</button>\n" +
     "</div>"
   );
 
@@ -217,13 +217,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "   <ng-include src=\"'/idm/templates/login-and-register-home.html'\"></ng-include>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"close()\">Sluiten</button>\n" +
+    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeLoginAndRegisterModal()\">Sluiten</button>\n" +
     "</div>"
   );
 
 
   $templateCache.put('/idm/templates/login.html',
-    "<div id=\"login_view\" ng-controller=\"WAIDLoginCtrl\">\n" +
+    "<div id=\"login_view\" ng-controller=\"WAIDIDMLoginCtrl\">\n" +
     "  <form role=\"form\"  name=\"loginForm\" novalidate>\n" +
     "    <div class=\"form-group\">\n" +
     "      <label for=\"id_username\">Gebruikersnaam</label>\n" +
@@ -253,13 +253,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  <ng-include src=\"'/idm/templates/lost-login.html'\"></ng-include>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"close()\">Sluiten</button>\n" +
+    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeLostLoginModal()\">Sluiten</button>\n" +
     "</div>"
   );
 
 
   $templateCache.put('/idm/templates/lost-login.html',
-    "<div id=\"lost_login_view\" ng-controller=\"WAIDLostLoginCtrl\">\n" +
+    "<div id=\"lost_login_view\" ng-controller=\"WAIDIDMLostLoginCtrl\">\n" +
     "<form role=\"form\" name=\"loginForm\" novalidate>\n" +
     "  <div class=\"form-group\">\n" +
     "    <label for=\"id_email\">E-mail</label>\n" +
@@ -276,7 +276,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
 
   $templateCache.put('/idm/templates/register.html',
-    " <div ng-controller=\"WAIDRegisterCtrl\">\n" +
+    " <div ng-controller=\"WAIDIDMRegisterCtrl\">\n" +
     "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ waid.config.getConfig('idm.translations.complete_profile_intro') }}</div>\n" +
     "\n" +
     "      <div class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.</div>\n" +
@@ -312,7 +312,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
 
   $templateCache.put('/idm/templates/social-login.html',
-    "  <div id=\"login_view\" ng-controller=\"WAIDSocialCtrl\">\n" +
+    "  <div id=\"login_view\" ng-controller=\"WAIDIDMSocialCtrl\">\n" +
     "    <a class=\"btn btn-default\" role=\"button\" ng-repeat=\"provider in providers\" ng-click=\"goToSocialLogin(provider)\">{{ provider.backend }}</a>\n" +
     "  </div>"
   );
@@ -328,34 +328,38 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  \n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"close()\">Sluiten</button>\n" +
+    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeTermsAndConditionsModal()\">Sluiten</button>\n" +
     "</div>"
   );
 
 
   $templateCache.put('/idm/templates/user-profile-home.html',
     "\n" +
-    "<div class=\"row\" ng-controller=\"WAIDIdmUserProfileHomeCtrl\">\n" +
+    "<div class=\"row\" ng-controller=\"WAIDIDMUserProfileHomeCtrl\">\n" +
     "  <div class=\"col-md-4\">\n" +
     "    <ng-include src=\"'/idm/templates/user-profile-menu.html'\"></ng-include>\n" +
     "  </div>      \n" +
     "  <div class=\"col-md-8\">\n" +
     "\n" +
-    "    <div ng-show=\"showProfilePage('overview')\" ng-controller=\"WAIDUserProfileOverviewCtrl\">\n" +
+    "    <div ng-show=\"showProfilePage('overview')\" ng-controller=\"WAIDIDMUserProfileOverviewCtrl\">\n" +
     "      <div>\n" +
     "        <a class=\"btn btn-default btn-xs pull-right\" ng-click=\"goToProfilePage('main')\">Algemene gegevens aanpassen</a>\n" +
     "        <h3>Overzicht</h3>\n" +
     "        <dl class=\"dl-horizontal\">\n" +
-    "          <dt>Geboortedatum</dt>\n" +
-    "          <dd>{{ model.date_of_birth }}</dd>\n" +
-    "        </dl>\n" +
-    "        <dl class=\"dl-horizontal\">\n" +
-    "          <dt>Geslacht</dt>\n" +
-    "          <dd><span ng-show=\"model.gender=='F'\">Vrouw</span><span ng-show=\"model.gender=='M'\">Male</span></dd>\n" +
+    "          <dt>Avatar</dt>\n" +
+    "          <dd><img ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\"></dd>\n" +
     "        </dl>\n" +
     "        <dl class=\"dl-horizontal\">\n" +
     "          <dt>Nickname</dt>\n" +
     "          <dd>{{ model.display_name }}</dd>\n" +
+    "        </dl>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Geboortedatum</dt>\n" +
+    "          <dd>{{ model.date_of_birth | date:'longDate' }}</dd>\n" +
+    "        </dl>\n" +
+    "        <dl class=\"dl-horizontal\">\n" +
+    "          <dt>Geslacht</dt>\n" +
+    "          <dd><span ng-show=\"model.gender=='F'\">{{ waid.config.getConfig('idm.translations.female') }}</span><span ng-show=\"model.gender=='M'\">{{ waid.config.getConfig('idm.translations.male') }}</span></dd>\n" +
     "        </dl>\n" +
     "      </div>\n" +
     "      \n" +
@@ -401,7 +405,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    </div>\n" +
     "\n" +
     "\n" +
-    "    <div ng-show=\"showProfilePage('emails')\" ng-controller=\"WAIDUserProfileEmailCtrl\">\n" +
+    "    <div ng-show=\"showProfilePage('emails')\" ng-controller=\"WAIDIDMUserProfileEmailCtrl\">\n" +
     "      <div>\n" +
     "        <h3>E-Mail adresses</h3>\n" +
     "          <div class=\"input-group input-group-sm\">\n" +
@@ -448,7 +452,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    </div>\n" +
     "\n" +
     "\n" +
-    "    <div ng-show=\"showProfilePage('main')\" ng-controller=\"WAIDUserProfileMainCtrl\">\n" +
+    "    <div ng-show=\"showProfilePage('main')\" ng-controller=\"WAIDIDMUserProfileMainCtrl\">\n" +
     "      <div>\n" +
     "        <h3>Algemene gegevens</h3>\n" +
     "        <form>\n" +
@@ -462,7 +466,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "            <label for=\"date_of_birth\">Geboortedatum</label>\n" +
     "\n" +
     "            <div class=\"input-group\">\n" +
-    "              <input type=\"text\" class=\"form-control\" id=\"date_of_birth\" uib-datepicker-popup ng-model=\"model.date_of_birth\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" />\n" +
+    "              <input type=\"text\" class=\"form-control\" id=\"date_of_birth\" uib-datepicker-popup ng-model=\"profileDate\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" />\n" +
     "              <span class=\"input-group-btn\">\n" +
     "                <button type=\"button\" class=\"btn btn-default\" ng-click=\"open()\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
     "              </span>\n" +
@@ -473,10 +477,10 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          <div class=\"form-group\">\n" +
     "            <label>Geslacht</label><br />\n" +
     "            <label class=\"radio-inline\">\n" +
-    "              <input type=\"radio\" ng-model=\"model.gender\" value=\"M\"> Male\n" +
+    "              <input type=\"radio\" ng-model=\"model.gender\" value=\"M\"> {{ waid.config.getConfig('idm.translations.male') }}\n" +
     "            </label>\n" +
     "            <label class=\"radio-inline\">\n" +
-    "              <input type=\"radio\" ng-model=\"model.gender\" value=\"F\"> Vrouw\n" +
+    "              <input type=\"radio\" ng-model=\"model.gender\" value=\"F\"> {{ waid.config.getConfig('idm.translations.female') }}\n" +
     "            </label>\n" +
     "          </div>\n" +
     "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.gender\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
@@ -484,7 +488,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "\n" +
     "          <div class=\"form-group\">\n" +
     "            <label>Avatar</label><br />\n" +
-    "            <img style=\"width:200px;\" ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
+    "            <img ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
     "            <div ng-show=\"isUploading\" class=\"alert alert-info\" role=\"alert\">Bezig met uploaden van foto.</div>\n" +
     "            <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Avatar\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
     "            \n" +
@@ -499,7 +503,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-show=\"showProfilePage('interests')\" ng-controller=\"WAIDUserProfileInterestsCtrl\">\n" +
+    "    <div ng-show=\"showProfilePage('interests')\" ng-controller=\"WAIDIDMUserProfileInterestsCtrl\">\n" +
     "      <div>\n" +
     "        <h3>Interesses</h3>\n" +
     "        <p>Om de kwaliteit en gebruiksvriendelijkheid te verbeteren willen we graag weten waar jouw interesses liggen.\n" +
@@ -523,7 +527,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    </div>\n" +
     "\n" +
     "\n" +
-    "    <div ng-show=\"showProfilePage('username')\" ng-controller=\"WAIDUserProfileUsernameCtrl\">\n" +
+    "    <div ng-show=\"showProfilePage('username')\" ng-controller=\"WAIDIDMUserProfileUsernameCtrl\">\n" +
     "      <div>\n" +
     "        <h3>Gebruikersnaam</h3>\n" +
     "        <form>\n" +
@@ -538,7 +542,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    </div>\n" +
     "\n" +
     "\n" +
-    "    <div ng-show=\"showProfilePage('password')\" ng-controller=\"WAIDUserProfilePasswordCtrl\">\n" +
+    "    <div ng-show=\"showProfilePage('password')\" ng-controller=\"WAIDIDMUserProfilePasswordCtrl\">\n" +
     "      <div>\n" +
     "        <h3>wachtwoord wijzigen</h3>\n" +
     "        <form>\n" +
@@ -587,7 +591,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "   <ng-include src=\"'/idm/templates/user-profile-home.html'\"></ng-include>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"close()\">Sluiten</button>\n" +
+    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeUserProfileModal()\">Sluiten</button>\n" +
     "</div>"
   );
 

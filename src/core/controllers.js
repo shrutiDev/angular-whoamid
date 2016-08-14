@@ -1,11 +1,6 @@
 'use strict';
 
-angular.module('waid.core.controllers', ['waid.core', 'waid.core.services', 'waid.idm.controllers', 'waid.core.strategy'])
-  .controller('WAIDCoreDefaultModalCtrl', function ($scope, $location, waidService, waidCore, waidCoreStrategy, $uibModalInstance) {
-    $scope.close = function () {
-      $uibModalInstance.dismiss('close');
-    };
-  })
+angular.module('waid.core.controllers', ['waid.core', 'waid.core.services', 'waid.idm.controllers', 'waid.core.strategy', 'waid.core.app.strategy'])
   .controller('WAIDCoreEmoticonModalCtrl', function($scope, $rootScope){
     $scope.emoticons = {
       'people':['😄','😆','😊','😃','😏','😍','😘','😚','😳','😌','😆','😁','😉','😜','😝','😀','😗','😙','😛','😴','😟','😦','😧','😮','😬','😕','😯','😑','😒','😅','😓','😥','😩','😔','😞','😖','😨','😰','😣','😢','😭','😂','😲','😱','😫','😠','😡','😤','😪','😋','😷','😎','😵','👿','😈','😐','😶','😇','👽','💛','💙','💜','❤','💚','💔','💓','💗','💕','💞','💘','💖','✨','⭐','🌟','💫','💥','💥','💢','❗','❓','❕','❔','💤','💨','💦','🎶','🎵','🔥','💩','💩','💩','👍','👍','👎','👎','👌','👊','👊','✊','✌','👋','✋','✋','👐','☝','👇','👈','👉','🙌','🙏','👆','👏','💪','🏃','🏃','👫','👪','👬','👭','💃','👯','🙆','🙅','💁','🙋','👰','🙎','🙍','🙇','💏','💑','💆','💇','💅','👦','👧','👩','👨','👶','👵','👴','👱','👲','👳','👷','👮','👼','👸','😺','😸','😻','😽','😼','🙀','😿','😹','😾','👹','👺','🙈','🙉','🙊','💂','💀','🐾','👄','💋','💧','👂','👀','👃','👅','💌','👤','👥','💬','💭'],
@@ -21,25 +16,6 @@ angular.module('waid.core.controllers', ['waid.core', 'waid.core.services', 'wai
     // console.log($rootScope.config);
     waidCore.account = {'id':angular.isDefined($rootScope.accountId) ? $rootScope.accountId : false};
     waidCore.application = {'id':angular.isDefined($rootScope.applicationId) ? $rootScope.applicationId : false};
-   
-    $rootScope.$watch('waid', function(waid){
-      if (typeof waid != "undefined") {
-        // Init once
-        if (!waid.isInit) {
-          if (waid.account && waid.application) {
-            waid.isInit = true;
-            waidService.authenticate();
-          }
-        }
 
-        var waidAlCode = $location.search().waidAlCode; 
-        if (waidAlCode) {
-          waidService.userAutoLoginGet(waidAlCode).then(function(data) {
-            $location.search('waidAlCode', null);
-          });
-        };
-      }
-    }, true);
-
-    waidCore.init();
+    waidCore.initialize();
   });

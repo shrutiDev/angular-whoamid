@@ -57,40 +57,11 @@ angular.module('waid.core', [])
         return false;
     }
 
-    // waid.config = {};
-
-    // Assume user is not logged in until we hear otherwise
-
-    // waid.openLoginAndRegisterHomeModal = function() {
-    //     waidCoreStrategy.openLoginAndRegisterHomeModal();
-    // };
-    // waid.openUserProfileHomeModal = function() {
-    //     waidCoreStrategy.openUserProfileHomeModal();
-    // };
-    // waid.openLostLoginModal = function() {
-    //     this.closeAllModals();
-    //     waidCoreStrategy.openLostLoginModal();
-    // };
-    // waid.openTermsAndConditionsModal = function() {
-    //     waidCoreStrategy.openTermsAndConditionsModal();
-    // };
-    // waid.openEmoticonsModal = function(text) {
-    //     waidCoreStrategy.openEmoticonsModal(text);
-    // };
-    // waid.closeEmoticonsModal =  function(){
-    //     waidCoreStrategy.closeEmoticonsModal();
-    // };
     waid.closeAllModals = function(){
         waid.closeUserProfileModal();
         waid.closeLoginAndRegisterModal();
         waid.closeLostLoginModal();
         waid.closeTermsAndConditionsModal();
-    };
-    waid.getTranslation = function(module, key) {
-        if (typeof waid.config[module].translations[key] != 'undefined') {
-            return waid.config[module].translations[key];
-        } 
-        return 'Unknown key `' + key + '` for module `' + module + '`';
     };
 
     waid.clearAccount = function() {
@@ -100,9 +71,6 @@ angular.module('waid.core', [])
         $rootScope.waid.application = false;
         $rootScope.waid.user = false;
     };
-
-    
-
   
     waid.utils = {};
 
