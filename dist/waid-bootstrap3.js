@@ -387,7 +387,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userLogoutAllPost': function () {
       var that = this;
       return this._makeRequest('POST', this._getAppUrl('/user/logout-all/'), 'application.userLogoutAll').then(function (data) {
-        this._clearAuthorizationData();
+        that._clearAuthorizationData();
         waidCore.user = false;
         return data;
       });

@@ -140,33 +140,6 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/idm/templates/_page.html',
-    "<div class=\"container\" style=\"margin-top:20px;\">\n" +
-    "  <div class=\"row\">\n" +
-    "    <div class=\"col-md-4\">\n" +
-    "      <div class=\"panel panel-default\">\n" +
-    "        <div class=\"panel-heading\">\n" +
-    "          <h3 class=\"panel-title\">Demo page</h3>\n" +
-    "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
-    "          Here you'll find all your comments.\n" +
-    "        </div>\n" +
-    "        \n" +
-    "      </div>\n" +
-    "\n" +
-    "    </div>      \n" +
-    "    <div class=\"col-md-8\">\n" +
-    "\n" +
-    "\n" +
-    "      <waid-comments waid=\"waid\" />\n" +
-    "\n" +
-    "     \n" +
-    "    </div>\n" +
-    "  </div>\n" +
-    "</div>\n"
-  );
-
-
   $templateCache.put('/idm/templates/complete-profile.html',
     "<div class=\"modal-header\">\n" +
     "  <h3 class=\"modal-title\">Bevestig uw gegevens</h3>\n" +
