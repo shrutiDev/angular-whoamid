@@ -64294,7 +64294,7 @@ angular.module('waid.core.app.strategy', [
     completeProfileModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getConfig('idm.templates.completeProfile'),
-      controller: 'WAIDCompleteProfileCtrl',
+      controller: 'WAIDIDMCompleteProfileCtrl',
       size: 'lg',
       backdrop: 'static'
     });
