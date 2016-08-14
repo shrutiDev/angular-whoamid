@@ -62,6 +62,19 @@ angular.module('waid.core.services', ['waid.core'])
                 if(data){
                     data.status = status;
                 }
+
+                if (typeof data != 'undefined' 
+                    && typeof data.error != 'undefined' 
+                    && data.error.code != 'undefined' 
+                    && data.error.code == 'invalid_authentication_credentials') {
+                    that._clearAuthorizationData();
+                }
+                
+                // Forbidden, send out event..
+                if (status == 403) {
+                    $rootScope.$broadcast("waid.services.request.error", data);
+                }
+
                 if(status == 0){
                     if(data == ""){
                         data = {};
@@ -82,13 +95,13 @@ angular.module('waid.core.services', ['waid.core'])
             return deferred.promise;
         },
         '_login' : function(token) {
-            $cookies.put('token', token);
+            $cookies.put('token', token, {'path':'/'});
             this.token = token;
             this.authenticate();
         },
         '_clearAuthorizationData': function() {
             this.authenticated = false;
-            $cookies.remove('token');
+            $cookies.remove('token', {'path':'/'});
             this.token = null;
         },
         '_makeFileRequest': function(method, path, broadcast, data) {
@@ -217,7 +230,7 @@ angular.module('waid.core.services', ['waid.core'])
             return this._makeRequest('PATCH', this._getAppUrl("/user/comments/" + id + "/"), 'application.userComments', data);
         },
         'userCommentsPost': function(data) {
-            if (typeof data.thread_id == 'undefined') {
+            if (typeof data.thread_id != "undefined" && data.thread_id == 'currenturl') {
                 data.thread_id = Slug.slugify($location.absUrl());
             }
             data.url = $location.absUrl();
@@ -297,12 +310,13 @@ angular.module('waid.core.services', ['waid.core'])
                     $rootScope.$broadcast("waid.services.authenticate.ok", that);
                     deferred.resolve(data);
                 }, function(data){
+                    that.authenticated = false;
                     $rootScope.$broadcast("waid.services.authenticate.error", that);
-                    // Error occurs so set token to null
                     deferred.reject(data);
                 })
             } else {
-                $rootScope.$broadcast("waid.services.authenticate.error");
+                that.authenticated = false;
+                $rootScope.$broadcast("waid.services.authenticate.none");
                 deferred.reject();
             }
 

@@ -9,7 +9,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  </blockquote>\n" +
     "\n" +
     "    <waid-comments-order-button></waid-comments-order-button>\n" +
-    "    <waid-user-profile-status-button></waid-user-profile-status-button>\n" +
+    "    <waid-user-profile-status-button class=\"pull-right\"></waid-user-profile-status-button>\n" +
     "\n" +
     "      <div class=\"media\" ng-show=\"waid.user\">\n" +
     "        <div class=\"media-left\">\n" +
@@ -173,10 +173,9 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "</div>\n" +
     "<div class=\"modal-body\">\n" +
     "  <ng-include src=\"'/idm/templates/register.html'\" ng-init=\"modus = 'complete'\"></ng-include>\n" +
-    "\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"close()\">Sluiten</button>\n" +
+    "  <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.logout();\">Niet verdergaan en uitloggen</button>\n" +
     "</div>"
   );
 
@@ -278,7 +277,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/idm/templates/register.html',
     " <div ng-controller=\"WAIDRegisterCtrl\">\n" +
-    "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> Om verder te gaan met jouw account hebben we wat extra gegevens nodig...</div>\n" +
+    "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ waid.config.getConfig('idm.translations.complete_profile_intro') }}</div>\n" +
     "\n" +
     "      <div class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.</div>\n" +
     "    <form role=\"form\" name=\"registerForm\" novalidate>\n" +
@@ -304,7 +303,9 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "      </div>\n" +
     "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.terms_and_conditions_check\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.non_field_errors\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "      <button ng-disabled=\"!model.terms_and_conditions_check\" type=\"submit\" class=\"btn btn-primary\" ng-click=\"register()\">Registreren</button>\n" +
+    "\n" +
+    "      <button ng-disabled=\"!model.terms_and_conditions_check\" type=\"submit\" class=\"btn btn-primary\" ng-click=\"register()\"><span ng-show=\"modus!='complete'\">Registreren</span><span ng-show=\"modus=='complete'\">Registratie afronden</span></button>\n" +
+    "\n" +
     "    </form>\n" +
     "  </div>"
   );
@@ -461,7 +462,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "            <label for=\"date_of_birth\">Geboortedatum</label>\n" +
     "\n" +
     "            <div class=\"input-group\">\n" +
-    "              <input type=\"text\" class=\"form-control\" id=\"date_of_birth\" uib-datepicker-popup ng-model=\"model.date_of_birth\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "              <input type=\"text\" class=\"form-control\" id=\"date_of_birth\" uib-datepicker-popup ng-model=\"model.date_of_birth\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" />\n" +
     "              <span class=\"input-group-btn\">\n" +
     "                <button type=\"button\" class=\"btn btn-default\" ng-click=\"open()\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
     "              </span>\n" +
@@ -618,7 +619,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    <li><a href=\"#\" ng-click=\"waid.logout()\"><span class=\"glyphicon glyphicon-log-out\"></span> Uitloggen</a></li>\n" +
     "    <li><a href=\"#\" ng-click=\"waid.logoutAll()\"><span class=\"glyphicon glyphicon-new-window\"></span> Op alle systemen uitloggen</a></li>\n" +
     "  </ul>\n" +
-    "  <button ng-hide=\"waid.user\" ng-click=\"waid.openLoginAndRegisterHomeModal()\" class=\"btn btn-default btn-xs\">Login of Registreer</button>\n" +
-    "</div>"
+    "</div>\n" +
+    "<button ng-hide=\"waid.user\" ng-click=\"waid.openLoginAndRegisterHomeModal()\" class=\"btn btn-default btn-xs\">Login of Registreer</button>"
   );
 }]);

@@ -120,15 +120,12 @@ angular.module('waid.idm.controllers', ['waid.core',])
     $scope.updateProfileInfo = function() {
       waidService.userProfileGet().then(function(data) {
         $scope.errors = [];
-        if (data.date_of_birth) {
-          var dateParts = data.date_of_birth.split('-')
-          data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
-        }
-        $scope.model = data;
+        $scope.model = $scope.formatDataFromApi(data);
       }, function(data) {
         $scope.errors = data;
       });
     }
+
 
     $scope.uploadFile = function(files) {
       $scope.isUploading = true;
@@ -143,16 +140,31 @@ angular.module('waid.idm.controllers', ['waid.core',])
       })
     }
     $scope.save = function(){
-      $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
+      if (typeof $scope.model.date_of_birth != 'undefined' && $scope.model.date_of_birth) {
+        $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
+      }
       waidService.userProfilePatch($scope.model).then(function(data) {
-        var dateParts = data.date_of_birth.split('-')
-        data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
-        $scope.model = data;
+        // if(typeof data.date_of_birth != 'undefined' && data.date_of_birth) {
+        //   var dateParts = data.date_of_birth.split('-')
+        //   data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+        // }
+        $scope.model = $scope.formatDataFromApi(data);
         $scope.errors = [];
       }, function(data) {
         $scope.errors = data;
       });
     }
+
+    $scope.formatDataFromApi = function(data){
+      if (data.date_of_birth) {
+        var dateParts = data.date_of_birth.split('-')
+        data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+        console.log(data);
+      }
+      return data;
+    }
+
+
     $scope.updateProfileInfo();
   })
   .controller('WAIDUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
@@ -239,6 +251,9 @@ angular.module('waid.idm.controllers', ['waid.core',])
     $scope.providers = [];
     $scope.getProviders = function() {
       waidService.socialProviderListGet().then(function(data){
+        for (var i=0; i<data.length; i++) {
+          data[i].url = data[i].url + '?return_url=' + encodeURIComponent($location.absUrl() + '?waidAlCode=[code]');
+        }
         $scope.providers = data;
       });
     }

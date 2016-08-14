@@ -123,9 +123,6 @@ angular.module('waid.admin.controllers', ['waid'])
         $uibModalInstance.dismiss('cancel');
       };
   })
-  .controller('ErrorCodesCtrl', function ($scope, $rootScope, $location, waidService) {
-    $scope.errorCodes = config.errorCodes;
-  })
   .controller('AdminPageCtrl', function ($scope, $rootScope, $location, waidService) {
     $scope.applications = [];
   })

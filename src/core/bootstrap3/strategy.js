@@ -8,6 +8,13 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
     var loginAndRegisterHomeModalInstance = null;
     var userProfileHomeModalInstance = null;
 
+
+    waidCore.checkIfModalIsOpen = function(modal) {
+      if (modal == 'completeProfile' && completeProfileModalInstance) {
+        return true;
+      }
+      return false;
+    }
     waidCore.checkLoading = function(){
       if(waidService.running.length > 0) {
           return true;
@@ -45,7 +52,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('core.templates.emoticonsModal'),
         controller: 'WAIDCoreEmoticonModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -60,7 +68,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.termsAndConditionsModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -75,7 +84,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.completeProfile'),
         controller: 'WAIDCompleteProfileCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -90,7 +100,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.lostLoginModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -105,7 +116,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.loginAndRegisterModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -120,7 +132,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.userProfileModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -189,15 +202,23 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       }
     };
 
+    $rootScope.$on('waid.services.request.error', function(event, data) {
+      if (waidService.token && waidCore.checkIfModalIsOpen('completeProfile') == false) {
+        waidService.userCompleteProfileGet().then(function(data){
+          waidCore.loginCheck(data);
+        })
+      }
+    });
+
     $rootScope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
       // Reload profile info
       if (data.profile_status.indexOf('profile_ok') !== -1) {
         // Wait for data to be stored
         setTimeout(function() {
-          waidService.userProfileGet();
+          waidService.authenticate();
         }, 1000);
       }
-      $scope.closeCompleteProfileModal();
+      waidCore.closeCompleteProfileModal();
 
       if(data.profile_status.indexOf('email_is_not_verified') !== -1) {
           growl.addErrorMessage("Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.",  {ttl: -1});
@@ -209,11 +230,20 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
     });
 
     $rootScope.$on('waid.services.application.userProfile.patch.ok', function(event, data) {
+      waidCore.user = data;
       growl.addSuccessMessage("Profiel informatie opgeslagen");
+    });
+
+    $rootScope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
+      waidCore.user = data;
     });
 
     $rootScope.$on('waid.services.application.userPassword.put.ok', function(event, data) {
       growl.addSuccessMessage("Wachtwoord is gewijzigd.");
+    });
+
+    $rootScope.$on('waid.services.application.userUsername.put.ok', function(event, data) {
+      growl.addSuccessMessage("Gebruikersnaam is gewijzigd.");
     });
 
     $rootScope.$on('waid.services.application.userLostLogin.post.ok', function(event, data) {

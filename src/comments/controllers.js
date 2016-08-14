@@ -67,19 +67,21 @@ angular.module('waid.comments.controllers', ['waid.core', 'waid.core.strategy'])
             }
           }
           $scope.comments = data
-        },function(data){
-          alert('Cannot retrieve comments.');
         }
       );
     }
 
     $scope.post = function(){
+      $scope.comment.thread_id = $scope.threadId;
       waidService.userCommentsPost($scope.comment).then(function(data){
         $scope.comment.comment = '';
         $scope.loadComments();
       })
     }
 
-    $scope.loadComments();
-
+    $scope.$watch('threadId', function(threadId){
+      if (threadId != '') {
+        $scope.loadComments();
+      }
+    });
   });

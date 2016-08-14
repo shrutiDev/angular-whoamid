@@ -1,6 +1,6 @@
 'use strict';
 angular.module('waid.core', [])
-  .service('waidCore', function ($rootScope) {
+  .service('waidCore', function ($rootScope, $cookies) {
     var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
 
 
@@ -30,7 +30,6 @@ angular.module('waid.core', [])
     }
 
     waid.config.getConfig = function(key) {
-        //console.log(key);
         parts = key.split('.')
         if (parts.length > 0) {
           var config = this;
@@ -101,6 +100,8 @@ angular.module('waid.core', [])
         $rootScope.waid.application = false;
         $rootScope.waid.user = false;
     };
+
+    
 
   
     waid.utils = {};

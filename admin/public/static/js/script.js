@@ -35641,9 +35641,17 @@ angular.module('waid', [
       'production':{
         'url': 'http://eu.whoamid.com/nl/api'
       }
-    },
+    }
     // 'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
     // 'applicationId' : 'c7d23002-da7d-4ad3-a665-9ae9de276c9e',
+  });
+
+
+  waidCore.config.setConfig('core', {
+    'templates':{
+      'core': '/core/templates/core.html',
+      'emoticonsModal':'/core/templates/emoticons-modal.html'
+    },
     'errorCodes':{
       'auth-cancelled' : 'Authentication was canceled by the user.',
       'auth-failed' : 'Authentication failed for some reason.',
@@ -35658,20 +35666,14 @@ angular.module('waid', [
   });
 
 
-  waidCore.config.setConfig('core', {
-    'templates':{
-      'core': '/core/templates/core.html',
-      'emoticonsModal':'/core/templates/emoticons-modal.html'
-    }
-  });
-
-
   waidCore.config.setConfig('comments', {
     'templates':{
       'commentsHome': '/comments/templates/comments-home.html',
       'commentsOrderButton': '/comments/templates/comments-order-button.html'
     }
   });
+
+
 
   waidCore.config.setConfig('idm', {
     'templates':{
@@ -35682,6 +35684,9 @@ angular.module('waid', [
       'lostLoginModal': '/idm/templates/lost-login-modal.html',
       'loginAndRegisterModal':'/idm/templates/login-and-register-modal.html',
       'userProfileModal':'/idm/templates/user-profile-modal.html'
+    },
+    'translations':{
+      'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...'
     }
   });
 
@@ -35723,7 +35728,7 @@ angular.module('waid', [
 
 'use strict';
 angular.module('waid.core', [])
-  .service('waidCore', function ($rootScope) {
+  .service('waidCore', function ($rootScope, $cookies) {
     var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
 
 
@@ -35753,7 +35758,6 @@ angular.module('waid.core', [])
     }
 
     waid.config.getConfig = function(key) {
-        //console.log(key);
         parts = key.split('.')
         if (parts.length > 0) {
           var config = this;
@@ -35824,6 +35828,8 @@ angular.module('waid.core', [])
         $rootScope.waid.application = false;
         $rootScope.waid.user = false;
     };
+
+    
 
   
     waid.utils = {};
@@ -35904,6 +35910,19 @@ angular.module('waid.core.services', ['waid.core'])
                 if(data){
                     data.status = status;
                 }
+
+                if (typeof data != 'undefined' 
+                    && typeof data.error != 'undefined' 
+                    && data.error.code != 'undefined' 
+                    && data.error.code == 'invalid_authentication_credentials') {
+                    that._clearAuthorizationData();
+                }
+                
+                // Forbidden, send out event..
+                if (status == 403) {
+                    $rootScope.$broadcast("waid.services.request.error", data);
+                }
+
                 if(status == 0){
                     if(data == ""){
                         data = {};
@@ -35924,13 +35943,13 @@ angular.module('waid.core.services', ['waid.core'])
             return deferred.promise;
         },
         '_login' : function(token) {
-            $cookies.put('token', token);
+            $cookies.put('token', token, {'path':'/'});
             this.token = token;
             this.authenticate();
         },
         '_clearAuthorizationData': function() {
             this.authenticated = false;
-            $cookies.remove('token');
+            $cookies.remove('token', {'path':'/'});
             this.token = null;
         },
         '_makeFileRequest': function(method, path, broadcast, data) {
@@ -36059,7 +36078,7 @@ angular.module('waid.core.services', ['waid.core'])
             return this._makeRequest('PATCH', this._getAppUrl("/user/comments/" + id + "/"), 'application.userComments', data);
         },
         'userCommentsPost': function(data) {
-            if (typeof data.thread_id == 'undefined') {
+            if (typeof data.thread_id != "undefined" && data.thread_id == 'currenturl') {
                 data.thread_id = Slug.slugify($location.absUrl());
             }
             data.url = $location.absUrl();
@@ -36139,12 +36158,13 @@ angular.module('waid.core.services', ['waid.core'])
                     $rootScope.$broadcast("waid.services.authenticate.ok", that);
                     deferred.resolve(data);
                 }, function(data){
+                    that.authenticated = false;
                     $rootScope.$broadcast("waid.services.authenticate.error", that);
-                    // Error occurs so set token to null
                     deferred.reject(data);
                 })
             } else {
-                $rootScope.$broadcast("waid.services.authenticate.error");
+                that.authenticated = false;
+                $rootScope.$broadcast("waid.services.authenticate.none");
                 deferred.reject();
             }
 
@@ -36250,6 +36270,13 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
     var loginAndRegisterHomeModalInstance = null;
     var userProfileHomeModalInstance = null;
 
+
+    waidCore.checkIfModalIsOpen = function(modal) {
+      if (modal == 'completeProfile' && completeProfileModalInstance) {
+        return true;
+      }
+      return false;
+    }
     waidCore.checkLoading = function(){
       if(waidService.running.length > 0) {
           return true;
@@ -36287,7 +36314,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('core.templates.emoticonsModal'),
         controller: 'WAIDCoreEmoticonModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -36302,7 +36330,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.termsAndConditionsModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -36317,7 +36346,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.completeProfile'),
         controller: 'WAIDCompleteProfileCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -36332,7 +36362,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.lostLoginModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -36347,7 +36378,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.loginAndRegisterModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -36362,7 +36394,8 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
         animation: true,
         templateUrl: waidCore.config.getConfig('idm.templates.userProfileModal'),
         controller: 'WAIDCoreDefaultModalCtrl',
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static'
       });
     };
 
@@ -36431,15 +36464,23 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
       }
     };
 
+    $rootScope.$on('waid.services.request.error', function(event, data) {
+      if (waidService.token && waidCore.checkIfModalIsOpen('completeProfile') == false) {
+        waidService.userCompleteProfileGet().then(function(data){
+          waidCore.loginCheck(data);
+        })
+      }
+    });
+
     $rootScope.$on('waid.services.application.userCompleteProfile.post.ok', function(event, data) {
       // Reload profile info
       if (data.profile_status.indexOf('profile_ok') !== -1) {
         // Wait for data to be stored
         setTimeout(function() {
-          waidService.userProfileGet();
+          waidService.authenticate();
         }, 1000);
       }
-      $scope.closeCompleteProfileModal();
+      waidCore.closeCompleteProfileModal();
 
       if(data.profile_status.indexOf('email_is_not_verified') !== -1) {
           growl.addErrorMessage("Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.",  {ttl: -1});
@@ -36451,11 +36492,20 @@ angular.module('waid.core.strategy', ['waid.core', 'waid.core.services'])
     });
 
     $rootScope.$on('waid.services.application.userProfile.patch.ok', function(event, data) {
+      waidCore.user = data;
       growl.addSuccessMessage("Profiel informatie opgeslagen");
+    });
+
+    $rootScope.$on('waid.services.application.userProfile.get.ok', function(event, data) {
+      waidCore.user = data;
     });
 
     $rootScope.$on('waid.services.application.userPassword.put.ok', function(event, data) {
       growl.addSuccessMessage("Wachtwoord is gewijzigd.");
+    });
+
+    $rootScope.$on('waid.services.application.userUsername.put.ok', function(event, data) {
+      growl.addSuccessMessage("Gebruikersnaam is gewijzigd.");
     });
 
     $rootScope.$on('waid.services.application.userLostLogin.post.ok', function(event, data) {
@@ -36612,15 +36662,12 @@ angular.module('waid.idm.controllers', ['waid.core',])
     $scope.updateProfileInfo = function() {
       waidService.userProfileGet().then(function(data) {
         $scope.errors = [];
-        if (data.date_of_birth) {
-          var dateParts = data.date_of_birth.split('-')
-          data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
-        }
-        $scope.model = data;
+        $scope.model = $scope.formatDataFromApi(data);
       }, function(data) {
         $scope.errors = data;
       });
     }
+
 
     $scope.uploadFile = function(files) {
       $scope.isUploading = true;
@@ -36635,16 +36682,31 @@ angular.module('waid.idm.controllers', ['waid.core',])
       })
     }
     $scope.save = function(){
-      $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
+      if (typeof $scope.model.date_of_birth != 'undefined' && $scope.model.date_of_birth) {
+        $scope.model.date_of_birth = $filter('date')($scope.model.date_of_birth, 'yyyy-MM-dd');
+      }
       waidService.userProfilePatch($scope.model).then(function(data) {
-        var dateParts = data.date_of_birth.split('-')
-        data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
-        $scope.model = data;
+        // if(typeof data.date_of_birth != 'undefined' && data.date_of_birth) {
+        //   var dateParts = data.date_of_birth.split('-')
+        //   data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+        // }
+        $scope.model = $scope.formatDataFromApi(data);
         $scope.errors = [];
       }, function(data) {
         $scope.errors = data;
       });
     }
+
+    $scope.formatDataFromApi = function(data){
+      if (data.date_of_birth) {
+        var dateParts = data.date_of_birth.split('-')
+        data.date_of_birth = new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+        console.log(data);
+      }
+      return data;
+    }
+
+
     $scope.updateProfileInfo();
   })
   .controller('WAIDUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
@@ -36731,6 +36793,9 @@ angular.module('waid.idm.controllers', ['waid.core',])
     $scope.providers = [];
     $scope.getProviders = function() {
       waidService.socialProviderListGet().then(function(data){
+        for (var i=0; i<data.length; i++) {
+          data[i].url = data[i].url + '?return_url=' + encodeURIComponent($location.absUrl() + '?waidAlCode=[code]');
+        }
         $scope.providers = data;
       });
     }
@@ -36892,21 +36957,23 @@ angular.module('waid.comments.controllers', ['waid.core', 'waid.core.strategy'])
             }
           }
           $scope.comments = data
-        },function(data){
-          alert('Cannot retrieve comments.');
         }
       );
     }
 
     $scope.post = function(){
+      $scope.comment.thread_id = $scope.threadId;
       waidService.userCommentsPost($scope.comment).then(function(data){
         $scope.comment.comment = '';
         $scope.loadComments();
       })
     }
 
-    $scope.loadComments();
-
+    $scope.$watch('threadId', function(threadId){
+      if (threadId != '') {
+        $scope.loadComments();
+      }
+    });
   });
 
 'use strict';
@@ -36945,7 +37012,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  </blockquote>\n" +
     "\n" +
     "    <waid-comments-order-button></waid-comments-order-button>\n" +
-    "    <waid-user-profile-status-button></waid-user-profile-status-button>\n" +
+    "    <waid-user-profile-status-button class=\"pull-right\"></waid-user-profile-status-button>\n" +
     "\n" +
     "      <div class=\"media\" ng-show=\"waid.user\">\n" +
     "        <div class=\"media-left\">\n" +
@@ -37109,10 +37176,9 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "</div>\n" +
     "<div class=\"modal-body\">\n" +
     "  <ng-include src=\"'/idm/templates/register.html'\" ng-init=\"modus = 'complete'\"></ng-include>\n" +
-    "\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"close()\">Sluiten</button>\n" +
+    "  <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.logout();\">Niet verdergaan en uitloggen</button>\n" +
     "</div>"
   );
 
@@ -37214,7 +37280,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/idm/templates/register.html',
     " <div ng-controller=\"WAIDRegisterCtrl\">\n" +
-    "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> Om verder te gaan met jouw account hebben we wat extra gegevens nodig...</div>\n" +
+    "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ waid.config.getConfig('idm.translations.complete_profile_intro') }}</div>\n" +
     "\n" +
     "      <div class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.</div>\n" +
     "    <form role=\"form\" name=\"registerForm\" novalidate>\n" +
@@ -37240,7 +37306,9 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "      </div>\n" +
     "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.terms_and_conditions_check\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.non_field_errors\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "      <button ng-disabled=\"!model.terms_and_conditions_check\" type=\"submit\" class=\"btn btn-primary\" ng-click=\"register()\">Registreren</button>\n" +
+    "\n" +
+    "      <button ng-disabled=\"!model.terms_and_conditions_check\" type=\"submit\" class=\"btn btn-primary\" ng-click=\"register()\"><span ng-show=\"modus!='complete'\">Registreren</span><span ng-show=\"modus=='complete'\">Registratie afronden</span></button>\n" +
+    "\n" +
     "    </form>\n" +
     "  </div>"
   );
@@ -37397,7 +37465,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "            <label for=\"date_of_birth\">Geboortedatum</label>\n" +
     "\n" +
     "            <div class=\"input-group\">\n" +
-    "              <input type=\"text\" class=\"form-control\" id=\"date_of_birth\" uib-datepicker-popup ng-model=\"model.date_of_birth\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "              <input type=\"text\" class=\"form-control\" id=\"date_of_birth\" uib-datepicker-popup ng-model=\"model.date_of_birth\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" />\n" +
     "              <span class=\"input-group-btn\">\n" +
     "                <button type=\"button\" class=\"btn btn-default\" ng-click=\"open()\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
     "              </span>\n" +
@@ -37554,8 +37622,8 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    <li><a href=\"#\" ng-click=\"waid.logout()\"><span class=\"glyphicon glyphicon-log-out\"></span> Uitloggen</a></li>\n" +
     "    <li><a href=\"#\" ng-click=\"waid.logoutAll()\"><span class=\"glyphicon glyphicon-new-window\"></span> Op alle systemen uitloggen</a></li>\n" +
     "  </ul>\n" +
-    "  <button ng-hide=\"waid.user\" ng-click=\"waid.openLoginAndRegisterHomeModal()\" class=\"btn btn-default btn-xs\">Login of Registreer</button>\n" +
-    "</div>"
+    "</div>\n" +
+    "<button ng-hide=\"waid.user\" ng-click=\"waid.openLoginAndRegisterHomeModal()\" class=\"btn btn-default btn-xs\">Login of Registreer</button>"
   );
 }]);
 'use strict';
@@ -37838,9 +37906,6 @@ angular.module('waid.admin.controllers', ['waid'])
       $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
       };
-  })
-  .controller('ErrorCodesCtrl', function ($scope, $rootScope, $location, waidService) {
-    $scope.errorCodes = config.errorCodes;
   })
   .controller('AdminPageCtrl', function ($scope, $rootScope, $location, waidService) {
     $scope.applications = [];

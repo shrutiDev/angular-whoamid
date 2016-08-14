@@ -28,9 +28,17 @@ angular.module('waid', [
       'production':{
         'url': 'http://eu.whoamid.com/nl/api'
       }
-    },
+    }
     // 'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
     // 'applicationId' : 'c7d23002-da7d-4ad3-a665-9ae9de276c9e',
+  });
+
+
+  waidCore.config.setConfig('core', {
+    'templates':{
+      'core': '/core/templates/core.html',
+      'emoticonsModal':'/core/templates/emoticons-modal.html'
+    },
     'errorCodes':{
       'auth-cancelled' : 'Authentication was canceled by the user.',
       'auth-failed' : 'Authentication failed for some reason.',
@@ -45,20 +53,14 @@ angular.module('waid', [
   });
 
 
-  waidCore.config.setConfig('core', {
-    'templates':{
-      'core': '/core/templates/core.html',
-      'emoticonsModal':'/core/templates/emoticons-modal.html'
-    }
-  });
-
-
   waidCore.config.setConfig('comments', {
     'templates':{
       'commentsHome': '/comments/templates/comments-home.html',
       'commentsOrderButton': '/comments/templates/comments-order-button.html'
     }
   });
+
+
 
   waidCore.config.setConfig('idm', {
     'templates':{
@@ -69,6 +71,9 @@ angular.module('waid', [
       'lostLoginModal': '/idm/templates/lost-login-modal.html',
       'loginAndRegisterModal':'/idm/templates/login-and-register-modal.html',
       'userProfileModal':'/idm/templates/user-profile-modal.html'
+    },
+    'translations':{
+      'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...'
     }
   });
 
