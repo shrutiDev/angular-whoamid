@@ -1,7 +1,9 @@
 'use strict';
 angular.module('waid.core.app.strategy', [
   'waid.core',
-  'waid.core.services'
+  'waid.core.services',
+  'ui.bootstrap',
+  'angular-growl'
 ]).service('waidCoreAppStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl) {
   var emoticonsModalInstance = null;
   var termsAndConditionsModalInstance = null;

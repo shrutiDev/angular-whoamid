@@ -1,5 +1,6 @@
 'use strict';
 angular.module('waid', [
+  'ngCookies',
   'waid.templates',
   'waid.core',
   'waid.core.strategy',

@@ -1,5 +1,6 @@
 'use strict';
 angular.module('waid', [
+  'ngCookies',
   'waid.templates',
   'waid.core',
   'waid.core.strategy',
@@ -46,7 +47,7 @@ angular.module('waid', [
   waidService.initialize();
 });
 'use strict';
-angular.module('waid.core', []).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootScope, $cookies) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -71,7 +72,11 @@ angular.module('waid.core', []).service('waidCore', function ($rootScope, $cooki
     this[key] = config;
   };
   waid.config.getConfig = function (key) {
-    parts = key.split('.');
+    if (key.indexOf('.') !== -1) {
+        var parts = key.split('.');
+    } else {
+        var parts = new Array(key);
+    }
     if (parts.length > 0) {
       var config = this;
       for (var i = 0; i < parts.length; i++) {
@@ -1202,7 +1207,7 @@ angular.module('waid.core.controllers', [
       '\uD83D\uDEA9'
     ]
   };
-}).controller('WAIDCoreCtrl', function ($scope, waidCore, $rootScope, $location, $window, waidService, growl, $routeParams, $log, $cookies) {
+}).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore, waidService) {
   if (angular.isDefined($rootScope.config)) {
     waidCore.config.patchConfig($rootScope.config);
   }
@@ -1232,7 +1237,9 @@ angular.module('waid.core.directives', [
 'use strict';
 angular.module('waid.core.app.strategy', [
   'waid.core',
-  'waid.core.services'
+  'waid.core.services',
+  'ui.bootstrap',
+  'angular-growl'
 ]).service('waidCoreAppStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl) {
   var emoticonsModalInstance = null;
   var termsAndConditionsModalInstance = null;

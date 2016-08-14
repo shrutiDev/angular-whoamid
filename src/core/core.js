@@ -1,5 +1,5 @@
 'use strict';
-angular.module('waid.core', []).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootScope, $cookies) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -24,7 +24,11 @@ angular.module('waid.core', []).service('waidCore', function ($rootScope, $cooki
     this[key] = config;
   };
   waid.config.getConfig = function (key) {
-    parts = key.split('.');
+    if (key.indexOf('.') !== -1) {
+        var parts = key.split('.');
+    } else {
+        var parts = new Array(key);
+    }
     if (parts.length > 0) {
       var config = this;
       for (var i = 0; i < parts.length; i++) {

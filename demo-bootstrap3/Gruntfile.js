@@ -55,7 +55,7 @@ module.exports = function (grunt) {
                 'src/bower_components/font-awesome/css/font-awesome.min.css',
                 'src/bower_components/angular-growl/build/angular-growl.min.css',
                 'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
-
+                'src/ui-bootstrap-custom-build/ui-bootstrap-custom-2.0.1-csp.css',
                 'src/angular-whoamid/dist/waid-bootstrap3.css',
                 // // 'src/bower_components/angular-isotope/styles/style.css',
                 // 'src/main.css'
@@ -94,8 +94,9 @@ module.exports = function (grunt) {
                     // Growl
                     'src/bower_components/angular-growl/build/angular-growl.js',
                     // ui bootstrap
-                    'src/bower_components/angular-bootstrap/ui-bootstrap.js',
-                    'src/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+                    //'src/ui-bootstrap-custom-build/ui-bootstrap-custom-2.0.1.js',
+                    'src/ui-bootstrap-custom-build/ui-bootstrap-custom-tpls-2.0.1.js',
+                    //'src/ui-bootstrap-tpls-2.0.1.js',
                     // Confirm modal
                     'src/bower_components/angular-confirm-modal/angular-confirm.js',
                     // Create slugs
