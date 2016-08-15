@@ -256,6 +256,20 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'articlesGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
     },
+    'adminCommentsListGet': function (params) {
+      if (typeof params != 'undefined') {
+        var query = '?' + $.param(params);
+      } else {
+        var query = '';
+      }
+      return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
+    },
+    'adminCommentsPatch': function (id, data) {
+      return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);
+    },
+    'adminCommentsDelete': function (id) {
+      return this._makeRequest('DELETE', this._getAdminUrl('/comments/' + id + '/'), 'admin.CommentsDelete');
+    },
     'adminAccountGet': function () {
       return this._makeRequest('GET', this._getAdminUrl('/account/'), 'admin.account');
     },

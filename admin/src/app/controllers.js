@@ -93,6 +93,51 @@ angular.module('waid.admin.controllers', ['waid'])
 
     
   })
+  .controller('WAIDAdminCommentsCtrl', function ($scope, waidCore, waidService, growl) {
+    $scope.search = {
+      'query':'',
+      'marked_as_spam':false
+    }
+
+    $scope.getComments = function () {
+      params = {}
+
+      if ($scope.search.query) {
+        params['search'] = $scope.search.query;
+      }
+      if ($scope.search.marked_as_spam) {
+        params['marked_as_spam'] = 'True';
+      }
+
+      waidService.adminCommentsListGet(params).then(function(data){
+        $scope.comments = data;
+      })
+    }
+
+    $scope.updateComment = function (comment) {
+      comment = {
+        'id':comment.id,
+        'comment':comment.comment_formatted,
+        'marked_as_spam':comment.marked_as_spam
+      }
+      waidService.adminCommentsPatch(comment.id, comment).then(function (data) {
+        comment = data;
+        growl.addSuccessMessage("Comment aangepast.");
+      }, function(data){
+        growl.addErrorMessage("Fout bij aanpassen van comment.");
+      });
+    };
+    $scope.deleteComment = function (comment) {
+      waidService.adminCommentsDelete(comment.id).then(function (data) {
+        var index = $scope.comments.indexOf(comment);
+        $scope.comments.splice(index, 1);
+        growl.addSuccessMessage("Comment verwijderd.");
+      }, function(){
+        growl.addErrorMessage("Kon comment niet verwijderen.");
+      });
+    };
+    $scope.getComments();
+  })
   .controller('WAIDCreateAccountCtrl', function ($scope, $uibModalInstance, Slug, waidService, account) {
       $scope.errors = [];
       $scope.registrationDone = false;

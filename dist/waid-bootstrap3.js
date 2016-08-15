@@ -140,7 +140,8 @@ angular.module('waid.core.strategy', [
     waidService.userLogoutAllPost();
   };
   waidCore.addEmoticon = function (emoticon) {
-    var input = document.getElementById(this.targetId);
+    var input = document.getElementById($rootScope.targetId);
+    input.focus();
     input.value = [
       input.value.slice(0, input.selectionStart),
       emoticon,
@@ -475,6 +476,20 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'articlesGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
+    },
+    'adminCommentsListGet': function (params) {
+      if (typeof params != 'undefined') {
+        var query = '?' + $.param(params);
+      } else {
+        var query = '';
+      }
+      return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
+    },
+    'adminCommentsPatch': function (id, data) {
+      return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);
+    },
+    'adminCommentsDelete': function (id) {
+      return this._makeRequest('DELETE', this._getAdminUrl('/comments/' + id + '/'), 'admin.CommentsDelete');
     },
     'adminAccountGet': function () {
       return this._makeRequest('GET', this._getAdminUrl('/account/'), 'admin.account');
@@ -1262,7 +1277,7 @@ angular.module('waid.core.app.strategy', [
     this.closeUserProfileModal();
   };
   waidCore.openEmoticonsModal = function (targetId) {
-    this.targetId = targetId;
+    $rootScope.targetId = targetId;
     emoticonsModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getConfig('core.templates.emoticonsModal'),

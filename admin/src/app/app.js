@@ -27,6 +27,9 @@ angular.module('app', [
       .when('/dashboard/', {
         templateUrl: 'waid/admin/dashboard.html'
       })
+      .when('/comments/', {
+        templateUrl: 'waid/admin/comments.html'
+      })
       .when('/application/overview/', {
         templateUrl: 'waid/admin/application/overview.html'
       })

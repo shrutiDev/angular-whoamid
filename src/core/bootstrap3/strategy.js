@@ -26,7 +26,7 @@ angular.module('waid.core.app.strategy', [
     this.closeUserProfileModal();
   };
   waidCore.openEmoticonsModal = function (targetId) {
-    this.targetId = targetId;
+    $rootScope.targetId = targetId;
     emoticonsModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getConfig('core.templates.emoticonsModal'),

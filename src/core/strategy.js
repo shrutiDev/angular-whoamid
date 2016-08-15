@@ -16,7 +16,8 @@ angular.module('waid.core.strategy', [
     waidService.userLogoutAllPost();
   };
   waidCore.addEmoticon = function (emoticon) {
-    var input = document.getElementById(this.targetId);
+    var input = document.getElementById($rootScope.targetId);
+    input.focus();
     input.value = [
       input.value.slice(0, input.selectionStart),
       emoticon,

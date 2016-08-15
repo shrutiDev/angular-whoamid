@@ -35753,7 +35753,8 @@ angular.module('waid.core.strategy', [
     waidService.userLogoutAllPost();
   };
   waidCore.addEmoticon = function (emoticon) {
-    var input = document.getElementById(this.targetId);
+    var input = document.getElementById($rootScope.targetId);
+    input.focus();
     input.value = [
       input.value.slice(0, input.selectionStart),
       emoticon,
@@ -36088,6 +36089,20 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'articlesGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
+    },
+    'adminCommentsListGet': function (params) {
+      if (typeof params != 'undefined') {
+        var query = '?' + $.param(params);
+      } else {
+        var query = '';
+      }
+      return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
+    },
+    'adminCommentsPatch': function (id, data) {
+      return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);
+    },
+    'adminCommentsDelete': function (id) {
+      return this._makeRequest('DELETE', this._getAdminUrl('/comments/' + id + '/'), 'admin.CommentsDelete');
     },
     'adminAccountGet': function () {
       return this._makeRequest('GET', this._getAdminUrl('/account/'), 'admin.account');
@@ -36875,7 +36890,7 @@ angular.module('waid.core.app.strategy', [
     this.closeUserProfileModal();
   };
   waidCore.openEmoticonsModal = function (targetId) {
-    this.targetId = targetId;
+    $rootScope.targetId = targetId;
     emoticonsModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getConfig('core.templates.emoticonsModal'),
@@ -38064,6 +38079,9 @@ angular.module('app', [
       .when('/dashboard/', {
         templateUrl: 'waid/admin/dashboard.html'
       })
+      .when('/comments/', {
+        templateUrl: 'waid/admin/comments.html'
+      })
       .when('/application/overview/', {
         templateUrl: 'waid/admin/application/overview.html'
       })
@@ -38285,6 +38303,51 @@ angular.module('waid.admin.controllers', ['waid'])
 
 
     
+  })
+  .controller('WAIDAdminCommentsCtrl', function ($scope, waidCore, waidService, growl) {
+    $scope.search = {
+      'query':'',
+      'marked_as_spam':false
+    }
+
+    $scope.getComments = function () {
+      params = {}
+
+      if ($scope.search.query) {
+        params['search'] = $scope.search.query;
+      }
+      if ($scope.search.marked_as_spam) {
+        params['marked_as_spam'] = 'True';
+      }
+
+      waidService.adminCommentsListGet(params).then(function(data){
+        $scope.comments = data;
+      })
+    }
+
+    $scope.updateComment = function (comment) {
+      comment = {
+        'id':comment.id,
+        'comment':comment.comment_formatted,
+        'marked_as_spam':comment.marked_as_spam
+      }
+      waidService.adminCommentsPatch(comment.id, comment).then(function (data) {
+        comment = data;
+        growl.addSuccessMessage("Comment aangepast.");
+      }, function(data){
+        growl.addErrorMessage("Fout bij aanpassen van comment.");
+      });
+    };
+    $scope.deleteComment = function (comment) {
+      waidService.adminCommentsDelete(comment.id).then(function (data) {
+        var index = $scope.comments.indexOf(comment);
+        $scope.comments.splice(index, 1);
+        growl.addSuccessMessage("Comment verwijderd.");
+      }, function(){
+        growl.addErrorMessage("Kon comment niet verwijderen.");
+      });
+    };
+    $scope.getComments();
   })
   .controller('WAIDCreateAccountCtrl', function ($scope, $uibModalInstance, Slug, waidService, account) {
       $scope.errors = [];
