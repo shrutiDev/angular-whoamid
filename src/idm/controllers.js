@@ -54,6 +54,10 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   waidService.userEmailListGet().then(function (data) {
     $scope.emails = data;
   });
+  // Update stuff
+  $rootScope.$watch('waid.user', function(data){
+    $scope.model = data;
+  }, true);
 }).controller('WAIDIDMUserProfileMainCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter, $timeout) {
   $scope.model = waidCore.user;
   $scope.errors = [];
@@ -85,7 +89,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
     fd.append('file', files[0]);
     waidService.userAvatarPut(fd).then(function (data) {
       $timeout(function () {
-        $scope.updateProfileInfo();
+        // Still buggy, save will redirect to overview...
+        $scope.save();
         $scope.isUploading = false;
       }, 1000);
     });

@@ -320,7 +320,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "        <h3>Overzicht</h3>\n" +
     "        <dl class=\"dl-horizontal\">\n" +
     "          <dt>Avatar</dt>\n" +
-    "          <dd><img ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\"></dd>\n" +
+    "          <dd><img ng-show=\"model.avatar_thumb_50_50\" ng-src=\"{{ model.avatar_thumb_50_50 }}\"></dd>\n" +
     "        </dl>\n" +
     "        <dl class=\"dl-horizontal\">\n" +
     "          <dt>Nickname</dt>\n" +
@@ -461,7 +461,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "\n" +
     "          <div class=\"form-group\">\n" +
     "            <label>Avatar</label><br />\n" +
-    "            <img ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
+    "            <img ng-show=\"model.avatar_thumb_50_50\" ng-src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
     "            <div ng-show=\"isUploading\" class=\"alert alert-info\" role=\"alert\">Bezig met uploaden van foto.</div>\n" +
     "            <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Avatar\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
     "            \n" +

@@ -666,7 +666,7 @@ angular.module('waid.core.controllers', [
     waidCore.config.patchConfig($rootScope.config);
   }
   // console.log($rootScope.config);
-  waidCore.account = { 'id': angular.isDefined($rootScope.accountId) ? $rootScope.accountId : false };
-  waidCore.application = { 'id': angular.isDefined($rootScope.applicationId) ? $rootScope.applicationId : false };
+  waidCore.account = { 'id': angular.isDefined($scope.accountId) ? $scope.accountId : false };
+  waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
 });

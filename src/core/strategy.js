@@ -27,7 +27,7 @@ angular.module('waid.core.strategy', [
     $rootScope.waid.closeEmoticonsModal();
   };
   var initRetrieveData = function (accountId, applicationId) {
-    waidService.publicAccountGet(accountId).then(function () {
+    waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
       delete data.main_application;
       waidCore.account = data;
@@ -38,9 +38,18 @@ angular.module('waid.core.strategy', [
     });
   };
   waidCore.initialize = function () {
+    // Check url params to set account and application manually
+    var waidAccountId = $location.search().waidAccountId;
+    var waidApplicationId = $location.search().waidApplicationId;
+
+    if (waidAccountId && waidApplicationId) {
+      waidCore.account.id = waidAccountId;
+      waidCore.application.id = waidApplicationId;
+    }
     // Init if account and app are fixed
     if (waidCore.account.id && waidCore.application.id) {
-      if ($cookies.getObject('account') && $cookies.getObject('application')) {
+      if ($cookies.getObject('account') && $cookies.getObject('account').id == waidCore.account.id 
+        && $cookies.getObject('application') && waidCore.application.id == $cookies.getObject('application').id) {
         try {
           waidCore.account = $cookies.getObject('account');
           waidCore.application = $cookies.getObject('application');

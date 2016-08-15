@@ -11,7 +11,7 @@
         <h3>Overzicht</h3>
         <dl class="dl-horizontal">
           <dt>Avatar</dt>
-          <dd><img ng-show="model.avatar_thumb_50_50" src="{{ model.avatar_thumb_50_50 }}"></dd>
+          <dd><img ng-show="model.avatar_thumb_50_50" ng-src="{{ model.avatar_thumb_50_50 }}"></dd>
         </dl>
         <dl class="dl-horizontal">
           <dt>Nickname</dt>
@@ -152,7 +152,7 @@
 
           <div class="form-group">
             <label>Avatar</label><br />
-            <img ng-show="model.avatar_thumb_50_50" src="{{ model.avatar_thumb_50_50 }}" />
+            <img ng-show="model.avatar_thumb_50_50" ng-src="{{ model.avatar_thumb_50_50 }}" />
             <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
             <input type="file" class="form-control" id="avatar" placeholder="Avatar" onchange="angular.element(this).scope().uploadFile(this.files)">
             

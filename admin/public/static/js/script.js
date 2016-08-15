@@ -35764,7 +35764,7 @@ angular.module('waid.core.strategy', [
     $rootScope.waid.closeEmoticonsModal();
   };
   var initRetrieveData = function (accountId, applicationId) {
-    waidService.publicAccountGet(accountId).then(function () {
+    waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
       delete data.main_application;
       waidCore.account = data;
@@ -35775,9 +35775,18 @@ angular.module('waid.core.strategy', [
     });
   };
   waidCore.initialize = function () {
+    // Check url params to set account and application manually
+    var waidAccountId = $location.search().waidAccountId;
+    var waidApplicationId = $location.search().waidApplicationId;
+
+    if (waidAccountId && waidApplicationId) {
+      waidCore.account.id = waidAccountId;
+      waidCore.application.id = waidApplicationId;
+    }
     // Init if account and app are fixed
     if (waidCore.account.id && waidCore.application.id) {
-      if ($cookies.getObject('account') && $cookies.getObject('application')) {
+      if ($cookies.getObject('account') && $cookies.getObject('account').id == waidCore.account.id 
+        && $cookies.getObject('application') && waidCore.application.id == $cookies.getObject('application').id) {
         try {
           waidCore.account = $cookies.getObject('account');
           waidCore.application = $cookies.getObject('application');
@@ -36840,8 +36849,8 @@ angular.module('waid.core.controllers', [
     waidCore.config.patchConfig($rootScope.config);
   }
   // console.log($rootScope.config);
-  waidCore.account = { 'id': angular.isDefined($rootScope.accountId) ? $rootScope.accountId : false };
-  waidCore.application = { 'id': angular.isDefined($rootScope.applicationId) ? $rootScope.applicationId : false };
+  waidCore.account = { 'id': angular.isDefined($scope.accountId) ? $scope.accountId : false };
+  waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
 });
 'use strict';
@@ -37118,6 +37127,10 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   waidService.userEmailListGet().then(function (data) {
     $scope.emails = data;
   });
+  // Update stuff
+  $rootScope.$watch('waid.user', function(data){
+    $scope.model = data;
+  }, true);
 }).controller('WAIDIDMUserProfileMainCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter, $timeout) {
   $scope.model = waidCore.user;
   $scope.errors = [];
@@ -37149,7 +37162,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
     fd.append('file', files[0]);
     waidService.userAvatarPut(fd).then(function (data) {
       $timeout(function () {
-        $scope.updateProfileInfo();
+        // Still buggy, save will redirect to overview...
+        $scope.save();
         $scope.isUploading = false;
       }, 1000);
     });
@@ -37770,7 +37784,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "        <h3>Overzicht</h3>\n" +
     "        <dl class=\"dl-horizontal\">\n" +
     "          <dt>Avatar</dt>\n" +
-    "          <dd><img ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\"></dd>\n" +
+    "          <dd><img ng-show=\"model.avatar_thumb_50_50\" ng-src=\"{{ model.avatar_thumb_50_50 }}\"></dd>\n" +
     "        </dl>\n" +
     "        <dl class=\"dl-horizontal\">\n" +
     "          <dt>Nickname</dt>\n" +
@@ -37911,7 +37925,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "\n" +
     "          <div class=\"form-group\">\n" +
     "            <label>Avatar</label><br />\n" +
-    "            <img ng-show=\"model.avatar_thumb_50_50\" src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
+    "            <img ng-show=\"model.avatar_thumb_50_50\" ng-src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
     "            <div ng-show=\"isUploading\" class=\"alert alert-info\" role=\"alert\">Bezig met uploaden van foto.</div>\n" +
     "            <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Avatar\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
     "            \n" +
