@@ -71,6 +71,7 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.account = false;
   waid.application = false;
   waid.isInit = false;
+
   $rootScope.waid = waid;
   return waid;
 });

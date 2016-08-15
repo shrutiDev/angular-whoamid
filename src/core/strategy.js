@@ -33,8 +33,8 @@ angular.module('waid.core.strategy', [
       waidCore.account = data;
       // TODO retrieve full application info
       waidCore.application = { 'id': applicationId };
-      $cookies.putObject('account', waidCore.account);
-      $cookies.putObject('application', waidCore.application);
+      $cookies.putObject('account', waidCore.account, { 'path': '/' });
+      $cookies.putObject('application', waidCore.application, { 'path': '/' });
     });
   };
   waidCore.initialize = function () {

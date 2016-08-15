@@ -52116,6 +52116,7 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.account = false;
   waid.application = false;
   waid.isInit = false;
+
   $rootScope.waid = waid;
   return waid;
 });
@@ -52154,8 +52155,8 @@ angular.module('waid.core.strategy', [
       waidCore.account = data;
       // TODO retrieve full application info
       waidCore.application = { 'id': applicationId };
-      $cookies.putObject('account', waidCore.account);
-      $cookies.putObject('application', waidCore.application);
+      $cookies.putObject('account', waidCore.account, { 'path': '/' });
+      $cookies.putObject('application', waidCore.application, { 'path': '/' });
     });
   };
   waidCore.initialize = function () {
@@ -53228,7 +53229,7 @@ angular.module('waid.core.controllers', [
       '\uD83D\uDEA9'
     ]
   };
-}).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore, waidService) {
+}).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore) {
   if (angular.isDefined($rootScope.config)) {
     waidCore.config.patchConfig($rootScope.config);
   }
@@ -53236,6 +53237,7 @@ angular.module('waid.core.controllers', [
   waidCore.account = { 'id': angular.isDefined($scope.accountId) ? $scope.accountId : false };
   waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
+  $scope.waid = waidCore;
 });
 'use strict';
 angular.module('waid.core.directives', [

@@ -29,9 +29,8 @@ module.exports = function (grunt) {
           },
           target: {
             files: {
-              'dist/waid-bootstrap3.css': [
-                'src/waid.css',
-                'src/core/bootstrap3/css/main.css'
+              'dist/waid-bootstrap3-min.css': [
+                'dist/waid-bootstrap3.css'
               ]
             }
           }
@@ -62,6 +61,13 @@ module.exports = function (grunt) {
         },
 
         concat: {
+          bootstrap3css:{
+            src:[
+                'src/waid.css',
+                'src/core/bootstrap3/css/main.css'
+              ],
+            dest:'dist/waid-bootstrap3.css'
+          },
           bootstrap3:{
               src: [
                 'src/core/app.js',
