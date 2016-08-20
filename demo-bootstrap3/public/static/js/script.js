@@ -54435,6 +54435,10 @@ angular.module('app', [
 angular.module('waid.demo.controllers', ['waid.core.services',])
   .controller('WAIDDemoCtrl', function ($scope, waidService) {
 
+    $scope.switchTheme = function(theme) {
+      $('link').prop('disabled', true);
+      $('#theme-' + theme).prop('disabled', false);
+    };
 
     $scope.$watch('waid', function(waid){
       if (typeof waid != "undefined" && waid.account && waid.application) {

@@ -58,7 +58,7 @@ module.exports = function (grunt) {
                 //'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
                 //'src/ui-bootstrap-custom-build/ui-bootstrap-custom-2.0.1-csp.css',
                 //'src/angular-whoamid/dist/bootstrap3/waid.css',
-                'src/angular-whoamid/dist/bootstrap3/css/themes/simplex.css',
+                // 'src/angular-whoamid/dist/bootstrap3/css/themes/slate.css',
                 // // 'src/bower_components/angular-isotope/styles/style.css',
                 // 'src/main.css'
               ]
@@ -70,7 +70,13 @@ module.exports = function (grunt) {
           main: {
             files: [
               // includes files within path and its sub-directories
-              {expand: true, flatten: true, src: ['src/angular-whoamid/dist/fonts/*'], dest: 'public/static/fonts/'},
+              {expand: true, flatten: true, src: ['src/angular-whoamid/dist/fonts/*'], dest: 'public/static/css/fonts/'},
+            ],
+          },
+          themes: {
+            files: [
+              // includes files within path and its sub-directories
+              {expand: true, flatten: true, src: ['src/angular-whoamid/dist/bootstrap3/css/themes/*'], dest: 'public/static/css/themes/'},
             ],
           },
         },

@@ -19,16 +19,26 @@ module.exports = function (grunt) {
             },
             css: { 
                 files: 'src/**/*.css',
-                tasks: ['sass', 'concat', 'cssmin', 'purifycss']
+                tasks: ['sass', 'concat', 'purifycss', 'cssmin']
             }
         },
 
         purifycss: {
             options: {},
-            bootstrap3noconflict: {
+            bootstrap3themesimplexnoconflict: {
               src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
               css: ['dist/bootstrap3/css/themes/simplex-noconflict.css'],
               dest: 'dist/bootstrap3/css/themes/simplex-noconflict.css'
+            },
+            bootstrap3themeslatenoconflict: {
+              src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
+              css: ['dist/bootstrap3/css/themes/slate-noconflict.css'],
+              dest: 'dist/bootstrap3/css/themes/slate-noconflict.css'
+            },
+             bootstrap3themeyetinoconflict: {
+              src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
+              css: ['dist/bootstrap3/css/themes/yeti-noconflict.css'],
+              dest: 'dist/bootstrap3/css/themes/yeti-noconflict.css'
             },
         },
 
@@ -41,7 +51,11 @@ module.exports = function (grunt) {
             dist: {
                 files: {
                     'dist/bootstrap3/css/themes/simplex.css': 'src/core/bootstrap3/sass/simplex.scss',
-                    'dist/bootstrap3/css/themes/simplex-noconflict.css': 'src/core/bootstrap3/sass/simplex-noconflict.scss'
+                    'dist/bootstrap3/css/themes/simplex-noconflict.css': 'src/core/bootstrap3/sass/simplex-noconflict.scss',
+                    'dist/bootstrap3/css/themes/slate.css': 'src/core/bootstrap3/sass/slate.scss',
+                    'dist/bootstrap3/css/themes/slate-noconflict.css': 'src/core/bootstrap3/sass/slate-noconflict.scss',
+                    'dist/bootstrap3/css/themes/yeti.css': 'src/core/bootstrap3/sass/yeti.scss',
+                    'dist/bootstrap3/css/themes/yeti-noconflict.css': 'src/core/bootstrap3/sass/yeti-noconflict.scss'
                 }
             }
         },
@@ -62,6 +76,21 @@ module.exports = function (grunt) {
             files: {
               'dist/bootstrap3/css/themes/simplex.min.css': [
                 'dist/bootstrap3/css/themes/simplex.css'
+              ],
+              'dist/bootstrap3/css/themes/simplex-noconflict.min.css': [
+                'dist/bootstrap3/css/themes/simplex-noconflict.css'
+              ],
+              'dist/bootstrap3/css/themes/slate.min.css': [
+                'dist/bootstrap3/css/themes/slate.css'
+              ],
+              'dist/bootstrap3/css/themes/slate-noconflict.min.css': [
+                'dist/bootstrap3/css/themes/slate-noconflict.css'
+              ],
+              'dist/bootstrap3/css/themes/yeti.min.css': [
+                'dist/bootstrap3/css/themes/yeti.css'
+              ],
+              'dist/bootstrap3/css/themes/yeti-noconflict.min.css': [
+                'dist/bootstrap3/css/themes/yeti-noconflict.css'
               ]
             }
           }
@@ -166,5 +195,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-purifycss');
 
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['copy', 'ngtemplates', 'sass', 'concat', 'cssmin', 'purifycss', 'uglify', 'watch']);
+    grunt.registerTask('default', ['copy', 'ngtemplates', 'sass', 'concat', 'purifycss', 'cssmin', 'uglify', 'watch']);
 }
