@@ -1,5 +1,5 @@
 'use strict';
-angular.module('waid.core.services', ['waid.core']).service('waidService', function idm($q, $http, $cookies, $rootScope, $location, Slug, waidCore) {
+angular.module('waid.core.services', ['waid.core']).service('waidService', function idm($q, $http, $cookies, $rootScope, $location, waidCore) {
   var service = {
     'API_URL': '',
     'apiVersion': 'v1',
@@ -212,7 +212,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userCommentsPost': function (data) {
       if (typeof data.thread_id != 'undefined' && data.thread_id == 'currenturl') {
-        data.thread_id = Slug.slugify($location.absUrl());
+        data.thread_id = waidCore.slugify($location.absUrl());
       }
       data.url = $location.absUrl();
       return this._makeRequest('POST', this._getAppUrl('/user/comments/'), 'application.userComments', data);
@@ -223,7 +223,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userCommentsListGet': function (params) {
       if (typeof params != 'undefined') {
         if (typeof params.thread_id != 'undefined' && params.thread_id == 'currenturl') {
-          params.thread_id = Slug.slugify($location.absUrl());
+          params.thread_id = waidCore.slugify($location.absUrl());
         }
         var query = '?' + $.param(params);
       } else {
@@ -234,7 +234,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'commentsListGet': function (params) {
       if (typeof params != 'undefined') {
         if (typeof params.thread_id != 'undefined' && params.thread_id == 'currenturl') {
-          params.thread_id = Slug.slugify($location.absUrl());
+          params.thread_id = waidCore.slugify($location.absUrl());
         }
         var query = '?' + $.param(params);
       } else {

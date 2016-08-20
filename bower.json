@@ -18,7 +18,9 @@
     "textAngular": "~1.5.0",
     "font-awesome": "~4.6.1",
     "angular-elastic": "~2.5.1",
-    "fingerprintjs2": "~1.4.1"
+    "fingerprintjs2": "~1.4.1",
+    "bootstrap-sass": "~3.3.7",
+    "angular-modal-service": "~0.10.1"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",

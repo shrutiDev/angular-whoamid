@@ -29,6 +29,7 @@ module.exports = function (grunt) {
                 files: 'src/app/**/*.css',
                 tasks: ['cssmin']
             }
+
         },
         ngtemplates:  {
           options: {
@@ -52,11 +53,12 @@ module.exports = function (grunt) {
             files: {
               'public/static/css/main.css': [
                 // Build waid sources
-                'src/bower_components/font-awesome/css/font-awesome.min.css',
-                'src/bower_components/angular-growl/build/angular-growl.min.css',
-                'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
-                'src/ui-bootstrap-custom-build/ui-bootstrap-custom-2.0.1-csp.css',
-                'src/angular-whoamid/dist/waid-bootstrap3.css',
+                //'src/bower_components/font-awesome/css/font-awesome.min.css',
+                //'src/bower_components/angular-growl/build/angular-growl.min.css',
+                //'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
+                //'src/ui-bootstrap-custom-build/ui-bootstrap-custom-2.0.1-csp.css',
+                //'src/angular-whoamid/dist/bootstrap3/waid.css',
+                'src/angular-whoamid/dist/bootstrap3/css/themes/simplex.css',
                 // // 'src/bower_components/angular-isotope/styles/style.css',
                 // 'src/main.css'
               ]
@@ -77,10 +79,7 @@ module.exports = function (grunt) {
         concat: {
           default:{
               src: [
-                    // waid resources
-                    // browser fingerprinting
-                    'src/bower_components/fingerprintjs2/fingerprint2.js',
-                    // 
+                    // waid resource
                     'src/bower_components/jquery/dist/jquery.js',
                     // Bootstrap libs
                     'src/bower_components/bootstrap/dist/js/bootstrap.js',
@@ -92,17 +91,17 @@ module.exports = function (grunt) {
                     'src/bower_components/angular-route/angular-route.js',
 
                     // Growl
-                    'src/bower_components/angular-growl/build/angular-growl.js',
+                    //'src/bower_components/angular-growl/build/angular-growl.js',
                     // ui bootstrap
                     //'src/ui-bootstrap-custom-build/ui-bootstrap-custom-2.0.1.js',
-                    'src/ui-bootstrap-custom-build/ui-bootstrap-custom-tpls-2.0.1.js',
+                    //'src/ui-bootstrap-custom-build/ui-bootstrap-custom-tpls-2.0.1.js',
                     //'src/ui-bootstrap-tpls-2.0.1.js',
                     // Confirm modal
-                    'src/bower_components/angular-confirm-modal/angular-confirm.js',
+                    //'src/bower_components/angular-confirm-modal/angular-confirm.js',
                     // Create slugs
-                    'src/bower_components/angular-slugify/angular-slugify.js',
+                    //'src/bower_components/angular-slugify/angular-slugify.js',
                     // dynamic textarea
-                    'src/bower_components/angular-elastic/elastic.js',
+                    //'src/bower_components/angular-elastic/elastic.js',
 
 
                     
@@ -113,8 +112,8 @@ module.exports = function (grunt) {
 
                     // Build waid
                     
-                    'src/angular-whoamid/dist/waid-bootstrap3.js',
-                    'src/angular-whoamid/dist/waid-bootstrap3-templates.js',
+                    'src/angular-whoamid/dist/bootstrap3/noconflict.js',
+                    'src/angular-whoamid/dist/bootstrap3/templates.js',
 
                     //'src/angular-whoamid/dist/waid-noconflict.js',
                     // Build demo

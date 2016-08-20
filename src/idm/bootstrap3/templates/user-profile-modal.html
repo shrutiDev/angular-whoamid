@@ -1,9 +1,39 @@
+<span class="waid" ng-controller="WAIDIDMUserProfileHomeCtrl">
 <div class="modal-header">
   <h3 class="modal-title">Profiel</h3>
 </div>
+<nav class="navbar navbar-default hidden-lg hidden-md">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header" data-toggle="collapse" data-target="#waid-profile-navbar">
+      <a class="navbar-brand" href="#" class="hidden-md">Menu</a>
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#waid-profile-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="waid-profile-navbar">
+      <ul class="nav navbar-nav">
+	    <li><a ng-class="getActiveProfilePageMenuClass('overview')" ng-click="goToProfilePage('overview')" data-toggle="collapse" data-target="#waid-profile-navbar">Overzicht</a></li>
+	    <li><a ng-class="getActiveProfilePageMenuClass('main')" ng-click="goToProfilePage('main')" data-toggle="collapse" data-target="#waid-profile-navbar">Algemeen</a></li>
+	    <li><a ng-class="getActiveProfilePageMenuClass('interests')" ng-click="goToProfilePage('interests')" data-toggle="collapse" data-target="#waid-profile-navbar">Interesses</a></li>
+	    <li><a ng-class="getActiveProfilePageMenuClass('emails')" ng-click="goToProfilePage('emails')" data-toggle="collapse" data-target="#waid-profile-navbar">E-Mail adressen</a></li>
+
+        <li><a ng-class="getActiveProfilePageMenuClass('username')" ng-click="goToProfilePage('username')"" data-toggle="collapse" data-target="#waid-profile-navbar">Gebruikersnaam</a></li>
+        <li><a ng-class="getActiveProfilePageMenuClass('password')" ng-click="goToProfilePage('password')" data-toggle="collapse" data-target="#waid-profile-navbar" >Wachtwoord</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#" ng-click="waid.logout()" class="visible-xs" data-toggle="collapse" data-target="#waid-profile-navbar">Uitloggen</a>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 <div class="modal-body">
    <ng-include src="'/idm/templates/user-profile-home.html'"></ng-include>
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning" type="button" ng-click="waid.closeUserProfileModal()">Sluiten</button>
 </div>
+</span>

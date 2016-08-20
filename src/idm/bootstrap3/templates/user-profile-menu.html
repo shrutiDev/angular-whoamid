@@ -1,11 +1,16 @@
-<div class="list-group">
-  <div class="list-group">
-    <a class="list-group-item" ng-class="getActiveProfilePageMenuClass('overview')" ng-click="goToProfilePage('overview')">Overzicht</a>
-    <a class="list-group-item" ng-class="getActiveProfilePageMenuClass('main')" ng-click="goToProfilePage('main')">Algemeen</a>
-    <a class="list-group-item" ng-class="getActiveProfilePageMenuClass('interests')" ng-click="goToProfilePage('interests')">Interesses</a>
-    <a class="list-group-item" ng-class="getActiveProfilePageMenuClass('emails')" ng-click="goToProfilePage('emails')">E-Mail adresses</a>
-    <a class="list-group-item" ng-class="getActiveProfilePageMenuClass('username')" ng-click="goToProfilePage('username')">Gebruikersnaam</a>
-    <a class="list-group-item" ng-class="getActiveProfilePageMenuClass('password')" ng-click="goToProfilePage('password')">Wachtwoord</a>
-    <a class="list-group-item" href="#" ng-click="waid.logout()">Uitloggen</a>
-  </div>
-</div>
+<span class="waid">
+
+
+
+
+<ul class="nav nav-pills nav-stacked">
+  <li role="presentation" ng-class="getActiveProfilePageMenuClass('overview')"><a ng-click="goToProfilePage('overview')">Overzicht</a></li>
+  <li role="presentation" ng-class="getActiveProfilePageMenuClass('main')"><a ng-click="goToProfilePage('main')">Algemeen</a></li>
+  <li role="presentation" ng-class="getActiveProfilePageMenuClass('interests')"><a ng-click="goToProfilePage('interests')">Interesses</a></li>
+  <li role="presentation" ng-class="getActiveProfilePageMenuClass('emails')"><a ng-click="goToProfilePage('emails')">E-Mail adressen</a></li>
+  <li role="presentation" ng-class="getActiveProfilePageMenuClass('username')"><a ng-click="goToProfilePage('username')">Gebruikersnaam</a></li>
+  <li role="presentation" ng-class="getActiveProfilePageMenuClass('password')"><a ng-click="goToProfilePage('password')">Wachtwoord</a></li>
+  <li role="presentation" ng-click="waid.logout()"><a>Uitloggen</a></li>
+</ul>
+
+</span>

@@ -3,7 +3,7 @@ angular.module('waid.idm', [
   'waid.templates',
   'waid.core',
   'waid.idm.controllers',
-  'waid.idm.directives'
+  'waid.idm.directives',
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.setConfig('idm', {
     'templates': {

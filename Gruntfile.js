@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         watch: {
             grunt: { files: ['Gruntfile.js'] },
             js: { 
-                files: '/src/**/*.js',
+                files: '/src/**/**.js',
                 tasks: ['concat', 'uglify']
             },
             concat: { 
@@ -14,14 +14,38 @@ module.exports = function (grunt) {
                 tasks: ['concat']
             },
             templates: { 
-                files: 'src/**/*.html',
+                files: 'src/**/**.html',
                 tasks: ['ngtemplates']
             },
             css: { 
                 files: 'src/**/*.css',
-                tasks: ['cssmin']
+                tasks: ['sass', 'concat', 'cssmin', 'purifycss']
             }
         },
+
+        purifycss: {
+            options: {},
+            bootstrap3noconflict: {
+              src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
+              css: ['dist/bootstrap3/css/themes/simplex-noconflict.css'],
+              dest: 'dist/bootstrap3/css/themes/simplex-noconflict.css'
+            },
+        },
+
+        sass: {
+            options: {
+                includePaths: [],
+                sourceMap: false
+            },
+            // Create bootstrap3 no conflict
+            dist: {
+                files: {
+                    'dist/bootstrap3/css/themes/simplex.css': 'src/core/bootstrap3/sass/simplex.scss',
+                    'dist/bootstrap3/css/themes/simplex-noconflict.css': 'src/core/bootstrap3/sass/simplex-noconflict.scss'
+                }
+            }
+        },
+
         cssmin: {
           options: {
             shorthandCompacting: false,
@@ -29,13 +53,22 @@ module.exports = function (grunt) {
           },
           target: {
             files: {
-              'dist/waid-bootstrap3-min.css': [
-                'dist/waid-bootstrap3.css'
+              'dist/bootstrap3/waid.min.css': [
+                'dist/bootstrap3/waid.css'
+              ]
+            }
+          },
+          bootstrap3noconflict: {
+            files: {
+              'dist/bootstrap3/css/themes/simplex.min.css': [
+                'dist/bootstrap3/css/themes/simplex.css'
               ]
             }
           }
         },
+
         ngtemplates: {
+          // Make all boostrap3 templates for caching
           bootstrap3:{
             options: {
               prefix: '/',
@@ -45,10 +78,9 @@ module.exports = function (grunt) {
               url:    function(url) { return url.replace('bootstrap3/', ''); }
             },
             cwd: 'src/',
-            src:      '**/bootstrap3/templates/**.html',
-            dest:     'dist/waid-bootstrap3-templates.js'
-          },
-         
+            src:      '**/bootstrap3/templates/**/**.html',
+            dest:     'dist/bootstrap3/templates.js'
+          }
         },
 
         copy: {
@@ -57,19 +89,13 @@ module.exports = function (grunt) {
               // includes files within path and its sub-directories
               {expand: true, flatten: true, src: ['src/assets/fonts/*'], dest: 'dist/fonts/'},
             ],
-          },
+          }
         },
 
         concat: {
-          bootstrap3css:{
-            src:[
-                'src/waid.css',
-                'src/core/bootstrap3/css/main.css'
-              ],
-            dest:'dist/waid-bootstrap3.css'
-          },
-          bootstrap3:{
-              src: [
+          // Base waid.js for core functionality
+          basejs : {
+            src: [
                 'src/core/app.js',
                 'src/core/core.js',
                 'src/core/strategy.js',
@@ -77,34 +103,52 @@ module.exports = function (grunt) {
                 'src/core/services.js',
                 'src/core/controllers.js',
                 'src/core/directives.js',
-                'src/core/bootstrap3/strategy.js',
-                
+
                 'src/idm/app.js',
                 'src/idm/controllers.js',
                 'src/idm/directives.js',
 
                 'src/comments/app.js',
                 'src/comments/controllers.js',
-                'src/comments/directives.js',
-                
+                'src/comments/directives.js'
               ],
-              dest: 'dist/waid-bootstrap3.js'
+              dest: 'dist/waid.js'
+          },
+          bootstrap3js:{
+              src: [
+                'dist/waid.js',
+                'src/core/bootstrap3/javascript/strategy.js',
+              ],
+              dest: 'dist/bootstrap3/waid.js'
+          },
+          bootstrap3noconflictjs:{
+              src: [
+                'dist/waid.js',
+                'src/core/bootstrap3/javascripts/noconflict/ui-bootstrap.js',
+                'src/core/bootstrap3/javascripts/noconflict/elastic.js',
+                'src/core/bootstrap3/javascripts/noconflict/fingerprint2.js',
+                'src/core/bootstrap3/javascripts/noconflict/angular-growl.js',
+                'src/core/bootstrap3/javascripts/noconflict/angular-slugify.js',
+                'src/core/bootstrap3/javascripts/strategy-noconflict.js',
+              ],
+              dest: 'dist/bootstrap3/noconflict.js'
           }
         },
         // Javascript compression
         uglify: {
-            bootstrap3:{
-                options: {
-                    compress: false,
-                    mangle: false,
-                    beautify: false
-                },
-                buildScriptjs: { 
-                    src: [
-                        // Build waid
-                        'dist/waid-bootstrap3.js',
-                    ],
-                    dest: 'dist/waid-bootstrap3.min.js'
+            options: {
+                compress: {},
+                mangle: false,
+                beautify: false
+            },
+            base:{
+                files: { 
+                    'dist/waid.min.js': ['dist/waid.js']
+                }
+            },
+            bootstrap3noconflict:{
+                files: { 
+                    'dist/bootstrap3/noconflict.min.js': ['dist/bootstrap3/noconflict.js']
                 }
             }
         }
@@ -118,6 +162,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-purifycss');
+
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['uglify', 'ngtemplates', 'concat', 'cssmin', 'copy', 'watch']);
+    grunt.registerTask('default', ['copy', 'ngtemplates', 'sass', 'concat', 'cssmin', 'purifycss', 'uglify', 'watch']);
 }

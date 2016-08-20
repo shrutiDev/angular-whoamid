@@ -1,0 +1,23 @@
+.grid
+  display: flex
+  flex-flow: row wrap
+  justify-content: space-between
+
+
+  .grid-elt
+    text-align: center
+    margin: 1em
+
+    .panel-body div
+      padding: .5em
+
+    .panel-footer
+      text-align: right
+
+    flex-basis: 30%
+
+    @media (max-width: 1200px)
+      flex-basis: 45%
+
+    @media (max-width: 590px)
+      flex-basis: 100%

@@ -1,13 +1,15 @@
-<div id="lost_login_view" ng-controller="WAIDIDMLostLoginCtrl">
-<form role="form" name="loginForm" novalidate>
-  <div class="form-group">
-    <label for="id_email">E-mail</label>
-    <input name="username" id="id_email" type="text" ng-model="model.email" placeholder="Email" class="form-control" required />
-  </div>
-  <div class="alert alert-danger" ng-repeat="error in errors.email"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
+<span class="waid">
+	<div id="lost_login_view" ng-controller="WAIDIDMLostLoginCtrl">
+	<form role="form" name="loginForm" novalidate>
+	  <div class="form-group">
+	    <label for="id_email">E-mail</label>
+	    <input name="username" id="id_email" type="text" ng-model="model.email" placeholder="Email" class="form-control" required />
+	  </div>
+	  <div class="alert alert-danger" ng-repeat="error in errors.email"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
 
-  <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
-  <button type="submit" class="btn btn-primary" ng-click="submit()">Inlog gegevens ophalen</button>
-</form>
-</div>
+	  <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
+	  <button type="submit" class="btn btn-primary" ng-click="submit()">Inlog gegevens ophalen</button>
+	</form>
+	</div>
+</span>
   
