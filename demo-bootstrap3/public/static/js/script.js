@@ -46702,6 +46702,22 @@ angular.module('waid.core.strategy', [
     }
     return false;
   };
+
+  waidCore.getAlCodeUrl = function() {
+      var url = $location.absUrl();
+      if ($location.$$html5 == false) {
+        if ($location.absUrl().indexOf('#') == -1) {
+          url += '#';
+        }
+      }
+      if ($location.absUrl().indexOf('?') == -1 || $location.absUrl().indexOf('#')) {
+        url += '?waidAlCode=[code]';
+      } else {
+        url += '&waidAlCode=[code]';
+      }
+      return url;
+  };
+
   waidCore.logout = function () {
     waidService.userLogoutPost();
   };
@@ -46793,12 +46809,12 @@ angular.module('waid.core.strategy', [
           $location.search('waidAlCode', null);
         });
       }
-      ;
+      
     }
   }, true);
 });
 'use strict';
-angular.module('waid.core.services', ['waid.core']).service('waidService', function idm($q, $http, $cookies, $rootScope, $location, waidCore) {
+angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore) {
   var service = {
     'API_URL': '',
     'apiVersion': 'v1',
@@ -46927,13 +46943,13 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userRegisterPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
-        data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+        data.return_url = waidCore.getAlCodeUrl();
       }
       return this._makeRequest('POST', this._getAppUrl('/user/register/'), 'application.userRegister', data);
     },
     'userCompleteProfilePost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
-        data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+        data.return_url = waidCore.getAlCodeUrl();
       }
       return this._makeRequest('POST', this._getAppUrl('/user/complete-profile/'), 'application.userCompleteProfile', data);
     },
@@ -46993,7 +47009,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userEmailPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
-        data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+        data.return_url = waidCore.getAlCodeUrl();
       }
       return this._makeRequest('POST', this._getAppUrl('/user/email/'), 'application.userEmail', data);
     },
@@ -47964,8 +47980,10 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   };
   // Format date string to javascript date
   $scope.$watch('model.date_of_birth', function (date) {
-    var dateParts = date.split('-');
-    $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+    if (typeof date != 'undefined') {
+      var dateParts = date.split('-');
+      $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+    }
   });
 }).controller('WAIDIDMUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
   $scope.model = {};
@@ -48027,12 +48045,12 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
     });
   };
   $scope.loadEmailList();
-}).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window) {
+}).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
     waidService.socialProviderListGet().then(function (data) {
       for (var i = 0; i < data.length; i++) {
-        data[i].url = data[i].url + '?return_url=' + encodeURIComponent($location.absUrl() + '?waidAlCode=[code]');
+        data[i].url = data[i].url + '?return_url=' + encodeURIComponent(waidCore.getAlCodeUrl());
       }
       $scope.providers = data;
     });

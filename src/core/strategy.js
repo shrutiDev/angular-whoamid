@@ -9,6 +9,22 @@ angular.module('waid.core.strategy', [
     }
     return false;
   };
+
+  waidCore.getAlCodeUrl = function() {
+      var url = $location.absUrl();
+      if ($location.$$html5 == false) {
+        if ($location.absUrl().indexOf('#') == -1) {
+          url += '#';
+        }
+      }
+      if ($location.absUrl().indexOf('?') == -1 || $location.absUrl().indexOf('#')) {
+        url += '?waidAlCode=[code]';
+      } else {
+        url += '&waidAlCode=[code]';
+      }
+      return url;
+  };
+
   waidCore.logout = function () {
     waidService.userLogoutPost();
   };
@@ -100,7 +116,7 @@ angular.module('waid.core.strategy', [
           $location.search('waidAlCode', null);
         });
       }
-      ;
+      
     }
   }, true);
 });

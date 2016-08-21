@@ -1,5 +1,5 @@
 'use strict';
-angular.module('waid.core.services', ['waid.core']).service('waidService', function idm($q, $http, $cookies, $rootScope, $location, waidCore) {
+angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore) {
   var service = {
     'API_URL': '',
     'apiVersion': 'v1',
@@ -128,13 +128,13 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userRegisterPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
-        data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+        data.return_url = waidCore.getAlCodeUrl();
       }
       return this._makeRequest('POST', this._getAppUrl('/user/register/'), 'application.userRegister', data);
     },
     'userCompleteProfilePost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
-        data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+        data.return_url = waidCore.getAlCodeUrl();
       }
       return this._makeRequest('POST', this._getAppUrl('/user/complete-profile/'), 'application.userCompleteProfile', data);
     },
@@ -194,7 +194,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userEmailPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
-        data.return_url = $location.absUrl() + '?waidAlCode=[code]';
+        data.return_url = waidCore.getAlCodeUrl();
       }
       return this._makeRequest('POST', this._getAppUrl('/user/email/'), 'application.userEmail', data);
     },

@@ -109,8 +109,10 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   };
   // Format date string to javascript date
   $scope.$watch('model.date_of_birth', function (date) {
-    var dateParts = date.split('-');
-    $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+    if (typeof date != 'undefined') {
+      var dateParts = date.split('-');
+      $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+    }
   });
 }).controller('WAIDIDMUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
   $scope.model = {};
@@ -172,12 +174,12 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
     });
   };
   $scope.loadEmailList();
-}).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window) {
+}).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
     waidService.socialProviderListGet().then(function (data) {
       for (var i = 0; i < data.length; i++) {
-        data[i].url = data[i].url + '?return_url=' + encodeURIComponent($location.absUrl() + '?waidAlCode=[code]');
+        data[i].url = data[i].url + '?return_url=' + encodeURIComponent(waidCore.getAlCodeUrl());
       }
       $scope.providers = data;
     });
