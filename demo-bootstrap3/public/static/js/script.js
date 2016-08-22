@@ -46735,13 +46735,14 @@ angular.module('waid.core.strategy', [
     input.focus();
     $rootScope.waid.closeEmoticonsModal();
   };
-  var initRetrieveData = function (accountId, applicationId) {
+  waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
       delete data.main_application;
       waidCore.account = data;
+      
       // TODO retrieve full application info
-      waidCore.application = { 'id': applicationId };
+      waidCore.application = application;
       $cookies.putObject('account', waidCore.account, { 'path': '/' });
       $cookies.putObject('application', waidCore.application, { 'path': '/' });
     });
@@ -46763,10 +46764,10 @@ angular.module('waid.core.strategy', [
           waidCore.account = $cookies.getObject('account');
           waidCore.application = $cookies.getObject('application');
         } catch (err) {
-          initRetrieveData(waidCore.account.id, waidCore.application.id);
+          waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
         }
       } else {
-        initRetrieveData(waidCore.account.id, waidCore.application.id);
+        waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
       }
     } else {
       // Try to set by cookie
@@ -47825,6 +47826,8 @@ angular.module('waid.core.controllers', [
   waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
   $scope.waid = waidCore;
+}).controller('WAIDCoreTermsAndConditionsCtrl', function ($scope, $rootScope, waidCore, waidService) {
+  waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
 });
 'use strict';
 angular.module('waid.core.directives', [
@@ -54060,13 +54063,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
 
   $templateCache.put('/idm/templates/terms-and-conditions-modal.html',
-    "<span class=\"waid\">\n" +
+    "<span class=\"waid\" ng-controller=\"WAIDCoreTermsAndConditionsCtrl\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	    <h3 class=\"modal-title\">Algemene voorwaarden</h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
-    "	  \n" +
-    "	    <p><b>WhoAmID</b> besteedt continue zorg en aandacht aan de samenstelling van de inhoud op onze sites. Op onze sites worden diverse interactiemogelijkheden aangeboden. De redactie bekijkt de berichten en reacties, die naar onze fora worden gestuurd niet vooraf - tenzij uitdrukkelijk anders aangegeven. Berichten die evident onrechtmatig zijn, worden zo spoedig mogelijk verwijderd. Het kan evenwel voorkomen dat u dergelijke berichten korte tijd aantreft. Wij distantiÃ«ren ons nadrukkelijk van deze berichten en verontschuldigen ons er bij voorbaat voor. Het is mogelijk dat de informatie die op de sites wordt gepubliceerd onvolledig is of onjuistheden bevat. Het is niet altijd mogelijk fouten te voorkomen. WhoAmID is niet verantwoordelijk voor meningen en boodschappen van gebruikers van (forum)pagina's. De meningen en boodschappen op de forumpagina's geven niet de mening of het beleid van WhoAmID weer. Ditzelfde geldt voor informatie van derden waarvan u via links op onze websites kennisneemt. Wij sluiten alle aansprakelijkheid uit voor enigerlei directe of indirecte schade, van welke aard dan ook, die voortvloeit uit het gebruik van informatie die op of via onze websites is verkregen. WhoAmID behoudt zich het recht voor - tenzij schriftelijk anders overeengekomen met de auteur - ingezonden materiaal te verwijderen in te korten en/of aan te passen. Dit geldt zowel voor tekst als muziek- en beeldmateriaal. Deze website is alleen bedoeld voor eigen raadpleging via normaal browser-bezoek. Het is derhalve niet toegestaan om de website op geautomatiseerde wijze te (laten) raadplegen, bijvoorbeeld via scripts, spiders en/of bots. Eventuele hyperlinks dienen bezoekers rechtstreeks te leiden naar de context, waarbinnen de publieke omroep content aanbiedt. Video- en audiostreams mogen bijvoorbeeld alleen worden vertoond via een link naar een omroeppagina of embedded omroepplayer. Overneming, inframing, herpublicatie, bewerking of toevoeging zijn niet toegestaan. Eveneens is het niet toegestaan technische beveiligingen te omzeilen of te verwijderen, of dit voor anderen mogelijk te maken. WhoAmID kan besluiten (delen van ) bijdragen van gebruikers op internetsites te publiceren c.q. over te nemen in andere media, bijvoorbeeld maar niet beperkt tot televisie, radio, internetsites, mobiele informatiedragers en printmedia. Door bijdragen te leveren op fora en andere WhoAmID vergelijkbare internetsites stemmen bezoekers op voorhand onvoorwaardelijk en eeuwigdurend in met bovengenoemd gebruik van (delen van) hun bijdragen. Wanneer rechtens komt vast te staan dat WhoAmID daartoe gehouden is, zal WhoAmID mogen overgaan tot het aan derde(n) verstrekken van naam, adres, woonplaats of ip-nummer van een bezoeker/gebruiker.</p>\n" +
+    "	  	<p ng-show=\"waid.application.terms_and_conditions.length > 0\" ng-bind-html=\"waid.application.terms_and_conditions\"></p>\n" +
+    "	    <p ng-hide=\"waid.application.terms_and_conditions.length > 0\"><b>WhoAmID</b> besteedt continue zorg en aandacht aan de samenstelling van de inhoud op onze sites. Op onze sites worden diverse interactiemogelijkheden aangeboden. De redactie bekijkt de berichten en reacties, die naar onze fora worden gestuurd niet vooraf - tenzij uitdrukkelijk anders aangegeven. Berichten die evident onrechtmatig zijn, worden zo spoedig mogelijk verwijderd. Het kan evenwel voorkomen dat u dergelijke berichten korte tijd aantreft. Wij distantiÃ«ren ons nadrukkelijk van deze berichten en verontschuldigen ons er bij voorbaat voor. Het is mogelijk dat de informatie die op de sites wordt gepubliceerd onvolledig is of onjuistheden bevat. Het is niet altijd mogelijk fouten te voorkomen. WhoAmID is niet verantwoordelijk voor meningen en boodschappen van gebruikers van (forum)pagina's. De meningen en boodschappen op de forumpagina's geven niet de mening of het beleid van WhoAmID weer. Ditzelfde geldt voor informatie van derden waarvan u via links op onze websites kennisneemt. Wij sluiten alle aansprakelijkheid uit voor enigerlei directe of indirecte schade, van welke aard dan ook, die voortvloeit uit het gebruik van informatie die op of via onze websites is verkregen. WhoAmID behoudt zich het recht voor - tenzij schriftelijk anders overeengekomen met de auteur - ingezonden materiaal te verwijderen in te korten en/of aan te passen. Dit geldt zowel voor tekst als muziek- en beeldmateriaal. Deze website is alleen bedoeld voor eigen raadpleging via normaal browser-bezoek. Het is derhalve niet toegestaan om de website op geautomatiseerde wijze te (laten) raadplegen, bijvoorbeeld via scripts, spiders en/of bots. Eventuele hyperlinks dienen bezoekers rechtstreeks te leiden naar de context, waarbinnen de publieke omroep content aanbiedt. Video- en audiostreams mogen bijvoorbeeld alleen worden vertoond via een link naar een omroeppagina of embedded omroepplayer. Overneming, inframing, herpublicatie, bewerking of toevoeging zijn niet toegestaan. Eveneens is het niet toegestaan technische beveiligingen te omzeilen of te verwijderen, of dit voor anderen mogelijk te maken. WhoAmID kan besluiten (delen van ) bijdragen van gebruikers op internetsites te publiceren c.q. over te nemen in andere media, bijvoorbeeld maar niet beperkt tot televisie, radio, internetsites, mobiele informatiedragers en printmedia. Door bijdragen te leveren op fora en andere WhoAmID vergelijkbare internetsites stemmen bezoekers op voorhand onvoorwaardelijk en eeuwigdurend in met bovengenoemd gebruik van (delen van) hun bijdragen. Wanneer rechtens komt vast te staan dat WhoAmID daartoe gehouden is, zal WhoAmID mogen overgaan tot het aan derde(n) verstrekken van naam, adres, woonplaats of ip-nummer van een bezoeker/gebruiker.</p>\n" +
     "	  \n" +
     "	</div>\n" +
     "	<div class=\"modal-footer\">\n" +

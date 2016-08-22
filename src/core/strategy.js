@@ -42,13 +42,14 @@ angular.module('waid.core.strategy', [
     input.focus();
     $rootScope.waid.closeEmoticonsModal();
   };
-  var initRetrieveData = function (accountId, applicationId) {
+  waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
       delete data.main_application;
       waidCore.account = data;
+      
       // TODO retrieve full application info
-      waidCore.application = { 'id': applicationId };
+      waidCore.application = application;
       $cookies.putObject('account', waidCore.account, { 'path': '/' });
       $cookies.putObject('application', waidCore.application, { 'path': '/' });
     });
@@ -70,10 +71,10 @@ angular.module('waid.core.strategy', [
           waidCore.account = $cookies.getObject('account');
           waidCore.application = $cookies.getObject('application');
         } catch (err) {
-          initRetrieveData(waidCore.account.id, waidCore.application.id);
+          waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
         }
       } else {
-        initRetrieveData(waidCore.account.id, waidCore.application.id);
+        waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
       }
     } else {
       // Try to set by cookie
