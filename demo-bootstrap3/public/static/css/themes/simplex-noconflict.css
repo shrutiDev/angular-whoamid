@@ -3971,6 +3971,7 @@
   padding-left: 0;
   list-style: none;
   position: inherit;
+  display: inherit;
 }
 
 .waid .nav:before,.waid .nav:after {
@@ -4952,6 +4953,7 @@
   background: transparent;
   border: 0;
   -webkit-appearance: none;
+  display: inherit;
 }
 
 .waid .modal-open {

@@ -5832,7 +5832,8 @@ tbody.collapse.in {
   margin-bottom: 0;
   padding-left: 0;
   list-style: none;
-  position: inherit; }
+  position: inherit;
+  display: inherit; }
   .nav:before, .nav:after {
     content: " ";
     display: table; }
@@ -7328,7 +7329,8 @@ button.close {
   cursor: pointer;
   background: transparent;
   border: 0;
-  -webkit-appearance: none; }
+  -webkit-appearance: none;
+  display: inherit; }
 
 .modal-open {
   overflow: hidden; }

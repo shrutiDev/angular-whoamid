@@ -109,7 +109,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   };
   // Format date string to javascript date
   $scope.$watch('model.date_of_birth', function (date) {
-    if (typeof date != 'undefined') {
+    if (typeof date != 'undefined' && date != null) {
       var dateParts = date.split('-');
       $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
     }

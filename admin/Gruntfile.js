@@ -51,13 +51,8 @@ module.exports = function (grunt) {
             files: {
               'public/static/css/main.css': [
                  // Build waid sources
-                'src/bower_components/font-awesome/css/font-awesome.min.css',
-                'src/bower_components/angular-growl/build/angular-growl.min.css',
                 'src/bower_components/textAngular/dist/textAngular.css',
-                'src/angular-whoamid/src/assets/bootstrap3-themes/simplex.css',
-                'src/angular-whoamid/dist/waid-bootstrap3.css',
-                'src/main.css',
-                
+                'src/angular-whoamid/dist/bootstrap3/css/themes/yeti.css'
               ]
             }
           }
@@ -113,8 +108,8 @@ module.exports = function (grunt) {
 
                     // Build waid
                     
-                    'src/angular-whoamid/dist/waid-bootstrap3.js',
-                    'src/angular-whoamid/dist/waid-bootstrap3-templates.js',
+                    'src/angular-whoamid/dist/bootstrap3/waid.js',
+                    'src/angular-whoamid/dist/bootstrap3/templates.js',
 
                     //'src/angular-whoamid/dist/waid-noconflict.js',
                     // Build demo

@@ -3,14 +3,20 @@ angular.module('waid.core.app.strategy', [
   'waid.core',
   'waid.core.services',
   'ui.bootstrap',
-  'angular-growl'
-]).service('waidCoreAppStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl) {
+  'angular-growl',
+  'slugifier',
+]).service('waidCoreAppStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl, Slug) {
   var emoticonsModalInstance = null;
   var termsAndConditionsModalInstance = null;
   var completeProfileModalInstance = null;
   var lostLoginModalInstance = null;
   var loginAndRegisterHomeModalInstance = null;
   var userProfileHomeModalInstance = null;
+
+  waidCore.slugify = function(slug) {
+    return Slug.slugify($location.absUrl());
+  }
+
   waidCore.checkIfModalIsOpen = function (modal) {
     if (modal == 'completeProfile' && completeProfileModalInstance) {
       return true;
@@ -172,4 +178,6 @@ angular.module('waid.core.app.strategy', [
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {
     waidCore.loginCheck(data);
   });
-});
+}).config(['growlProvider', function(growlProvider) {
+    growlProvider.globalTimeToLive(5000);
+}])

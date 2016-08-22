@@ -146,7 +146,7 @@ module.exports = function (grunt) {
           bootstrap3js:{
               src: [
                 'dist/waid.js',
-                'src/core/bootstrap3/javascript/strategy.js',
+                'src/core/bootstrap3/javascripts/strategy.js',
               ],
               dest: 'dist/bootstrap3/waid.js'
           },
