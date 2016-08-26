@@ -35720,13 +35720,32 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
     waid.closeLostLoginModal();
     waid.closeTermsAndConditionsModal();
   };
-  waid.clearAccount = function () {
-    $cookies.remove('account');
-    $cookies.remove('application');
+  waid.clearWaidData = function () {
     $rootScope.waid.account = false;
     $rootScope.waid.application = false;
     $rootScope.waid.user = false;
+
+    $cookies.remove('waid', {'path':'/'});
   };
+
+  waid.saveWaidData = function() {
+    var waid = {
+      'account':$rootScope.waid.account,
+      'application':$rootScope.waid.application,
+      'token':$rootScope.waid.token
+    }
+    $cookies.putObject('waid', waid, { 'path': '/' });
+  }
+
+  waid.getWaidData = function() {
+    var waid = $cookies.getObject('waid');
+    if (waid) {
+      console.log(waid);
+      return waid;
+    }
+    return false;
+  }
+
   waid.utils = {};
   waid.user = false;
   waid.account = false;
@@ -35765,9 +35784,11 @@ angular.module('waid.core.strategy', [
 
   waidCore.logout = function () {
     waidService.userLogoutPost();
+    self.clearWaidData();
   };
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
+    self.clearWaidData();
   };
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
@@ -35780,15 +35801,15 @@ angular.module('waid.core.strategy', [
     input.focus();
     $rootScope.waid.closeEmoticonsModal();
   };
-  var initRetrieveData = function (accountId, applicationId) {
+  waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
       delete data.main_application;
+
       waidCore.account = data;
-      // TODO retrieve full application info
-      waidCore.application = { 'id': applicationId };
-      $cookies.putObject('account', waidCore.account, { 'path': '/' });
-      $cookies.putObject('application', waidCore.application, { 'path': '/' });
+      waidCore.application = application;
+      
+      waidCore.saveWaidData();
     });
   };
   waidCore.initialize = function () {
@@ -35802,29 +35823,32 @@ angular.module('waid.core.strategy', [
     }
     // Init if account and app are fixed
     if (waidCore.account.id && waidCore.application.id) {
-      if ($cookies.getObject('account') && $cookies.getObject('account').id == waidCore.account.id 
-        && $cookies.getObject('application') && waidCore.application.id == $cookies.getObject('application').id) {
+      // Try to set by cookie
+      var waid = waidCore.getWaidData();
+      if (waid && waid.account && waid.account.id == waidCore.account.id 
+        && waid.application && waid.application.id == waidCore.application.id) {
         try {
-          waidCore.account = $cookies.getObject('account');
-          waidCore.application = $cookies.getObject('application');
+          waidCore.account = waid.account;
+          waidCore.application = waid.application;
         } catch (err) {
-          initRetrieveData(waidCore.account.id, waidCore.application.id);
+          waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
         }
       } else {
-        initRetrieveData(waidCore.account.id, waidCore.application.id);
+        waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
       }
     } else {
       // Try to set by cookie
-      if ($cookies.getObject('account') && $cookies.getObject('application')) {
+      var waid = waidCore.getWaidData();
+      if (waid && waid.account && waid.application) {
         try {
-          waidCore.account = $cookies.getObject('account');
-          waidCore.application = $cookies.getObject('application');
+          waidCore.account = waid.account;
+          waidCore.application = waid.application;
         } catch (err) {
-          waidCore.clearAccount();
+          waidCore.clearWaidData();
           waidService._clearAuthorizationData();
         }
       } else {
-        waidCore.clearAccount();
+        waidCore.clearWaidData();
         waidService._clearAuthorizationData();
       }
     }
@@ -35872,8 +35896,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       // Set CSRFToken
       $http.defaults.headers.common['X-CSRFToken'] = $cookies.get('csrftoken');
       // Set authorization token
-      if (this.token != null && this.token != '' && this.token != 'null') {
-        $http.defaults.headers.common.Authorization = 'Token ' + this.token;
+      if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
+        $http.defaults.headers.common.Authorization = 'Token ' + waidCore.token;
       } else {
         $http.defaults.headers.common.Authorization = null;
       }
@@ -35937,14 +35961,13 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return deferred.promise;
     },
     '_login': function (token) {
-      $cookies.put('token', token, { 'path': '/' });
-      this.token = token;
+      waidCore.token = token;
+      waidCore.saveWaidData();
       this.authenticate();
     },
     '_clearAuthorizationData': function () {
       this.authenticated = false;
-      $cookies.remove('token', { 'path': '/' });
-      this.token = null;
+      waidCore.token = null;
     },
     '_makeFileRequest': function (method, path, broadcast, data) {
       var deferred = $q.defer();
@@ -36155,8 +36178,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'authenticate': function () {
       var that = this;
       var deferred = $q.defer();
-      this.token = $cookies.get('token');
-      if (this.token != null && this.token != '' && this.token != 'null') {
+      waidCore.token = waidCore.token;
+      if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
         this.userProfileGet().then(function (data) {
           that.authenticated = true;
           waidCore.user = data;
@@ -36870,6 +36893,8 @@ angular.module('waid.core.controllers', [
   waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
   $scope.waid = waidCore;
+}).controller('WAIDCoreTermsAndConditionsCtrl', function ($scope, $rootScope, waidCore, waidService) {
+  waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
 });
 'use strict';
 angular.module('waid.core.directives', [
@@ -37931,13 +37956,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
 
   $templateCache.put('/idm/templates/terms-and-conditions-modal.html',
-    "<span class=\"waid\">\n" +
+    "<span class=\"waid\" ng-controller=\"WAIDCoreTermsAndConditionsCtrl\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	    <h3 class=\"modal-title\">Algemene voorwaarden</h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
-    "	  \n" +
-    "	    <p><b>WhoAmID</b> besteedt continue zorg en aandacht aan de samenstelling van de inhoud op onze sites. Op onze sites worden diverse interactiemogelijkheden aangeboden. De redactie bekijkt de berichten en reacties, die naar onze fora worden gestuurd niet vooraf - tenzij uitdrukkelijk anders aangegeven. Berichten die evident onrechtmatig zijn, worden zo spoedig mogelijk verwijderd. Het kan evenwel voorkomen dat u dergelijke berichten korte tijd aantreft. Wij distantiÃ«ren ons nadrukkelijk van deze berichten en verontschuldigen ons er bij voorbaat voor. Het is mogelijk dat de informatie die op de sites wordt gepubliceerd onvolledig is of onjuistheden bevat. Het is niet altijd mogelijk fouten te voorkomen. WhoAmID is niet verantwoordelijk voor meningen en boodschappen van gebruikers van (forum)pagina's. De meningen en boodschappen op de forumpagina's geven niet de mening of het beleid van WhoAmID weer. Ditzelfde geldt voor informatie van derden waarvan u via links op onze websites kennisneemt. Wij sluiten alle aansprakelijkheid uit voor enigerlei directe of indirecte schade, van welke aard dan ook, die voortvloeit uit het gebruik van informatie die op of via onze websites is verkregen. WhoAmID behoudt zich het recht voor - tenzij schriftelijk anders overeengekomen met de auteur - ingezonden materiaal te verwijderen in te korten en/of aan te passen. Dit geldt zowel voor tekst als muziek- en beeldmateriaal. Deze website is alleen bedoeld voor eigen raadpleging via normaal browser-bezoek. Het is derhalve niet toegestaan om de website op geautomatiseerde wijze te (laten) raadplegen, bijvoorbeeld via scripts, spiders en/of bots. Eventuele hyperlinks dienen bezoekers rechtstreeks te leiden naar de context, waarbinnen de publieke omroep content aanbiedt. Video- en audiostreams mogen bijvoorbeeld alleen worden vertoond via een link naar een omroeppagina of embedded omroepplayer. Overneming, inframing, herpublicatie, bewerking of toevoeging zijn niet toegestaan. Eveneens is het niet toegestaan technische beveiligingen te omzeilen of te verwijderen, of dit voor anderen mogelijk te maken. WhoAmID kan besluiten (delen van ) bijdragen van gebruikers op internetsites te publiceren c.q. over te nemen in andere media, bijvoorbeeld maar niet beperkt tot televisie, radio, internetsites, mobiele informatiedragers en printmedia. Door bijdragen te leveren op fora en andere WhoAmID vergelijkbare internetsites stemmen bezoekers op voorhand onvoorwaardelijk en eeuwigdurend in met bovengenoemd gebruik van (delen van) hun bijdragen. Wanneer rechtens komt vast te staan dat WhoAmID daartoe gehouden is, zal WhoAmID mogen overgaan tot het aan derde(n) verstrekken van naam, adres, woonplaats of ip-nummer van een bezoeker/gebruiker.</p>\n" +
+    "	  	<p ng-show=\"waid.application.terms_and_conditions.length > 0\" ng-bind-html=\"waid.application.terms_and_conditions\"></p>\n" +
+    "	    <p ng-hide=\"waid.application.terms_and_conditions.length > 0\"><b>WhoAmID</b> besteedt continue zorg en aandacht aan de samenstelling van de inhoud op onze sites. Op onze sites worden diverse interactiemogelijkheden aangeboden. De redactie bekijkt de berichten en reacties, die naar onze fora worden gestuurd niet vooraf - tenzij uitdrukkelijk anders aangegeven. Berichten die evident onrechtmatig zijn, worden zo spoedig mogelijk verwijderd. Het kan evenwel voorkomen dat u dergelijke berichten korte tijd aantreft. Wij distantiÃ«ren ons nadrukkelijk van deze berichten en verontschuldigen ons er bij voorbaat voor. Het is mogelijk dat de informatie die op de sites wordt gepubliceerd onvolledig is of onjuistheden bevat. Het is niet altijd mogelijk fouten te voorkomen. WhoAmID is niet verantwoordelijk voor meningen en boodschappen van gebruikers van (forum)pagina's. De meningen en boodschappen op de forumpagina's geven niet de mening of het beleid van WhoAmID weer. Ditzelfde geldt voor informatie van derden waarvan u via links op onze websites kennisneemt. Wij sluiten alle aansprakelijkheid uit voor enigerlei directe of indirecte schade, van welke aard dan ook, die voortvloeit uit het gebruik van informatie die op of via onze websites is verkregen. WhoAmID behoudt zich het recht voor - tenzij schriftelijk anders overeengekomen met de auteur - ingezonden materiaal te verwijderen in te korten en/of aan te passen. Dit geldt zowel voor tekst als muziek- en beeldmateriaal. Deze website is alleen bedoeld voor eigen raadpleging via normaal browser-bezoek. Het is derhalve niet toegestaan om de website op geautomatiseerde wijze te (laten) raadplegen, bijvoorbeeld via scripts, spiders en/of bots. Eventuele hyperlinks dienen bezoekers rechtstreeks te leiden naar de context, waarbinnen de publieke omroep content aanbiedt. Video- en audiostreams mogen bijvoorbeeld alleen worden vertoond via een link naar een omroeppagina of embedded omroepplayer. Overneming, inframing, herpublicatie, bewerking of toevoeging zijn niet toegestaan. Eveneens is het niet toegestaan technische beveiligingen te omzeilen of te verwijderen, of dit voor anderen mogelijk te maken. WhoAmID kan besluiten (delen van ) bijdragen van gebruikers op internetsites te publiceren c.q. over te nemen in andere media, bijvoorbeeld maar niet beperkt tot televisie, radio, internetsites, mobiele informatiedragers en printmedia. Door bijdragen te leveren op fora en andere WhoAmID vergelijkbare internetsites stemmen bezoekers op voorhand onvoorwaardelijk en eeuwigdurend in met bovengenoemd gebruik van (delen van) hun bijdragen. Wanneer rechtens komt vast te staan dat WhoAmID daartoe gehouden is, zal WhoAmID mogen overgaan tot het aan derde(n) verstrekken van naam, adres, woonplaats of ip-nummer van een bezoeker/gebruiker.</p>\n" +
     "	  \n" +
     "	</div>\n" +
     "	<div class=\"modal-footer\">\n" +
@@ -38457,7 +38482,9 @@ angular.module('waid.admin.controllers', ['waid'])
 
     $scope.changeAccount = function() {
       $scope.account = '';
-      $scope.waid.clearAccount();
+      $scope.waid.token = '';
+      $scope.waid.clearWaidData();
+      //waidCore.clearWaidData();
     }
 
     $scope.goToAccount = function(){
@@ -38470,12 +38497,12 @@ angular.module('waid.admin.controllers', ['waid'])
           $scope.waid.account = data;
           $scope.waid.application = application;
 
-          $cookies.putObject('account', $scope.waid.account);
-          $cookies.putObject('application', $scope.waid.application);
+          waidCore.account = data;
+          waidCore.application = application;
+          waidCore.saveWaidData();
         }, function(data){
           growl.addErrorMessage("Geen geldige account.");
-          $cookies.remove('account');
-          $cookies.remove('application');
+          $scope.waid.clearWaidData();
         });
       }
     }

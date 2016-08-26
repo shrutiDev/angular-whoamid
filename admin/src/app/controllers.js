@@ -6,7 +6,9 @@ angular.module('waid.admin.controllers', ['waid'])
 
     $scope.changeAccount = function() {
       $scope.account = '';
-      $scope.waid.clearAccount();
+      $scope.waid.token = '';
+      $scope.waid.clearWaidData();
+      //waidCore.clearWaidData();
     }
 
     $scope.goToAccount = function(){
@@ -19,12 +21,12 @@ angular.module('waid.admin.controllers', ['waid'])
           $scope.waid.account = data;
           $scope.waid.application = application;
 
-          $cookies.putObject('account', $scope.waid.account);
-          $cookies.putObject('application', $scope.waid.application);
+          waidCore.account = data;
+          waidCore.application = application;
+          waidCore.saveWaidData();
         }, function(data){
           growl.addErrorMessage("Geen geldige account.");
-          $cookies.remove('account');
-          $cookies.remove('application');
+          $scope.waid.clearWaidData();
         });
       }
     }

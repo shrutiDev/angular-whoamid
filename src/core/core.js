@@ -59,13 +59,32 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
     waid.closeLostLoginModal();
     waid.closeTermsAndConditionsModal();
   };
-  waid.clearAccount = function () {
-    $cookies.remove('account');
-    $cookies.remove('application');
+  waid.clearWaidData = function () {
     $rootScope.waid.account = false;
     $rootScope.waid.application = false;
     $rootScope.waid.user = false;
+
+    $cookies.remove('waid', {'path':'/'});
   };
+
+  waid.saveWaidData = function() {
+    var waid = {
+      'account':$rootScope.waid.account,
+      'application':$rootScope.waid.application,
+      'token':$rootScope.waid.token
+    }
+    $cookies.putObject('waid', waid, { 'path': '/' });
+  }
+
+  waid.getWaidData = function() {
+    var waid = $cookies.getObject('waid');
+    if (waid) {
+      console.log(waid);
+      return waid;
+    }
+    return false;
+  }
+
   waid.utils = {};
   waid.user = false;
   waid.account = false;

@@ -12,8 +12,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       // Set CSRFToken
       $http.defaults.headers.common['X-CSRFToken'] = $cookies.get('csrftoken');
       // Set authorization token
-      if (this.token != null && this.token != '' && this.token != 'null') {
-        $http.defaults.headers.common.Authorization = 'Token ' + this.token;
+      if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
+        $http.defaults.headers.common.Authorization = 'Token ' + waidCore.token;
       } else {
         $http.defaults.headers.common.Authorization = null;
       }
@@ -77,14 +77,13 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return deferred.promise;
     },
     '_login': function (token) {
-      $cookies.put('token', token, { 'path': '/' });
-      this.token = token;
+      waidCore.token = token;
+      waidCore.saveWaidData();
       this.authenticate();
     },
     '_clearAuthorizationData': function () {
       this.authenticated = false;
-      $cookies.remove('token', { 'path': '/' });
-      this.token = null;
+      waidCore.token = null;
     },
     '_makeFileRequest': function (method, path, broadcast, data) {
       var deferred = $q.defer();
@@ -295,8 +294,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'authenticate': function () {
       var that = this;
       var deferred = $q.defer();
-      this.token = $cookies.get('token');
-      if (this.token != null && this.token != '' && this.token != 'null') {
+      waidCore.token = waidCore.token;
+      if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
         this.userProfileGet().then(function (data) {
           that.authenticated = true;
           waidCore.user = data;

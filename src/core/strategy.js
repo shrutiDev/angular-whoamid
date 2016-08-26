@@ -27,9 +27,11 @@ angular.module('waid.core.strategy', [
 
   waidCore.logout = function () {
     waidService.userLogoutPost();
+    self.clearWaidData();
   };
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
+    self.clearWaidData();
   };
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
@@ -46,12 +48,11 @@ angular.module('waid.core.strategy', [
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
       delete data.main_application;
+
       waidCore.account = data;
-      
-      // TODO retrieve full application info
       waidCore.application = application;
-      $cookies.putObject('account', waidCore.account, { 'path': '/' });
-      $cookies.putObject('application', waidCore.application, { 'path': '/' });
+      
+      waidCore.saveWaidData();
     });
   };
   waidCore.initialize = function () {
@@ -65,11 +66,13 @@ angular.module('waid.core.strategy', [
     }
     // Init if account and app are fixed
     if (waidCore.account.id && waidCore.application.id) {
-      if ($cookies.getObject('account') && $cookies.getObject('account').id == waidCore.account.id 
-        && $cookies.getObject('application') && waidCore.application.id == $cookies.getObject('application').id) {
+      // Try to set by cookie
+      var waid = waidCore.getWaidData();
+      if (waid && waid.account && waid.account.id == waidCore.account.id 
+        && waid.application && waid.application.id == waidCore.application.id) {
         try {
-          waidCore.account = $cookies.getObject('account');
-          waidCore.application = $cookies.getObject('application');
+          waidCore.account = waid.account;
+          waidCore.application = waid.application;
         } catch (err) {
           waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
         }
@@ -78,16 +81,17 @@ angular.module('waid.core.strategy', [
       }
     } else {
       // Try to set by cookie
-      if ($cookies.getObject('account') && $cookies.getObject('application')) {
+      var waid = waidCore.getWaidData();
+      if (waid && waid.account && waid.application) {
         try {
-          waidCore.account = $cookies.getObject('account');
-          waidCore.application = $cookies.getObject('application');
+          waidCore.account = waid.account;
+          waidCore.application = waid.application;
         } catch (err) {
-          waidCore.clearAccount();
+          waidCore.clearWaidData();
           waidService._clearAuthorizationData();
         }
       } else {
-        waidCore.clearAccount();
+        waidCore.clearWaidData();
         waidService._clearAuthorizationData();
       }
     }
