@@ -27,11 +27,11 @@ angular.module('waid.core.strategy', [
 
   waidCore.logout = function () {
     waidService.userLogoutPost();
-    self.clearWaidData();
+    waidCore.clearWaidData();
   };
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
-    self.clearWaidData();
+    waidCore.clearWaidData();
   };
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
@@ -51,7 +51,7 @@ angular.module('waid.core.strategy', [
 
       waidCore.account = data;
       waidCore.application = application;
-      
+      waidCore.isInit = true;
       waidCore.saveWaidData();
     });
   };
@@ -110,9 +110,12 @@ angular.module('waid.core.strategy', [
     if (typeof waid != 'undefined') {
       // Init once
       if (!waid.isInit) {
-        if (waid.account && waid.application) {
-          waid.isInit = true;
-          waidService.authenticate();
+        if (waid.account && waid.application && waid.token) {
+          waidService.authenticate().then(function(){
+            waid.isInit = true;
+          }, function(){
+            waid.isInit = true;
+          })
         }
       }
       var waidAlCode = $location.search().waidAlCode;

@@ -171,11 +171,11 @@ angular.module('waid.core.strategy', [
 
   waidCore.logout = function () {
     waidService.userLogoutPost();
-    self.clearWaidData();
+    waidCore.clearWaidData();
   };
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
-    self.clearWaidData();
+    waidCore.clearWaidData();
   };
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
@@ -195,7 +195,7 @@ angular.module('waid.core.strategy', [
 
       waidCore.account = data;
       waidCore.application = application;
-      
+      waidCore.isInit = true;
       waidCore.saveWaidData();
     });
   };
@@ -254,9 +254,12 @@ angular.module('waid.core.strategy', [
     if (typeof waid != 'undefined') {
       // Init once
       if (!waid.isInit) {
-        if (waid.account && waid.application) {
-          waid.isInit = true;
-          waidService.authenticate();
+        if (waid.account && waid.application && waid.token) {
+          waidService.authenticate().then(function(){
+            waid.isInit = true;
+          }, function(){
+            waid.isInit = true;
+          })
         }
       }
       var waidAlCode = $location.search().waidAlCode;
@@ -534,6 +537,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       }
       return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
     },
+    'adminDefaultEmailTemplatesGet': function () {
+      return this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+    },
     'adminCommentsPatch': function (id, data) {
       return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);
     },
@@ -565,7 +571,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'authenticate': function () {
       var that = this;
       var deferred = $q.defer();
-      waidCore.token = waidCore.token;
       if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
         this.userProfileGet().then(function (data) {
           that.authenticated = true;

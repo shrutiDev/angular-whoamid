@@ -263,6 +263,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       }
       return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
     },
+    'adminDefaultEmailTemplatesGet': function () {
+      return this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+    },
     'adminCommentsPatch': function (id, data) {
       return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);
     },
@@ -294,7 +297,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'authenticate': function () {
       var that = this;
       var deferred = $q.defer();
-      waidCore.token = waidCore.token;
       if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
         this.userProfileGet().then(function (data) {
           that.authenticated = true;

@@ -25,21 +25,21 @@ module.exports = function (grunt) {
 
         purifycss: {
             options: {},
-            bootstrap3themesimplexnoconflict: {
-              src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
-              css: ['dist/bootstrap3/css/themes/simplex-noconflict.css'],
-              dest: 'dist/bootstrap3/css/themes/simplex-noconflict.css'
-            },
-            bootstrap3themeslatenoconflict: {
-              src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
-              css: ['dist/bootstrap3/css/themes/slate-noconflict.css'],
-              dest: 'dist/bootstrap3/css/themes/slate-noconflict.css'
-            },
-             bootstrap3themeyetinoconflict: {
-              src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
-              css: ['dist/bootstrap3/css/themes/yeti-noconflict.css'],
-              dest: 'dist/bootstrap3/css/themes/yeti-noconflict.css'
-            },
+            // bootstrap3themesimplexnoconflict: {
+            //   src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
+            //   css: ['dist/bootstrap3/css/themes/simplex-noconflict.css'],
+            //   dest: 'dist/bootstrap3/css/themes/simplex-noconflict.css'
+            // },
+            // bootstrap3themeslatenoconflict: {
+            //   src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
+            //   css: ['dist/bootstrap3/css/themes/slate-noconflict.css'],
+            //   dest: 'dist/bootstrap3/css/themes/slate-noconflict.css'
+            // },
+            //  bootstrap3themeyetinoconflict: {
+            //   src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
+            //   css: ['dist/bootstrap3/css/themes/yeti-noconflict.css'],
+            //   dest: 'dist/bootstrap3/css/themes/yeti-noconflict.css'
+            // },
         },
 
         sass: {
