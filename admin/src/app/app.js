@@ -8,6 +8,7 @@ angular.module('app', [
   'waid',
   'waid.admin.controllers',
   'waid.admin.templates',
+  'waid.admin.directives',
   'angular-growl',
   'ui.bootstrap',
   'angular-confirm',
@@ -73,4 +74,32 @@ angular.module('app', [
         redirectTo: '/'
       });
     $locationProvider.html5Mode(true);
-  }]);
+  }])
+  .run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
+    waidCore.config.setConfig('admin', {
+      'translations': {
+        'mailSettings': {
+          'type':{
+            'register': {
+              'title':'Registratie'
+            },
+            'register_social':{
+              'title':'Social registratie'
+            },
+            'change_password':{
+              'title':'Wachtwoord aangepast'
+            },
+            'change_username':{
+              'title':'Gebruikersnaam aangepast'
+            },
+            'email_add':{
+              'title':'E-Mail toegevoegd'
+            },
+            'user_activity_notification':{
+              'title':'Activiteit op account'
+            }
+          }
+        }
+      }
+    });
+});

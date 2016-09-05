@@ -116,7 +116,8 @@ module.exports = function (grunt) {
                     'src/app/app.js',
                     'src/app/templates.js',
                     'src/app/config.js',
-                    'src/app/controllers.js'
+                    'src/app/controllers.js',
+                    'src/app/directives.js'
                 
               ],
               dest: 'public/static/js/script.js'

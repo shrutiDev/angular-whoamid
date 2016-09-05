@@ -47,7 +47,7 @@ angular.module('waid.admin.controllers', ['waid'])
     
     $scope.$on('waid.services.admin.account.get.error', function(event, data) {
       growl.addErrorMessage("Geen permissie om in deze admin in te loggen.");
-      waidCore.logout();
+      // waidCore.logout();
       // $location.path('/');
       // // TODO : Fix this buggy refresh
       // $window.location.href = '/';
@@ -71,12 +71,20 @@ angular.module('waid.admin.controllers', ['waid'])
 
     $scope.adminAccountChecked = false;
     
-    $scope.$watch('waid', function(waid){
-      if (typeof waid != "undefined" && waid.isInit && $scope.adminAccountChecked == false && waid.user) {
-        waidService.adminAccountGet();
-        $scope.adminAccountChecked = true;
-        if($location.path() != '/page/overview/') {
-          $location.path('/page/overview/');
+    $rootScope.$watch('waid', function(waid){
+      // Als init en is
+      if (typeof waid != "undefined" && waid.isInit && $scope.adminAccountChecked == false) {
+        if (waid.isLoggedIn) {
+          waidService.adminAccountGet().then(function(data){
+            if($location.path() == '/') {
+              $location.path('/page/overview/');
+            }
+          }, function(data){
+            if($location.path() != '/') {
+              $location.path('/');
+            }
+          });
+          $scope.adminAccountChecked = true;
         } else {
           if($location.path() != '/') {
             $location.path('/');
@@ -93,7 +101,7 @@ angular.module('waid.admin.controllers', ['waid'])
 
     
   })
-  .controller('WAIDAdminCommentsCtrl', function ($scope, waidCore, waidService, growl) {
+  .controller('WAIDAdminCommentsCtrl', function ($scope, $rootScope, waidCore, waidService, growl) {
     $scope.search = {
       'query':'',
       'marked_as_spam':false
@@ -136,7 +144,13 @@ angular.module('waid.admin.controllers', ['waid'])
         growl.addErrorMessage("Kon comment niet verwijderen.");
       });
     };
-    $scope.getComments();
+
+    $rootScope.$watch('waid', function(waid){
+      if (waid.isInit) {
+        $scope.getComments();
+      }
+    }, true);
+
   })
   .controller('WAIDCreateAccountCtrl', function ($scope, $uibModalInstance, Slug, waidService, account) {
       $scope.errors = [];
@@ -181,10 +195,11 @@ angular.module('waid.admin.controllers', ['waid'])
     };
 
     $rootScope.$watch('waid', function(waid) {
-      if (waid.isInit &&  $scope.applications.length == 0) {
+      console.log(waid);
+      if (waid.isInit) {
         $scope.getApplicationList();
       }
-    });
+    }, true);
     
   })
   .controller('AdminApplicationMenuCtrl', function ($scope, $rootScope, $routeParams, waidService) {
@@ -195,7 +210,7 @@ angular.module('waid.admin.controllers', ['waid'])
           $rootScope.application = data;
         });
       }
-    });
+    }, true);
   })
   .controller('ApplicationDetailMainCtrl', function ($scope, $rootScope, $routeParams, waidService) {
     $scope.save = function() {
@@ -231,7 +246,8 @@ angular.module('waid.admin.controllers', ['waid'])
       });
     }
   })
-  .controller('AdminApplicationDetailMailTemplatesCtrl', function ($scope, $rootScope, $routeParams, waidService) {
+  .controller('AdminApplicationEmailActionCtrl', function ($scope, $rootScope, $routeParams, waidService) {
+    $scope.waid = $rootScope.waid;
     $scope.save = function() {
       waidService.adminApplicationPatch($scope.application).then(function(data){
         $rootScope.application = data;
@@ -240,10 +256,15 @@ angular.module('waid.admin.controllers', ['waid'])
         $scope.errors = data;
       });
     }
-    waidService.adminDefaultEmailTemplatesGet().then(function(data) {
-      $scope.defaultTemplateData = data;
-      console.log(data);
-    });
+
+    $rootScope.$watch('waid', function(waid){
+      if (waid.isInit && !$scope.defaultTemplateData) {
+        waidService.adminDefaultEmailTemplatesGet().then(function(data) {
+          $scope.defaultTemplateData = data;
+          console.log(data);
+        });
+      }
+    }, true);
 
     $scope.getObjectInfo = function(key) {
       if ($scope.defaultTemplateData != 'undefined' && $scope.defaultTemplateData != null) {
@@ -257,15 +278,23 @@ angular.module('waid.admin.controllers', ['waid'])
   })
   .controller('AccountOverviewCtrl', function ($scope, $rootScope, $location, waidService) {
     $scope.model = {};
-    waidService.adminAccountGet().then(function(data){
-      $scope.model = data;
+    $rootScope.$watch('waid', function(waid){
+      if (waid.isInit) {
+        waidService.adminAccountGet().then(function(data){
+          $scope.model = data;
+        });
+      }
     });
   })
   .controller('AccountMainCtrl', function ($scope, $rootScope, $location, waidService, $window) {
     $scope.model = {};
 
-    waidService.adminAccountGet().then(function(data){
-      $scope.model = data;
+    $rootScope.$watch('waid', function(waid){
+      if (waid.isInit) {
+        waidService.adminAccountGet().then(function(data){
+          $scope.model = data;
+        });
+      }
     });
     
     $scope.save = function(){

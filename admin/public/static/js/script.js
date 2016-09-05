@@ -35740,7 +35740,6 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.getWaidData = function() {
     var waid = $cookies.getObject('waid');
     if (waid) {
-      console.log(waid);
       return waid;
     }
     return false;
@@ -35751,6 +35750,7 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.account = false;
   waid.application = false;
   waid.isInit = false;
+  waid.isLoggedIn = false;
 
   $rootScope.waid = waid;
   return waid;
@@ -35784,12 +35784,14 @@ angular.module('waid.core.strategy', [
 
   waidCore.logout = function () {
     waidService.userLogoutPost();
-    waidCore.clearWaidData();
+    waidService.user = false;
   };
+
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
-    waidCore.clearWaidData();
+    waidService.user = false;
   };
+
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
     input.focus();
@@ -35801,6 +35803,8 @@ angular.module('waid.core.strategy', [
     input.focus();
     $rootScope.waid.closeEmoticonsModal();
   };
+
+  // Retrieve basic account and application data
   waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
@@ -35808,11 +35812,19 @@ angular.module('waid.core.strategy', [
 
       waidCore.account = data;
       waidCore.application = application;
-      waidCore.isInit = true;
+
+      waidService.applicationGet().then(function(data){
+        console.log('Ja');
+        waidCore.application = data;
+      });
+
       waidCore.saveWaidData();
     });
   };
+
+  // Main initializer for waid
   waidCore.initialize = function () {
+    console.log('Initialize');
     // Check url params to set account and application manually
     var waidAccountId = $location.search().waidAccountId;
     var waidApplicationId = $location.search().waidApplicationId;
@@ -35830,6 +35842,7 @@ angular.module('waid.core.strategy', [
         try {
           waidCore.account = waid.account;
           waidCore.application = waid.application;
+          waidCore.token = waid.token;
         } catch (err) {
           waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
         }
@@ -35843,6 +35856,7 @@ angular.module('waid.core.strategy', [
         try {
           waidCore.account = waid.account;
           waidCore.application = waid.application;
+          waidCore.token = waid.token;
         } catch (err) {
           waidCore.clearWaidData();
           waidService._clearAuthorizationData();
@@ -35853,6 +35867,8 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+
+  //
   waidCore.loginCheck = function (data) {
     if (typeof data.profile_status != 'undefined' && data.profile_status.length > 0) {
       if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -35863,18 +35879,31 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+
   $rootScope.$watch('waid', function (waid) {
+    
     if (typeof waid != 'undefined') {
-      // Init once
-      if (!waid.isInit) {
-        if (waid.account && waid.application && waid.token) {
+      if (!waid.isInit && waid.account && waid.application) {
+        console.log(waid.token);
+        if (waid.token && !waid.isLoggedIn) {
+          console.log('Authenticate');
           waidService.authenticate().then(function(){
-            waid.isInit = true;
+             waid.isLoggedIn = true;
+             waid.isInit = true;
+             console.log('Ja');
           }, function(){
-            waid.isInit = true;
+             waid.isLoggedIn = false;
+             waid.isInit = true;
+             console.log('Nee');
           })
+        } else {
+          waid.isLoggedIn = false;
+          waid.isInit = true;
         }
+        console.log('Waid Strategy init');
+        console.log(waid);
       }
+
       var waidAlCode = $location.search().waidAlCode;
       if (waidAlCode) {
         waidService.userAutoLoginGet(waidAlCode).then(function (data) {
@@ -35965,12 +35994,15 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     '_login': function (token) {
       waidCore.token = token;
+      waidCore.isLoggedIn = true;
       waidCore.saveWaidData();
       this.authenticate();
+      console.log('Login initialized');
     },
     '_clearAuthorizationData': function () {
       this.authenticated = false;
       waidCore.token = null;
+      console.log('Logout initialized');
     },
     '_makeFileRequest': function (method, path, broadcast, data) {
       var deferred = $q.defer();
@@ -36142,6 +36174,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'articlesGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
     },
+    'applicationGet': function(id) {
+      return this._makeRequest('GET', this._getAppUrl('/'), 'application');
+    },
     'adminCommentsListGet': function (params) {
       if (typeof params != 'undefined') {
         var query = '?' + $.param(params);
@@ -36151,7 +36186,10 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
     },
     'adminDefaultEmailTemplatesGet': function () {
-      return this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+      if (!this.adminDefaultEmailTemplatesGetRunning) {
+        this.adminDefaultEmailTemplatesGetRunning = this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+      }
+      return this.adminDefaultEmailTemplatesGetRunning;
     },
     'adminCommentsPatch': function (id, data) {
       return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);
@@ -36898,8 +36936,6 @@ angular.module('waid.core.controllers', [
   waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
   $scope.waid = waidCore;
-}).controller('WAIDCoreTermsAndConditionsCtrl', function ($scope, $rootScope, waidCore, waidService) {
-  waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
 });
 'use strict';
 angular.module('waid.core.directives', [
@@ -37119,7 +37155,13 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
       $scope.initEmails(data);
     });
   };
-  $scope.loadEmailList();
+
+  $scope.$watch('waid', function(waid) {
+    if (waid.isInit) {
+      $scope.loadEmailList();
+    }
+  }, true);
+
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -37525,9 +37567,9 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/comments/templates/comments-home.html',
     "<span class=\"waid\">\n" +
-    "  <h3>{{ waid.config.getConfig('comments.translations.title') }}</h3>\n" +
+    "  <h3>{{ ::waid.config.getConfig('comments.translations.title') }}</h3>\n" +
     "  <blockquote ng-hide=\"waid.user\">\n" +
-    "    <p>{{ waid.config.getConfig('comments.translations.notLoggedInText') }}</p>\n" +
+    "    <p>{{ ::waid.config.getConfig('comments.translations.notLoggedInText') }}</p>\n" +
     "  </blockquote>\n" +
     "\n" +
     "  <waid-comments-order-button ng-show=\"comments.length > 0\"></waid-comments-order-button>\n" +
@@ -37542,7 +37584,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    <div class=\"media-body\">\n" +
     "      <textarea class=\"form-control\" rows=\"3\" ng-model=\"comment.comment\" id=\"add_comment\" msd-elastic></textarea><br />\n" +
     "      <button type=\"button\" class=\"btn btn-default btn-xs pull-right\" ng-click=\"post()\">\n" +
-    "          <span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span> {{ waid.config.getConfig('comments.translations.postCommentButton') }}\n" +
+    "          <span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.postCommentButton') }}\n" +
     "      </button> \n" +
     "      <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"waid.openEmoticonsModal('add_comment')\">\n" +
     "          😄&nbsp;Emoticon toevoegen\n" +
@@ -37562,18 +37604,18 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "        <small>{{ comment.created | date:'medium' }}</small>\n" +
     "        <div class=\"btn-group pull-right\" ng-show=\"waid.user\">\n" +
     "          <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n" +
-    "            {{ waid.config.getConfig('comments.translations.actionDropdownTitle') }} <span class=\"caret\"></span>\n" +
+    "            {{ ::waid.config.getConfig('comments.translations.actionDropdownTitle') }} <span class=\"caret\"></span>\n" +
     "          </button>\n" +
     "          <ul class=\"dropdown-menu\">\n" +
     "            <li><a ng-click=\"editComment(comment)\" ng-show=\"comment.is_owner\">\n" +
-    "              <span class=\"glyphicon glyphicon-edit\" aria-hidden=\"true\"></span> {{ waid.config.getConfig('comments.translations.editCommentTitle') }}</a>\n" +
+    "              <span class=\"glyphicon glyphicon-edit\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.editCommentTitle') }}</a>\n" +
     "            </li>\n" +
     "            <li ng-show=\"!comment.marked_as_spam\"><a ng-click=\"markComment(comment, 'SPAM')\">\n" +
-    "              <span class=\"glyphicon glyphicon-exclamation-sign aria-hidden=\"true\"></span> {{ waid.config.getConfig('comments.translations.markCommentSpamTitle') }}</a>\n" +
+    "              <span class=\"glyphicon glyphicon-exclamation-sign aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.markCommentSpamTitle') }}</a>\n" +
     "            </li>\n" +
     "            <li role=\"separator\" class=\"divider\" ng-show=\"comment.is_owner\"></li>\n" +
     "            <li><a ng-click=\"deleteComment(comment)\" ng-show=\"comment.is_owner\" confirm=\"{{ waid.config.getConfig('comments.translations.confirmDeleteContentBody') }}\" confirm-title=\"{{ waid.config.getConfig('comments.translations.confirmDeleteContentTitle') }}\">\n" +
-    "              <span class=\"glyphicon glyphicon-remove-sign\" aria-hidden=\"true\"></span> {{ waid.config.getConfig('comments.translations.deleteCommentTitle') }}</a>\n" +
+    "              <span class=\"glyphicon glyphicon-remove-sign\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.deleteCommentTitle') }}</a>\n" +
     "            </li>\n" +
     "          </ul>\n" +
     "        </div>\n" +
@@ -37590,14 +37632,14 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "        </div>\n" +
     "\n" +
     "        <small class=\"pull-right\" ng-show=\"comment.marked_as_spam\">\n" +
-    "          <span class=\"glyphicon glyphicon-exclamation-sign aria-hidden=\"true\"></span> {{ waid.config.getConfig('comments.translations.commentMarkedAsSpam') }}\n" +
+    "          <span class=\"glyphicon glyphicon-exclamation-sign aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.commentMarkedAsSpam') }}\n" +
     "        </small>\n" +
     "      </div>\n" +
     "      <div ng-show=\"comment.is_edit\">\n" +
     "        <textarea class=\"form-control\" rows=\"1\" msd-elastic id=\"edit_comment_{{ comment.id }}\"ng-model=\"comment.comment_formatted\"></textarea>\n" +
     "        <p style=\"margin-top:10px;\">\n" +
     "        <button type=\"button\" class=\"btn btn-default btn-xs pull-right\" ng-click=\"updateComment(comment)\">\n" +
-    "          <span class=\"glyphicon glyphicon-check\" aria-hidden=\"true\"></span> {{ waid.config.getConfig('comments.translations.updateCommentButton') }}\n" +
+    "          <span class=\"glyphicon glyphicon-check\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.updateCommentButton') }}\n" +
     "        </button>\n" +
     "        <button type=\"button\" class=\"btn btn-default btn-xs pull-left\"\" ng-click=\"waid.openEmoticonsModal('edit_comment_' + comment.id)\">\n" +
     "            😄 Emoticon toevoegen\n" +
@@ -37616,16 +37658,16 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  <div class=\"btn-group\">\n" +
     "    <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n" +
     "       <span class=\"glyphicon glyphicon-sort\"></span> \n" +
-    "       <span ng-show=\"ordering=='-created'\">{{ waid.config.getConfig('comments.translations.voteOrderNewestFirst') }}</span>\n" +
-    "       <span ng-show=\"ordering=='created'\">{{ waid.config.getConfig('comments.translations.voteOrderOldestFirst') }}</span>\n" +
-    "       <span ng-show=\"ordering=='-vote_count'\">{{ waid.config.getConfig('comments.translations.voteOrderTopFirst') }}</span><span class=\"caret\"></span>\n" +
+    "       <span ng-show=\"ordering=='-created'\">{{ ::waid.config.getConfig('comments.translations.voteOrderNewestFirst') }}</span>\n" +
+    "       <span ng-show=\"ordering=='created'\">{{ ::waid.config.getConfig('comments.translations.voteOrderOldestFirst') }}</span>\n" +
+    "       <span ng-show=\"ordering=='-vote_count'\">{{ ::waid.config.getConfig('comments.translations.voteOrderTopFirst') }}</span><span class=\"caret\"></span>\n" +
     "    </button>\n" +
     "    <ul class=\"dropdown-menu\">\n" +
-    "      <li><a href=\"#\" ng-click=\"orderCommentList('-created')\"><span class=\"glyphicon glyphicon-sort-by-attributes-alt\"></span> {{ waid.config.getConfig('comments.translations.voteOrderNewestFirst') }} </a></li>\n" +
+    "      <li><a href=\"#\" ng-click=\"orderCommentList('-created')\"><span class=\"glyphicon glyphicon-sort-by-attributes-alt\"></span> {{ ::waid.config.getConfig('comments.translations.voteOrderNewestFirst') }} </a></li>\n" +
     "      <li><a href=\"#\" ng-click=\"orderCommentList('created')\"><span class=\"glyphicon glyphicon-sort-by-attributes\n" +
-    "          \"></span> {{ waid.config.getConfig('comments.translations.voteOrderOldestFirst') }}</a></li>\n" +
+    "          \"></span> {{ ::waid.config.getConfig('comments.translations.voteOrderOldestFirst') }}</a></li>\n" +
     "      <li><a href=\"#\" ng-click=\"orderCommentList('-vote_count')\"><span class=\"glyphicon glyphicon-flash\n" +
-    "          \"></span> {{ waid.config.getConfig('comments.translations.voteOrderTopFirst') }}</a></li>\n" +
+    "          \"></span> {{ ::waid.config.getConfig('comments.translations.voteOrderTopFirst') }}</a></li>\n" +
     "    </ul>\n" +
     "  </div>\n" +
     "</span>"
@@ -37842,7 +37884,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   $templateCache.put('/idm/templates/login-and-register-modal.html',
     "<span class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
-    "	  <h3 class=\"modal-title\">Inloggen of registreren</h3>\n" +
+    "	  <h3 class=\"modal-title\">Inloggen of registreren <i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeLoginAndRegisterModal()\"></i></h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
     "	   <ng-include src=\"'/idm/templates/login-and-register-home.html'\"></ng-include>\n" +
@@ -37882,7 +37924,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   $templateCache.put('/idm/templates/lost-login-modal.html',
     "<span class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
-    "	  <h3 class=\"modal-title\">Login gegevens kwijt?</h3>\n" +
+    "	  <h3 class=\"modal-title\">Login gegevens kwijt?<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeLostLoginModal()\"></i></h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
     "	  <ng-include src=\"'/idm/templates/lost-login.html'\"></ng-include>\n" +
@@ -37961,9 +38003,9 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
 
   $templateCache.put('/idm/templates/terms-and-conditions-modal.html',
-    "<span class=\"waid\" ng-controller=\"WAIDCoreTermsAndConditionsCtrl\">\n" +
+    "<span class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
-    "	    <h3 class=\"modal-title\">Algemene voorwaarden</h3>\n" +
+    "	    <h3 class=\"modal-title\">Algemene voorwaarden<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeTermsAndConditionsModal()\"></i></h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
     "	  	<p ng-show=\"waid.application.terms_and_conditions.length > 0\" ng-bind-html=\"waid.application.terms_and_conditions\"></p>\n" +
@@ -38007,7 +38049,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          <dt>Geslacht</dt>\n" +
     "          <dd><span ng-show=\"model.gender=='F'\">{{ waid.config.getConfig('idm.translations.female') }}</span><span ng-show=\"model.gender=='M'\">{{ waid.config.getConfig('idm.translations.male') }}</span></dd>\n" +
     "        </dl>\n" +
-    "        <a class=\"btn btn-default btn-xs btn-block\" ng-click=\"goToProfilePage('main')\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i> Algemene gegevens aanpassen</a>\n" +
+    "        <a class=\"btn btn-default btn-block\" ng-click=\"goToProfilePage('main')\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i> Algemene gegevens aanpassen</a>\n" +
     "      </div>\n" +
     "      \n" +
     "\n" +
@@ -38022,7 +38064,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          <dt>Niet leuk</dt>\n" +
     "          <dd>{{ model.dislike_tags }}</dd>\n" +
     "        </dl>\n" +
-    "        <a class=\"btn btn-default btn-xs btn-block\" ng-click=\"goToProfilePage('interests')\">Interesses aanpassen</a>\n" +
+    "        <a class=\"btn btn-default btn-block\" ng-click=\"goToProfilePage('interests')\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i> Interesses aanpassen</a>\n" +
     "      </div>\n" +
     "\n" +
     "      <div>\n" +
@@ -38036,7 +38078,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          <dd>{{ email.email }}</dd>\n" +
     "        </dl>\n" +
     "\n" +
-    "        <a class=\"btn btn-default btn-xs btn-block\" ng-click=\"goToProfilePage('emails')\">E-mail adressen aanpassen</a>\n" +
+    "        <a class=\"btn btn-default btn-block\" ng-click=\"goToProfilePage('emails')\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i> E-mail adressen aanpassen</a>\n" +
     "\n" +
     "      </div>\n" +
     "\n" +
@@ -38046,13 +38088,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          <dt>Gebruikersnaam</dt>\n" +
     "          <dd>{{ model.username }}</dd>\n" +
     "        </dl>\n" +
-    "        <a class=\"btn btn-default btn-xs btn-block\" ng-click=\"goToProfilePage('username')\">Login aanpassen</a>\n" +
+    "        <a class=\"btn btn-default btn-block\" ng-click=\"goToProfilePage('username')\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i> Login aanpassen</a>\n" +
     "        \n" +
     "        <dl class=\"dl-horizontal\">\n" +
     "          <dt>Wachtwoord</dt>\n" +
     "          <dd>******</dd>\n" +
     "        </dl>\n" +
-    "        <a class=\"btn btn-default btn-xs btn-block\" ng-click=\"goToProfilePage('password')\">Wachtwoord aanpassen</a>\n" +
+    "        <a class=\"btn btn-default btn-block\" ng-click=\"goToProfilePage('password')\"> <i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i> Wachtwoord aanpassen</a>\n" +
     "\n" +
     "      </div>\n" +
     "    </div>\n" +
@@ -38100,7 +38142,8 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "          <p>Er zijn nog geen e-mail adressen bekend. Voeg hierboven een e-mail adres toe. Je ontvangt een bevestigings e-mail ter verificatie.</p>\n" +
     "          </div>\n" +
     "          <div class=\"alert alert-danger\" ng-if=\"errors.detail\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{errors.detail}}</div> <br />  \n" +
-    "          <a class=\"btn btn-default btn-sm btn-block\" ng-click=\"goToProfilePage('overview')\">Naar overzicht</a>\n" +
+    "          <a class=\"btn btn-default btn-block\" ng-click=\"goToProfilePage('overview')\">\n" +
+    "          <i class=\"glyphicon glyphicon-chevron-left\" aria-hidden=\"true\"></i> Naar overzicht</a>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -38245,7 +38288,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   $templateCache.put('/idm/templates/user-profile-modal.html',
     "<span class=\"waid\" ng-controller=\"WAIDIDMUserProfileHomeCtrl\">\n" +
     "<div class=\"modal-header\">\n" +
-    "  <h3 class=\"modal-title\">Profiel</h3>\n" +
+    "  <h3 class=\"modal-title\">Profiel<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeUserProfileModal()\"></i></h3>\n" +
     "</div>\n" +
     "<nav class=\"navbar navbar-default hidden-lg hidden-md\">\n" +
     "  <div class=\"container-fluid\">\n" +
@@ -38330,6 +38373,7 @@ angular.module('app', [
   'waid',
   'waid.admin.controllers',
   'waid.admin.templates',
+  'waid.admin.directives',
   'angular-growl',
   'ui.bootstrap',
   'angular-confirm',
@@ -38395,10 +38439,110 @@ angular.module('app', [
         redirectTo: '/'
       });
     $locationProvider.html5Mode(true);
-  }]);
+  }])
+  .run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
+    waidCore.config.setConfig('admin', {
+      'translations': {
+        'mailSettings': {
+          'type':{
+            'register': {
+              'title':'Registratie'
+            },
+            'register_social':{
+              'title':'Social registratie'
+            },
+            'change_password':{
+              'title':'Wachtwoord aangepast'
+            },
+            'change_username':{
+              'title':'Gebruikersnaam aangepast'
+            },
+            'email_add':{
+              'title':'E-Mail toegevoegd'
+            },
+            'user_activity_notification':{
+              'title':'Activiteit op account'
+            }
+          }
+        }
+      }
+    });
+});
 
 angular.module('waid.admin.templates',[]).run(['$templateCache', function($templateCache) { 
   'use strict';
+
+  $templateCache.put('/app/templates/application-email-action.html',
+    "\n" +
+    "		<uib-accordion-group is-open=\"accordion[fieldName + '_open']\">\n" +
+    "            <uib-accordion-heading>\n" +
+    "              {{ ::waid.config.getConfig('admin.translations.mailSettings.type.' + fieldName + '.title') }} <i class=\"pull-right glyphicon\" ng-class=\"{'glyphicon-chevron-down': accordion[fieldName + '_open'], 'glyphicon-chevron-right': !accordion[fieldName + '_open']}\"></i>\n" +
+    "            </uib-accordion-heading>\n" +
+    "            <form>\n" +
+    "              <div class=\"checkbox\">\n" +
+    "                <label>\n" +
+    "                  <input type=\"checkbox\" ng-model=\"application['mail_' + fieldName + '_use_template']\"  ng-true-value=\"true\" ng-false-value=\"false\" > Gebruik aangepaste template\n" +
+    "                </label>\n" +
+    "              </div>\n" +
+    "              <div ng-show=\"application['mail_' + fieldName + '_use_template'] == true\">\n" +
+    "                <button class=\"btn btn-primary\" type=\"button\" ng-click=\"accordion[fieldName + '_open_params']=!accordion[fieldName + '_open_params']\" aria-expanded=\"false\" aria-controls=\"{{ accordion[fieldName + '_open_params'] }}\">\n" +
+    "                  Variabelen\n" +
+    "                </button>\n" +
+    "                <button class=\"btn btn-primary\" type=\"button\" ng-click=\"accordion[fieldName + '_open_example']=!accordion[fieldName + '_open_example']\" aria-expanded=\"false\" aria-controls=\"{{ accordion[fieldName + '_open_example'] }}\">\n" +
+    "                  Standaard e-mail voorbeeld\n" +
+    "                </button>\n" +
+    "\n" +
+    "                <div class=\"collapse\" uib-collapse=\"!accordion[fieldName + '_open_params']\">\n" +
+    "                  <div class=\"well\">\n" +
+    "                    <ul>\n" +
+    "                      <li ng-repeat=\"(key, param) in defaultTemplateData.templates[fieldName].params\">\n" +
+    "                        <b>{{ key }}</b>\n" +
+    "                        <any ng-if=\"param.type == 'object'\">\n" +
+    "                          <ul>\n" +
+    "                            <li ng-repeat=\"(var, properties) in getObjectInfo(key)\">{{ var }} : {{ properties.description }}</li>\n" +
+    "                          </ul>\n" +
+    "                        </any>\n" +
+    "                      </li>\n" +
+    "                    </ul>\n" +
+    "                  </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"collapse\" uib-collapse=\"!accordion[fieldName + '_open_example']\">\n" +
+    "                  <div class=\"well\">\n" +
+    "                    <div class=\"form-group\">\n" +
+    "                      <label>Onderwerp</label>\n" +
+    "                      <input class=\"form-control\" ng-model=\"defaultTemplateData.templates[fieldName].mail.subject\" disabled></input>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"form-group\">\n" +
+    "                      <label for=\"mail_register_message_text\">Inhoud (tekst)</label>\n" +
+    "                      <textarea class=\"form-control\" ng-model=\"defaultTemplateData.templates[fieldName].mail.body_txt\" msd-elastic disabled></textarea>\n" +
+    "                    </div>\n" +
+    "                  </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "\n" +
+    "                <div class=\"form-group\">\n" +
+    "                  <label for=\"mail_{{ fieldName }}_subject\">Onderwerp</label>\n" +
+    "                  <input type=\"input\" class=\"form-control\" id=\"mail_{{ fieldName }}_subject\" ng-model=\"application['mail_' + fieldName + '_subject']\">\n" +
+    "                </div>\n" +
+    "                <div class=\"alert alert-danger\" ng-repeat=\"error in errors.mail_register_subject\"><span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                  <label for=\"mail_register_message_html\">Inhoud (html)</label>\n" +
+    "                  <text-angular id=\"mail_register_message_html\" ng-model=\"application.mail_register_message_html\" rows=\"15\"></text-angular>\n" +
+    "                </div>\n" +
+    "                <div class=\"alert alert-danger\" ng-repeat=\"error in errors.mail_register_subject\"><span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                  <label for=\"mail_register_message_text\">Inhoud (tekst)</label>\n" +
+    "                  <textarea rows=\"15\" class=\"form-control\" id=\"mail_register_message_text\" ng-model=\"application.mail_register_message_text\" msd-elastic></textarea>\n" +
+    "                </div>\n" +
+    "                <div class=\"alert alert-danger\" ng-repeat=\"error in errors.mail_register_message_text\"><span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "              </div>\n" +
+    "              <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
+    "\n" +
+    "            </form>\n" +
+    "          </uib-accordion-group>"
+  );
+
 
   $templateCache.put('/app/templates/cookie-policy.html',
     "<div class=\"container\">\n" +
@@ -38528,7 +38672,7 @@ angular.module('waid.admin.controllers', ['waid'])
     
     $scope.$on('waid.services.admin.account.get.error', function(event, data) {
       growl.addErrorMessage("Geen permissie om in deze admin in te loggen.");
-      waidCore.logout();
+      // waidCore.logout();
       // $location.path('/');
       // // TODO : Fix this buggy refresh
       // $window.location.href = '/';
@@ -38552,12 +38696,20 @@ angular.module('waid.admin.controllers', ['waid'])
 
     $scope.adminAccountChecked = false;
     
-    $scope.$watch('waid', function(waid){
-      if (typeof waid != "undefined" && waid.isInit && $scope.adminAccountChecked == false && waid.user) {
-        waidService.adminAccountGet();
-        $scope.adminAccountChecked = true;
-        if($location.path() != '/page/overview/') {
-          $location.path('/page/overview/');
+    $rootScope.$watch('waid', function(waid){
+      // Als init en is
+      if (typeof waid != "undefined" && waid.isInit && $scope.adminAccountChecked == false) {
+        if (waid.isLoggedIn) {
+          waidService.adminAccountGet().then(function(data){
+            if($location.path() == '/') {
+              $location.path('/page/overview/');
+            }
+          }, function(data){
+            if($location.path() != '/') {
+              $location.path('/');
+            }
+          });
+          $scope.adminAccountChecked = true;
         } else {
           if($location.path() != '/') {
             $location.path('/');
@@ -38574,7 +38726,7 @@ angular.module('waid.admin.controllers', ['waid'])
 
     
   })
-  .controller('WAIDAdminCommentsCtrl', function ($scope, waidCore, waidService, growl) {
+  .controller('WAIDAdminCommentsCtrl', function ($scope, $rootScope, waidCore, waidService, growl) {
     $scope.search = {
       'query':'',
       'marked_as_spam':false
@@ -38617,7 +38769,13 @@ angular.module('waid.admin.controllers', ['waid'])
         growl.addErrorMessage("Kon comment niet verwijderen.");
       });
     };
-    $scope.getComments();
+
+    $rootScope.$watch('waid', function(waid){
+      if (waid.isInit) {
+        $scope.getComments();
+      }
+    }, true);
+
   })
   .controller('WAIDCreateAccountCtrl', function ($scope, $uibModalInstance, Slug, waidService, account) {
       $scope.errors = [];
@@ -38662,10 +38820,11 @@ angular.module('waid.admin.controllers', ['waid'])
     };
 
     $rootScope.$watch('waid', function(waid) {
-      if (waid.isInit &&  $scope.applications.length == 0) {
+      console.log(waid);
+      if (waid.isInit) {
         $scope.getApplicationList();
       }
-    });
+    }, true);
     
   })
   .controller('AdminApplicationMenuCtrl', function ($scope, $rootScope, $routeParams, waidService) {
@@ -38676,7 +38835,7 @@ angular.module('waid.admin.controllers', ['waid'])
           $rootScope.application = data;
         });
       }
-    });
+    }, true);
   })
   .controller('ApplicationDetailMainCtrl', function ($scope, $rootScope, $routeParams, waidService) {
     $scope.save = function() {
@@ -38712,7 +38871,8 @@ angular.module('waid.admin.controllers', ['waid'])
       });
     }
   })
-  .controller('AdminApplicationDetailMailTemplatesCtrl', function ($scope, $rootScope, $routeParams, waidService) {
+  .controller('AdminApplicationEmailActionCtrl', function ($scope, $rootScope, $routeParams, waidService) {
+    $scope.waid = $rootScope.waid;
     $scope.save = function() {
       waidService.adminApplicationPatch($scope.application).then(function(data){
         $rootScope.application = data;
@@ -38721,10 +38881,15 @@ angular.module('waid.admin.controllers', ['waid'])
         $scope.errors = data;
       });
     }
-    waidService.adminDefaultEmailTemplatesGet().then(function(data) {
-      $scope.defaultTemplateData = data;
-      console.log(data);
-    });
+
+    $rootScope.$watch('waid', function(waid){
+      if (waid.isInit && !$scope.defaultTemplateData) {
+        waidService.adminDefaultEmailTemplatesGet().then(function(data) {
+          $scope.defaultTemplateData = data;
+          console.log(data);
+        });
+      }
+    }, true);
 
     $scope.getObjectInfo = function(key) {
       if ($scope.defaultTemplateData != 'undefined' && $scope.defaultTemplateData != null) {
@@ -38738,15 +38903,23 @@ angular.module('waid.admin.controllers', ['waid'])
   })
   .controller('AccountOverviewCtrl', function ($scope, $rootScope, $location, waidService) {
     $scope.model = {};
-    waidService.adminAccountGet().then(function(data){
-      $scope.model = data;
+    $rootScope.$watch('waid', function(waid){
+      if (waid.isInit) {
+        waidService.adminAccountGet().then(function(data){
+          $scope.model = data;
+        });
+      }
     });
   })
   .controller('AccountMainCtrl', function ($scope, $rootScope, $location, waidService, $window) {
     $scope.model = {};
 
-    waidService.adminAccountGet().then(function(data){
-      $scope.model = data;
+    $rootScope.$watch('waid', function(waid){
+      if (waid.isInit) {
+        waidService.adminAccountGet().then(function(data){
+          $scope.model = data;
+        });
+      }
     });
     
     $scope.save = function(){
@@ -38759,3 +38932,21 @@ angular.module('waid.admin.controllers', ['waid'])
       });
     }
   });
+
+'use strict';
+angular.module('waid.admin.directives', [
+  'waid',
+  'waid.admin.controllers'
+]).directive('waidAdminApplicationEmailAction', function (waidCore) {
+  return {
+    scope: {
+      'application': '=',
+      'fieldName': '@'
+    },
+    'controller':'AdminApplicationEmailActionCtrl',
+    restrict: 'E',
+    templateUrl: function (elem, attrs) {
+      return '/app/templates/application-email-action.html'
+    }
+  };
+});

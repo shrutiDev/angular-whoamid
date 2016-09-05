@@ -1,6 +1,78 @@
 angular.module('waid.admin.templates',[]).run(['$templateCache', function($templateCache) { 
   'use strict';
 
+  $templateCache.put('/app/templates/application-email-action.html',
+    "\n" +
+    "		<uib-accordion-group is-open=\"accordion[fieldName + '_open']\">\n" +
+    "            <uib-accordion-heading>\n" +
+    "              {{ ::waid.config.getConfig('admin.translations.mailSettings.type.' + fieldName + '.title') }} <i class=\"pull-right glyphicon\" ng-class=\"{'glyphicon-chevron-down': accordion[fieldName + '_open'], 'glyphicon-chevron-right': !accordion[fieldName + '_open']}\"></i>\n" +
+    "            </uib-accordion-heading>\n" +
+    "            <form>\n" +
+    "              <div class=\"checkbox\">\n" +
+    "                <label>\n" +
+    "                  <input type=\"checkbox\" ng-model=\"application['mail_' + fieldName + '_use_template']\"  ng-true-value=\"true\" ng-false-value=\"false\" > Gebruik aangepaste template\n" +
+    "                </label>\n" +
+    "              </div>\n" +
+    "              <div ng-show=\"application['mail_' + fieldName + '_use_template'] == true\">\n" +
+    "                <button class=\"btn btn-primary\" type=\"button\" ng-click=\"accordion[fieldName + '_open_params']=!accordion[fieldName + '_open_params']\" aria-expanded=\"false\" aria-controls=\"{{ accordion[fieldName + '_open_params'] }}\">\n" +
+    "                  Variabelen\n" +
+    "                </button>\n" +
+    "                <button class=\"btn btn-primary\" type=\"button\" ng-click=\"accordion[fieldName + '_open_example']=!accordion[fieldName + '_open_example']\" aria-expanded=\"false\" aria-controls=\"{{ accordion[fieldName + '_open_example'] }}\">\n" +
+    "                  Standaard e-mail voorbeeld\n" +
+    "                </button>\n" +
+    "\n" +
+    "                <div class=\"collapse\" uib-collapse=\"!accordion[fieldName + '_open_params']\">\n" +
+    "                  <div class=\"well\">\n" +
+    "                    <ul>\n" +
+    "                      <li ng-repeat=\"(key, param) in defaultTemplateData.templates[fieldName].params\">\n" +
+    "                        <b>{{ key }}</b>\n" +
+    "                        <any ng-if=\"param.type == 'object'\">\n" +
+    "                          <ul>\n" +
+    "                            <li ng-repeat=\"(var, properties) in getObjectInfo(key)\">{{ var }} : {{ properties.description }}</li>\n" +
+    "                          </ul>\n" +
+    "                        </any>\n" +
+    "                      </li>\n" +
+    "                    </ul>\n" +
+    "                  </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"collapse\" uib-collapse=\"!accordion[fieldName + '_open_example']\">\n" +
+    "                  <div class=\"well\">\n" +
+    "                    <div class=\"form-group\">\n" +
+    "                      <label>Onderwerp</label>\n" +
+    "                      <input class=\"form-control\" ng-model=\"defaultTemplateData.templates[fieldName].mail.subject\" disabled></input>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"form-group\">\n" +
+    "                      <label for=\"mail_register_message_text\">Inhoud (tekst)</label>\n" +
+    "                      <textarea class=\"form-control\" ng-model=\"defaultTemplateData.templates[fieldName].mail.body_txt\" msd-elastic disabled></textarea>\n" +
+    "                    </div>\n" +
+    "                  </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "\n" +
+    "                <div class=\"form-group\">\n" +
+    "                  <label for=\"mail_{{ fieldName }}_subject\">Onderwerp</label>\n" +
+    "                  <input type=\"input\" class=\"form-control\" id=\"mail_{{ fieldName }}_subject\" ng-model=\"application['mail_' + fieldName + '_subject']\">\n" +
+    "                </div>\n" +
+    "                <div class=\"alert alert-danger\" ng-repeat=\"error in errors.mail_register_subject\"><span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                  <label for=\"mail_register_message_html\">Inhoud (html)</label>\n" +
+    "                  <text-angular id=\"mail_register_message_html\" ng-model=\"application.mail_register_message_html\" rows=\"15\"></text-angular>\n" +
+    "                </div>\n" +
+    "                <div class=\"alert alert-danger\" ng-repeat=\"error in errors.mail_register_subject\"><span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                  <label for=\"mail_register_message_text\">Inhoud (tekst)</label>\n" +
+    "                  <textarea rows=\"15\" class=\"form-control\" id=\"mail_register_message_text\" ng-model=\"application.mail_register_message_text\" msd-elastic></textarea>\n" +
+    "                </div>\n" +
+    "                <div class=\"alert alert-danger\" ng-repeat=\"error in errors.mail_register_message_text\"><span class=\"glyphicon glyphicon-exclamation-sign\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "              </div>\n" +
+    "              <button type=\"submit\" class=\"btn btn-default\" ng-click=\"save()\">Opslaan</button>\n" +
+    "\n" +
+    "            </form>\n" +
+    "          </uib-accordion-group>"
+  );
+
+
   $templateCache.put('/app/templates/cookie-policy.html',
     "<div class=\"container\">\n" +
     "<h3>Cookieverklaring voor whoamid.com</h3>\n" +
