@@ -1,20 +1,17 @@
 <span class="waid">
-    <div class="row">
-      <div class="col-md-4">
-        <h3>Social login/registratie</h3>
-        <p>Social login zorgt ervoor dat je snel kan aanmelden met jouw social media account.</p>
-        <p>Je word doorverwezen naar de social account met verdere informatie en instructies.</p>
-        <p>Zodra je daar akkoord geeft word je weer doorverwezen naar deze site en is jouw account aangemaakt!</p>
-        <ng-include src="'/idm/templates/social-login.html'"></ng-include>
-      </div>
-      <div class="col-md-4">
-        <h3>Login</h3>
-        <ng-include src="'/idm/templates/login.html'"></ng-include>
-      </div>
-      
-      <div class="col-md-4">
-        <h3>Registreren</h3>
-        <ng-include src="'/idm/templates/register.html'"></ng-include>
-      </div>
+  <div class="row">
+    <div class="col-md-4">
+      <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_social_login_title') }}</h3>
+      <div ng-bind-html="::waid.config.getTranslation('idm', 'login_and_register_home_social_login_intro')"></div>
+      <ng-include src="waid.config.getTemplateUrl('idm', 'social-login')"></ng-include>
     </div>
+    <div class="col-md-4">
+      <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_login_title') }}</h3>
+      <ng-include src="waid.config.getTemplateUrl('idm', 'login')"></ng-include>
+    </div>
+    <div class="col-md-4">
+      <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_register_title') }}</h3>
+      <ng-include src="waid.config.getTemplateUrl('idm', 'register')"></ng-include>
+    </div>
+  </div>
 </span>

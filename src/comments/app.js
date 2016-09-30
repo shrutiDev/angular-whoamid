@@ -1,5 +1,4 @@
 angular.module('waid.comments', [
-  'waid.templates',
   'waid.core',
   'waid.idm',
   'waid.comments.controllers',
@@ -7,8 +6,8 @@ angular.module('waid.comments', [
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.setConfig('comments', {
     'templates': {
-      'commentsHome': '/comments/templates/comments-home.html',
-      'commentsOrderButton': '/comments/templates/comments-order-button.html'
+      'commentsHome': '/comments/bootstrap3/templates/comments-home.html',
+      'commentsOrderButton': '/comments/bootstrap3/templates/comments-order-button.html'
     },
     'translations': {
       'title': 'Comments',
@@ -24,7 +23,8 @@ angular.module('waid.comments', [
       'updateCommentButton': 'Aanpassen',
       'voteOrderNewestFirst': 'Nieuwste eerst',
       'voteOrderOldestFirst': 'Oudste eerst',
-      'voteOrderTopFirst': 'Top comments'
+      'voteOrderTopFirst': 'Top comments',
+      'addEmoticonButtonText': 'Emoticon toevoegen'
     }
   });
 });

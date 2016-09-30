@@ -27,12 +27,14 @@ angular.module('waid.core.strategy', [
 
   waidCore.logout = function () {
     waidService.userLogoutPost();
-    waidCore.clearWaidData();
+    waidService.user = false;
   };
+
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
-    waidCore.clearWaidData();
+    waidService.user = false;
   };
+
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
     input.focus();
@@ -44,6 +46,8 @@ angular.module('waid.core.strategy', [
     input.focus();
     $rootScope.waid.closeEmoticonsModal();
   };
+
+  // Retrieve basic account and application data
   waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
@@ -51,11 +55,19 @@ angular.module('waid.core.strategy', [
 
       waidCore.account = data;
       waidCore.application = application;
-      waidCore.isInit = true;
+
+      waidService.applicationGet().then(function(data){
+        console.log('Ja');
+        waidCore.application = data;
+      });
+
       waidCore.saveWaidData();
     });
   };
+
+  // Main initializer for waid
   waidCore.initialize = function () {
+    console.log('Initialize');
     // Check url params to set account and application manually
     var waidAccountId = $location.search().waidAccountId;
     var waidApplicationId = $location.search().waidApplicationId;
@@ -73,6 +85,7 @@ angular.module('waid.core.strategy', [
         try {
           waidCore.account = waid.account;
           waidCore.application = waid.application;
+          waidCore.token = waid.token;
         } catch (err) {
           waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
         }
@@ -86,6 +99,7 @@ angular.module('waid.core.strategy', [
         try {
           waidCore.account = waid.account;
           waidCore.application = waid.application;
+          waidCore.token = waid.token;
         } catch (err) {
           waidCore.clearWaidData();
           waidService._clearAuthorizationData();
@@ -96,6 +110,8 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+
+  //
   waidCore.loginCheck = function (data) {
     if (typeof data.profile_status != 'undefined' && data.profile_status.length > 0) {
       if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -106,18 +122,31 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+
   $rootScope.$watch('waid', function (waid) {
+    
     if (typeof waid != 'undefined') {
-      // Init once
-      if (!waid.isInit) {
-        if (waid.account && waid.application && waid.token) {
+      if (!waid.isInit && waid.account && waid.application) {
+        console.log(waid.token);
+        if (waid.token && !waid.isLoggedIn) {
+          console.log('Authenticate');
           waidService.authenticate().then(function(){
-            waid.isInit = true;
+             waid.isLoggedIn = true;
+             waid.isInit = true;
+             console.log('Ja');
           }, function(){
-            waid.isInit = true;
+             waid.isLoggedIn = false;
+             waid.isInit = true;
+             console.log('Nee');
           })
+        } else {
+          waid.isLoggedIn = false;
+          waid.isInit = true;
         }
+        console.log('Waid Strategy init');
+        console.log(waid);
       }
+
       var waidAlCode = $location.search().waidAlCode;
       if (waidAlCode) {
         waidService.userAutoLoginGet(waidAlCode).then(function (data) {

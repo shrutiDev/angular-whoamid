@@ -12,7 +12,7 @@ angular.module('waid.core.directives', [
     restrict: 'E',
     controller: 'WAIDCoreCtrl',
     templateUrl: function (elem, attrs) {
-      return attrs.templateUrl || waidCore.config.core.templates.core;
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('core', 'core');
     }
   };
 });

@@ -127,7 +127,6 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.getWaidData = function() {
     var waid = $cookies.getObject('waid');
     if (waid) {
-      console.log(waid);
       return waid;
     }
     return false;
@@ -138,6 +137,7 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.account = false;
   waid.application = false;
   waid.isInit = false;
+  waid.isLoggedIn = false;
 
   $rootScope.waid = waid;
   return waid;
@@ -171,12 +171,14 @@ angular.module('waid.core.strategy', [
 
   waidCore.logout = function () {
     waidService.userLogoutPost();
-    waidCore.clearWaidData();
+    waidService.user = false;
   };
+
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
-    waidCore.clearWaidData();
+    waidService.user = false;
   };
+
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
     input.focus();
@@ -188,6 +190,8 @@ angular.module('waid.core.strategy', [
     input.focus();
     $rootScope.waid.closeEmoticonsModal();
   };
+
+  // Retrieve basic account and application data
   waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
@@ -195,11 +199,19 @@ angular.module('waid.core.strategy', [
 
       waidCore.account = data;
       waidCore.application = application;
-      waidCore.isInit = true;
+
+      waidService.applicationGet().then(function(data){
+        console.log('Ja');
+        waidCore.application = data;
+      });
+
       waidCore.saveWaidData();
     });
   };
+
+  // Main initializer for waid
   waidCore.initialize = function () {
+    console.log('Initialize');
     // Check url params to set account and application manually
     var waidAccountId = $location.search().waidAccountId;
     var waidApplicationId = $location.search().waidApplicationId;
@@ -217,6 +229,7 @@ angular.module('waid.core.strategy', [
         try {
           waidCore.account = waid.account;
           waidCore.application = waid.application;
+          waidCore.token = waid.token;
         } catch (err) {
           waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
         }
@@ -230,6 +243,7 @@ angular.module('waid.core.strategy', [
         try {
           waidCore.account = waid.account;
           waidCore.application = waid.application;
+          waidCore.token = waid.token;
         } catch (err) {
           waidCore.clearWaidData();
           waidService._clearAuthorizationData();
@@ -240,6 +254,8 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+
+  //
   waidCore.loginCheck = function (data) {
     if (typeof data.profile_status != 'undefined' && data.profile_status.length > 0) {
       if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -250,18 +266,31 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+
   $rootScope.$watch('waid', function (waid) {
+    
     if (typeof waid != 'undefined') {
-      // Init once
-      if (!waid.isInit) {
-        if (waid.account && waid.application && waid.token) {
+      if (!waid.isInit && waid.account && waid.application) {
+        console.log(waid.token);
+        if (waid.token && !waid.isLoggedIn) {
+          console.log('Authenticate');
           waidService.authenticate().then(function(){
-            waid.isInit = true;
+             waid.isLoggedIn = true;
+             waid.isInit = true;
+             console.log('Ja');
           }, function(){
-            waid.isInit = true;
+             waid.isLoggedIn = false;
+             waid.isInit = true;
+             console.log('Nee');
           })
+        } else {
+          waid.isLoggedIn = false;
+          waid.isInit = true;
         }
+        console.log('Waid Strategy init');
+        console.log(waid);
       }
+
       var waidAlCode = $location.search().waidAlCode;
       if (waidAlCode) {
         waidService.userAutoLoginGet(waidAlCode).then(function (data) {
@@ -352,12 +381,15 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     '_login': function (token) {
       waidCore.token = token;
+      waidCore.isLoggedIn = true;
       waidCore.saveWaidData();
       this.authenticate();
+      console.log('Login initialized');
     },
     '_clearAuthorizationData': function () {
       this.authenticated = false;
       waidCore.token = null;
+      console.log('Logout initialized');
     },
     '_makeFileRequest': function (method, path, broadcast, data) {
       var deferred = $q.defer();
@@ -529,6 +561,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'articlesGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
     },
+    'applicationGet': function(id) {
+      return this._makeRequest('GET', this._getAppUrl('/'), 'application');
+    },
     'adminCommentsListGet': function (params) {
       if (typeof params != 'undefined') {
         var query = '?' + $.param(params);
@@ -538,7 +573,10 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
     },
     'adminDefaultEmailTemplatesGet': function () {
-      return this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+      if (!this.adminDefaultEmailTemplatesGetRunning) {
+        this.adminDefaultEmailTemplatesGetRunning = this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+      }
+      return this.adminDefaultEmailTemplatesGetRunning;
     },
     'adminCommentsPatch': function (id, data) {
       return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);
@@ -1285,8 +1323,6 @@ angular.module('waid.core.controllers', [
   waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
   $scope.waid = waidCore;
-}).controller('WAIDCoreTermsAndConditionsCtrl', function ($scope, $rootScope, waidCore, waidService) {
-  waidCore.initRetrieveData(waidCore.account.id, waidCore.application.id);
 });
 'use strict';
 angular.module('waid.core.directives', [
@@ -1328,6 +1364,22 @@ angular.module('waid.idm', [
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
       'male': 'Man',
       'female': 'Vrouw'
+      'avatar': 'Avatar',
+      'nickname': 'Nickname',
+      'date_of_birth': 'Geboortedatum',
+      'gender':'Geslacht',
+      'overview':'Overzicht',
+      'edit_overview':'Algemene gegevens aanpassen',
+      'interests':'Interesses',
+      'fun':'Leuk',
+      'not_fun':'Niet leuk',
+      'edit_interests':'Interesses aanpassen',
+      'email_addresses':'E-mail adressen',
+      'edit_email_addresses': 'E-mail adressen aanpassen',
+      'username':'Gebruikersnaam',
+      'edit_username':'Gebruikersnaam wijzigen',
+      'password':'Wachtwoord',
+      'edit_password':'Wachtwoord wijzigen'
     }
   });
 });
@@ -1506,7 +1558,13 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
       $scope.initEmails(data);
     });
   };
-  $scope.loadEmailList();
+
+  $scope.$watch('waid', function(waid) {
+    if (waid.isInit) {
+      $scope.loadEmailList();
+    }
+  }, true);
+
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -1620,7 +1678,8 @@ angular.module('waid.comments', [
       'updateCommentButton': 'Aanpassen',
       'voteOrderNewestFirst': 'Nieuwste eerst',
       'voteOrderOldestFirst': 'Oudste eerst',
-      'voteOrderTopFirst': 'Top comments'
+      'voteOrderTopFirst': 'Top comments',
+      'addEmoticonButtonText': 'Emoticon toevoegen'
     }
   });
 });

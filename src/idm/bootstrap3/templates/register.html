@@ -1,7 +1,6 @@
 <span class="waid">
  <div ng-controller="WAIDIDMRegisterCtrl">
       <div ng-show="modus=='complete'" class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ waid.config.getConfig('idm.translations.complete_profile_intro') }}</div>
-
       <div class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.</div>
     <form role="form" name="registerForm" novalidate>
       <div class="form-group" ng-show="show.username">
@@ -26,9 +25,7 @@
       </div>
       <div class="alert alert-danger" ng-repeat="error in errors.terms_and_conditions_check"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
       <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-
       <button ng-disabled="!model.terms_and_conditions_check" type="submit" class="btn btn-primary" ng-click="register()"><span ng-show="modus!='complete'">Registreren</span><span ng-show="modus=='complete'">Registratie afronden</span></button>
-
     </form>
   </div>
 </span>

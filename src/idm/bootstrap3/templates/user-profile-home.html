@@ -3,13 +3,11 @@
 
 <div class="row">
   <div class="col-lg-4 col-md-4 col-sm-4 hidden-sm hidden-xs">
-    <ng-include src="'/idm/templates/user-profile-menu.html'"></ng-include>
+    <ng-include src="waid.config.getTemplateUrl('idm', 'userProfileMenu')"></ng-include>
   </div>
   <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-
     <div ng-show="showProfilePage('overview')" ng-controller="WAIDIDMUserProfileOverviewCtrl">
       <div>
-        
         <h3>Overzicht</h3>
         <dl class="dl-horizontal">
           <dt>Avatar</dt>
@@ -27,12 +25,11 @@
           <dt>Geslacht</dt>
           <dd><span ng-show="model.gender=='F'">{{ waid.config.getConfig('idm.translations.female') }}</span><span ng-show="model.gender=='M'">{{ waid.config.getConfig('idm.translations.male') }}</span></dd>
         </dl>
-        <a class="btn btn-default btn-xs btn-block" ng-click="goToProfilePage('main')"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Algemene gegevens aanpassen</a>
+        <a class="btn btn-default btn-block" ng-click="goToProfilePage('main')"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Algemene gegevens aanpassen</a>
       </div>
       
 
       <div>
-        
         <h3>Interesses</h3>
         <dl class="dl-horizontal">
           <dt>Leuk</dt>
@@ -42,11 +39,10 @@
           <dt>Niet leuk</dt>
           <dd>{{ model.dislike_tags }}</dd>
         </dl>
-        <a class="btn btn-default btn-xs btn-block" ng-click="goToProfilePage('interests')">Interesses aanpassen</a>
+        <a class="btn btn-default btn-block" ng-click="goToProfilePage('interests')"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Interesses aanpassen</a>
       </div>
 
       <div>
-
         <h3>E-mail adressen</h3>
         <dl class="dl-horizontal" ng-repeat="email in emails">
           <dt>
@@ -55,25 +51,25 @@
           </dt>
           <dd>{{ email.email }}</dd>
         </dl>
-
-        <a class="btn btn-default btn-xs btn-block" ng-click="goToProfilePage('emails')">E-mail adressen aanpassen</a>
-
+        <a class="btn btn-default btn-block" ng-click="goToProfilePage('emails')"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> E-mail adressen aanpassen</a>
       </div>
 
       <div>
-        <h3>Login</h3>
+        <h3>Gebruikersnaam</h3>
         <dl class="dl-horizontal">
           <dt>Gebruikersnaam</dt>
           <dd>{{ model.username }}</dd>
         </dl>
-        <a class="btn btn-default btn-xs btn-block" ng-click="goToProfilePage('username')">Login aanpassen</a>
-        
+        <a class="btn btn-default btn-block" ng-click="goToProfilePage('username')"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Login aanpassen</a>
+      </div>
+
+      <div>
+        <h3>Wachtwoord</h3>
         <dl class="dl-horizontal">
           <dt>Wachtwoord</dt>
           <dd>******</dd>
         </dl>
-        <a class="btn btn-default btn-xs btn-block" ng-click="goToProfilePage('password')">Wachtwoord aanpassen</a>
-
+        <a class="btn btn-default btn-block" ng-click="goToProfilePage('password')"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Wachtwoord aanpassen</a>
       </div>
     </div>
 
@@ -120,7 +116,8 @@
           <p>Er zijn nog geen e-mail adressen bekend. Voeg hierboven een e-mail adres toe. Je ontvangt een bevestigings e-mail ter verificatie.</p>
           </div>
           <div class="alert alert-danger" ng-if="errors.detail"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{errors.detail}}</div> <br />  
-          <a class="btn btn-default btn-sm btn-block" ng-click="goToProfilePage('overview')">Naar overzicht</a>
+          <a class="btn btn-default btn-block" ng-click="goToProfilePage('overview')">
+          <i class="glyphicon glyphicon-chevron-left" aria-hidden="true"></i> Naar overzicht</a>
       </div>
     </div>
 

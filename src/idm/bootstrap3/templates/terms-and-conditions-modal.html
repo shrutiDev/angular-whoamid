@@ -1,6 +1,6 @@
-<span class="waid" ng-controller="WAIDCoreTermsAndConditionsCtrl">
+<span class="waid">
 	<div class="modal-header">
-	    <h3 class="modal-title">Algemene voorwaarden</h3>
+	    <h3 class="modal-title">Algemene voorwaarden<i class="glyphicon glyphicon-remove pull-right" ng-click="waid.closeTermsAndConditionsModal()"></i></h3>
 	</div>
 	<div class="modal-body">
 	  	<p ng-show="waid.application.terms_and_conditions.length > 0" ng-bind-html="waid.application.terms_and_conditions"></p>

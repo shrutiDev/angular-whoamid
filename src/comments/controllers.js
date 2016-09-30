@@ -7,6 +7,7 @@ angular.module('waid.comments.controllers', [
   $scope.ordering = angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
   $scope.orderingEnabled = angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
   $scope.threadId = angular.isDefined($scope.threadId) ? $scope.threadId : 'currenturl';
+
   $scope.waid = $rootScope.waid;
   $scope.comment = { 'comment': '' };
   $scope.orderCommentList = function (ordering) {

@@ -23,6 +23,15 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.config.setConfig = function (key, config) {
     this[key] = config;
   };
+  waid.config.getTemplateUrl = function (module, key) {
+    return '/static/idm/angular-whoamid/src' + this[module]['templates'][key];
+  };
+  waid.config.getTemplate = function(url) {
+    return '/static/idm/angular-whoamid/src' + url;
+  };
+  waid.config.getTranslation = function (module, key) {
+    return this[module]['translations'][key];
+  };
   waid.config.getConfig = function (key) {
     if (key.indexOf('.') !== -1) {
         var parts = key.split('.');
@@ -79,7 +88,6 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.getWaidData = function() {
     var waid = $cookies.getObject('waid');
     if (waid) {
-      console.log(waid);
       return waid;
     }
     return false;
@@ -90,6 +98,7 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
   waid.account = false;
   waid.application = false;
   waid.isInit = false;
+  waid.isLoggedIn = false;
 
   $rootScope.waid = waid;
   return waid;

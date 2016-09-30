@@ -78,12 +78,15 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     '_login': function (token) {
       waidCore.token = token;
+      waidCore.isLoggedIn = true;
       waidCore.saveWaidData();
       this.authenticate();
+      console.log('Login initialized');
     },
     '_clearAuthorizationData': function () {
       this.authenticated = false;
       waidCore.token = null;
+      console.log('Logout initialized');
     },
     '_makeFileRequest': function (method, path, broadcast, data) {
       var deferred = $q.defer();
@@ -255,6 +258,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'articlesGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
     },
+    'applicationGet': function(id) {
+      return this._makeRequest('GET', this._getAppUrl('/'), 'application');
+    },
     'adminCommentsListGet': function (params) {
       if (typeof params != 'undefined') {
         var query = '?' + $.param(params);
@@ -264,7 +270,10 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
     },
     'adminDefaultEmailTemplatesGet': function () {
-      return this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+      if (!this.adminDefaultEmailTemplatesGetRunning) {
+        this.adminDefaultEmailTemplatesGetRunning = this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+      }
+      return this.adminDefaultEmailTemplatesGetRunning;
     },
     'adminCommentsPatch': function (id, data) {
       return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);

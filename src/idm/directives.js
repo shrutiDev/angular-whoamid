@@ -6,14 +6,14 @@ angular.module('waid.idm.directives', [
   return {
     restrict: 'E',
     templateUrl: function (elem, attrs) {
-      return attrs.templateUrl || waidCore.config.idm.templates.userProfileNavbar;
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'userProfileNavbar');
     }
   };
 }).directive('waidUserProfileStatusButton', function (waidCore) {
   return {
     restrict: 'E',
     templateUrl: function (elem, attrs) {
-      return attrs.templateUrl || waidCore.config.idm.templates.userProfileStatusButton;
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'userProfileStatusButton');
     }
   };
 });

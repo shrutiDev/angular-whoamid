@@ -1,6 +1,6 @@
 <span class="waid" ng-controller="WAIDIDMUserProfileHomeCtrl">
 <div class="modal-header">
-  <h3 class="modal-title">Profiel</h3>
+  <h3 class="modal-title">Profiel<i class="glyphicon glyphicon-remove pull-right" ng-click="waid.closeUserProfileModal()"></i></h3>
 </div>
 <nav class="navbar navbar-default hidden-lg hidden-md">
   <div class="container-fluid">
@@ -31,7 +31,7 @@
   </div><!-- /.container-fluid -->
 </nav>
 <div class="modal-body">
-   <ng-include src="'/idm/templates/user-profile-home.html'"></ng-include>
+   <ng-include src="waid.config.getTemplateUrl('idm', 'userProfileHome')"></ng-include>
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning" type="button" ng-click="waid.closeUserProfileModal()">Sluiten</button>

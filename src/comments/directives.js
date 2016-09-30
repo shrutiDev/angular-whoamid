@@ -12,14 +12,14 @@ angular.module('waid.comments.directives', [
     },
     controller: 'WAIDCommentsCtrl',
     templateUrl: function (elem, attrs) {
-      return attrs.templateUrl || waidCore.config.getConfig('comments.templates.commentsHome');
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('comments', 'commentsHome');
     }
   };
 }).directive('waidCommentsOrderButton', function (waidCore) {
   return {
     restrict: 'E',
     templateUrl: function (elem, attrs) {
-      return attrs.templateUrl || waidCore.config.getConfig('comments.templates.commentsOrderButton');
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('comments', 'commentsOrderButton');
     }
   };
 });

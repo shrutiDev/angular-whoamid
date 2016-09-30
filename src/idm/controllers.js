@@ -173,7 +173,13 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
       $scope.initEmails(data);
     });
   };
-  $scope.loadEmailList();
+
+  $scope.$watch('waid', function(waid) {
+    if (waid.isInit) {
+      $scope.loadEmailList();
+    }
+  }, true);
+
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {

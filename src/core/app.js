@@ -1,7 +1,6 @@
 'use strict';
 angular.module('waid', [
   'ngCookies',
-  'waid.templates',
   'waid.core',
   'waid.core.strategy',
   'waid.core.services',
@@ -21,8 +20,9 @@ angular.module('waid', [
   });
   waidCore.config.setConfig('core', {
     'templates': {
-      'core': '/core/templates/core.html',
-      'emoticonsModal': '/core/templates/emoticons-modal.html'
+      'core': '/core/bootstrap3/templates/core.html',
+      'emoticonsModal': '/core/bootstrap3/templates/emoticons-modal.html',
+      'modalWindow' : '/core/bootstrap3/templates/modal/window.html'
     },
     'errorCodes': {
       'auth-cancelled': 'Authentication was canceled by the user.',
@@ -36,12 +36,10 @@ angular.module('waid', [
       'system-error': 'System error, failed for some reason.'
     },
     'translations': {
-      'emoticons': {
-        'people': 'Mensen',
-        'nature': 'Natuur',
-        'objects': 'Objecten',
-        'places': 'Plaatsen'
-      }
+      'emoticons_people': 'Mensen',
+      'emoticons_nature': 'Natuur',
+      'emoticons_objects': 'Objecten',
+      'emoticons_places': 'Plaatsen'
     }
   });
   waidService.initialize();
