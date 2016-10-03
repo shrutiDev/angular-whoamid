@@ -62,7 +62,7 @@ angular.module('waid.comments.controllers', [
     });
   };
   $scope.post = function () {
-    $scope.comment.thread_id = $scope.objectId;
+    $scope.comment.object_id = $scope.objectId;
     waidService.userCommentsPost($scope.comment).then(function (data) {
       $scope.comment.comment = '';
       $scope.loadComments();
