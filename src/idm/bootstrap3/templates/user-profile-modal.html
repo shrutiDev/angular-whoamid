@@ -17,13 +17,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="waid-profile-navbar">
       <ul class="nav navbar-nav">
-	    <li><a ng-class="getActiveProfilePageMenuClass('overview')" ng-click="goToProfilePage('overview')" data-toggle="collapse" data-target="#waid-profile-navbar">Overzicht</a></li>
-	    <li><a ng-class="getActiveProfilePageMenuClass('main')" ng-click="goToProfilePage('main')" data-toggle="collapse" data-target="#waid-profile-navbar">Algemeen</a></li>
-	    <li><a ng-class="getActiveProfilePageMenuClass('interests')" ng-click="goToProfilePage('interests')" data-toggle="collapse" data-target="#waid-profile-navbar">Interesses</a></li>
-	    <li><a ng-class="getActiveProfilePageMenuClass('emails')" ng-click="goToProfilePage('emails')" data-toggle="collapse" data-target="#waid-profile-navbar">E-Mail adressen</a></li>
-
-        <li><a ng-class="getActiveProfilePageMenuClass('username')" ng-click="goToProfilePage('username')"" data-toggle="collapse" data-target="#waid-profile-navbar">Gebruikersnaam</a></li>
-        <li><a ng-class="getActiveProfilePageMenuClass('password')" ng-click="goToProfilePage('password')" data-toggle="collapse" data-target="#waid-profile-navbar" >Wachtwoord</a></li>
+        <li ng-repeat="menuItem in waid.config.getConfig('idm').profile.fieldSet"><a ng-class="getActiveProfilePageMenuClass(menuItem.key)" ng-click="goToProfilePage(menuItem.key)" data-toggle="collapse" data-target="#waid-profile-navbar">{{ waid.config.getTranslation('idm', 'profile_' + menuItem.key + '_title') }}</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="#" ng-click="waid.logout()" class="visible-xs" data-toggle="collapse" data-target="#waid-profile-navbar">Uitloggen</a>
       </ul>

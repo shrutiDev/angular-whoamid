@@ -6,7 +6,7 @@ angular.module('waid.comments.controllers', [
 ]).controller('WAIDCommentsCtrl', function ($scope, $rootScope, waidService, $q, waidCoreStrategy, waidCoreAppStrategy) {
   $scope.ordering = angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
   $scope.orderingEnabled = angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
-  $scope.threadId = angular.isDefined($scope.threadId) ? $scope.threadId : 'currenturl';
+  $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
 
   $scope.waid = $rootScope.waid;
   $scope.comment = { 'comment': '' };
@@ -49,7 +49,7 @@ angular.module('waid.comments.controllers', [
   };
   $scope.loadComments = function () {
     waidService.commentsListGet({
-      'thread_id': $scope.threadId,
+      'object_id': $scope.objectId,
       'ordering': $scope.ordering
     }).then(function (data) {
       for (var i = 0; i < data.length; i++) {
@@ -62,14 +62,14 @@ angular.module('waid.comments.controllers', [
     });
   };
   $scope.post = function () {
-    $scope.comment.thread_id = $scope.threadId;
+    $scope.comment.thread_id = $scope.objectId;
     waidService.userCommentsPost($scope.comment).then(function (data) {
       $scope.comment.comment = '';
       $scope.loadComments();
     });
   };
-  $scope.$watch('threadId', function (threadId) {
-    if (threadId != '') {
+  $scope.$watch('objectId', function (objectId) {
+    if (objectId != '') {
       $scope.loadComments();
     }
   });

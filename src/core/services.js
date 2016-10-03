@@ -213,8 +213,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return this._makeRequest('PATCH', this._getAppUrl('/user/comments/' + id + '/'), 'application.userComments', data);
     },
     'userCommentsPost': function (data) {
-      if (typeof data.thread_id != 'undefined' && data.thread_id == 'currenturl') {
-        data.thread_id = waidCore.slugify($location.absUrl());
+      if (typeof data.object_id != 'undefined' && data.object_id == 'currenturl') {
+        data.object_id = waidCore.slugify($location.absUrl());
       }
       data.url = $location.absUrl();
       return this._makeRequest('POST', this._getAppUrl('/user/comments/'), 'application.userComments', data);
@@ -224,8 +224,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userCommentsListGet': function (params) {
       if (typeof params != 'undefined') {
-        if (typeof params.thread_id != 'undefined' && params.thread_id == 'currenturl') {
-          params.thread_id = waidCore.slugify($location.absUrl());
+        if (typeof params.object_id != 'undefined' && params.object_id == 'currenturl') {
+          params.object_id = waidCore.slugify($location.absUrl());
         }
         var query = '?' + $.param(params);
       } else {
@@ -235,8 +235,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'commentsListGet': function (params) {
       if (typeof params != 'undefined') {
-        if (typeof params.thread_id != 'undefined' && params.thread_id == 'currenturl') {
-          params.thread_id = waidCore.slugify($location.absUrl());
+        if (typeof params.object_id != 'undefined' && params.object_id == 'currenturl') {
+          params.object_id = waidCore.slugify($location.absUrl());
         }
         var query = '?' + $.param(params);
       } else {
@@ -251,6 +251,12 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'commentsMarkPost': function (id, mark) {
       var data = { 'mark': mark };
       return this._makeRequest('POST', this._getAppUrl('/comments/' + id + '/mark/'), 'application.commentsMark', data);
+    },
+    'ratingPost': function (data) {
+      if (typeof data.object_id != 'undefined' && data.object_id == 'currenturl') {
+        data.object_id = waidCore.slugify($location.absUrl());
+      }
+      return this._makeRequest('POST', this._getAppUrl('/rating/'), 'application.rating', data);
     },
     'articlesListGet': function () {
       return this._makeRequest('GET', this._getAppUrl('/articles/'), 'application.articlesList');

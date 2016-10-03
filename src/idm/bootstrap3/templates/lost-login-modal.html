@@ -1,11 +1,11 @@
 <span class="waid">
 	<div class="modal-header">
-	  <h3 class="modal-title">Login gegevens kwijt?<i class="glyphicon glyphicon-remove pull-right" ng-click="waid.closeLostLoginModal()"></i></h3>
+	  <h3 class="modal-title">{{ ::waid.config.getTranslation('idm', 'lost_login_modal_title') }}<i class="glyphicon glyphicon-remove pull-right" ng-click="waid.closeLostLoginModal()"></i></h3>
 	</div>
 	<div class="modal-body">
 	  <ng-include src="waid.config.getTemplateUrl('idm', 'lostLogin')"></ng-include>
 	</div>
 	<div class="modal-footer">
-	    <button class="btn btn-warning" type="button" ng-click="waid.closeLostLoginModal()">Sluiten</button>
+	    <button class="btn btn-warning" type="button" ng-click="waid.closeLostLoginModal()">{{ ::waid.config.getTranslation('idm', 'lost_login_modal_close_button') }}</button>
 	</div>
 </span>

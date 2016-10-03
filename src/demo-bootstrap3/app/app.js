@@ -6,6 +6,8 @@ angular.module('app', [
   'ngSanitize',
   'ngRoute',
   'waid',
+  'waid.rating',
+  'waid.comments',
   'waid.demo.controllers',
   'monospaced.elastic',
   'iso.directives',
