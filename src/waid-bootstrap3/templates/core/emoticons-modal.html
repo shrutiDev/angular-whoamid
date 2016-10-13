@@ -1,0 +1,16 @@
+<span class="waid">
+	<div class="modal-header">
+	  <h3 class="modal-title">Emoticons</h3>
+	</div>
+	<div class="modal-body">
+	<div ng-repeat="(key, group) in emoticons">
+		<h4>{{ waid.config.getTranslation('core', 'emoticons_' + key) }}</h4>
+		<p>
+		<span class="emoticon_select" ng-repeat="emoticon in group track by $index" ng-click="waid.addEmoticon(emoticon)">{{ emoticon }}</span>
+		</p>
+	</div>
+	</div>
+	<div class="modal-footer">
+	    <button class="btn btn-warning" type="button" ng-click="waid.closeEmoticonsModal()">Sluiten</button>
+	</div>
+</span>

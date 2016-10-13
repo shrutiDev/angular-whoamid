@@ -1,0 +1,10 @@
+<span class="waid">
+
+
+<ul class="nav nav-pills nav-stacked">
+  <li role="presentation" ng-repeat="menuItem in waid.config.getConfig('idm').profile.fieldSet" ng-class="getActiveProfilePageMenuClass(menuItem.key)"><a ng-click="goToProfilePage(menuItem.key)">{{ waid.config.getTranslation('idm', 'profile_' + menuItem.key + '_title') }}</a></li>
+  <li role="presentation" ng-click="waid.logout()"><a>Uitloggen</a></li>
+</ul>
+
+</span>
+

@@ -1,0 +1,11 @@
+<span class="waid">
+	<div class="modal-header">
+	  <h3 class="modal-title">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_title') }}</h3>
+	</div>
+	<div class="modal-body">
+	  <ng-include src="waid.config.getTemplateUrl('idm', 'register')" ng-init="modus = 'complete'"></ng-include>
+	</div>
+	<div class="modal-footer">
+	  <button class="btn btn-warning" type="button" ng-click="waid.logout()">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_close_button') }}</button>
+	</div>
+</span>

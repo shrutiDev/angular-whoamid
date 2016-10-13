@@ -1,0 +1,14 @@
+<span class="waid">
+<div class="btn-group">
+  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-show="waid.user">
+    <span class="glyphicon glyphicon-user"></span> Ingelogd als {{ waid.user.default_name }}  <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" ng-show="waid.user">
+    <li><a ng-click="waid.openUserProfileHomeModal()"><span class="glyphicon glyphicon-cog"></span> Profiel</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="#" ng-click="waid.logout()"><span class="glyphicon glyphicon-log-out"></span> Uitloggen</a></li>
+    <li><a href="#" ng-click="waid.logoutAll()"><span class="glyphicon glyphicon-new-window"></span> Op alle systemen uitloggen</a></li>
+  </ul>
+</div>
+<button ng-hide="waid.user" ng-click="waid.openLoginAndRegisterHomeModal()" class="btn btn-default btn-xs">Login of Registreer</button>
+</div>
