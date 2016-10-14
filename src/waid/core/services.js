@@ -1,5 +1,5 @@
 'use strict';
-angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore) {
+angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
   var service = {
     'API_URL': '',
     'apiVersion': 'v1',
@@ -337,14 +337,15 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'initialize': function (url) {
       var that = this;
+      this.API_URL = $window.location.protocol + '//';
       if (window.location.port == '8080' || window.location.port == '8000') {
-        this.API_URL = waidCore.config.getConfig('api.environment.development.url');
+        this.API_URL += waidCore.config.getConfig('api.environment.development.url');
       } else if (window.location.port == '8001') {
-        this.API_URL = waidCore.config.getConfig('api.environment.test.url');
+        this.API_URL += waidCore.config.getConfig('api.environment.test.url');
       } else if (window.location.port == '8002') {
-        this.API_URL = waidCore.config.getConfig('api.environment.staging.url');
+        this.API_URL += waidCore.config.getConfig('api.environment.staging.url');
       } else {
-        this.API_URL = waidCore.config.getConfig('api.environment.production.url');
+        this.API_URL += waidCore.config.getConfig('api.environment.production.url');
       }
       // new Fingerprint2().get(function (result, components) {
       //   that.fp = result;

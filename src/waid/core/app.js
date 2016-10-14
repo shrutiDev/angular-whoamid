@@ -13,10 +13,10 @@ angular.module('waid', [
   waidCore.config.baseTemplatePath = '';
   waidCore.config.setConfig('api', {
     'environment': {
-      'development': { 'url': 'http://dev.whoamid.com:8000/nl/api' },
-      'test': { 'url': 'http://test.whoamid.com:8001/nl/api' },
-      'staging': { 'url': 'http://test.whoamid.com:8002/nl/api' },
-      'production': { 'url': 'http://eu.whoamid.com/nl/api' }
+      'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
+      'test': { 'url': 'test.whoamid.com:8001/nl/api' },
+      'staging': { 'url': 'test.whoamid.com:8002/nl/api' },
+      'production': { 'url': 'eu.whoamid.com/nl/api' }
     }  // 'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
        // 'applicationId' : 'c7d23002-da7d-4ad3-a665-9ae9de276c9e',
   });

@@ -13,10 +13,10 @@ angular.module('waid', [
   waidCore.config.baseTemplatePath = '';
   waidCore.config.setConfig('api', {
     'environment': {
-      'development': { 'url': 'http://dev.whoamid.com:8000/nl/api' },
-      'test': { 'url': 'http://test.whoamid.com:8001/nl/api' },
-      'staging': { 'url': 'http://test.whoamid.com:8002/nl/api' },
-      'production': { 'url': 'http://eu.whoamid.com/nl/api' }
+      'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
+      'test': { 'url': 'test.whoamid.com:8001/nl/api' },
+      'staging': { 'url': 'test.whoamid.com:8002/nl/api' },
+      'production': { 'url': 'eu.whoamid.com/nl/api' }
     }  // 'accountId' : 'efa26bbd-33dc-4148-b135-a1e9234e0fef',
        // 'applicationId' : 'c7d23002-da7d-4ad3-a665-9ae9de276c9e',
   });
@@ -314,7 +314,7 @@ angular.module('waid.core.strategy', [
   }, true);
 });
 'use strict';
-angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore) {
+angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
   var service = {
     'API_URL': '',
     'apiVersion': 'v1',
@@ -652,14 +652,15 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'initialize': function (url) {
       var that = this;
+      this.API_URL = $window.location.protocol + '//';
       if (window.location.port == '8080' || window.location.port == '8000') {
-        this.API_URL = waidCore.config.getConfig('api.environment.development.url');
+        this.API_URL += waidCore.config.getConfig('api.environment.development.url');
       } else if (window.location.port == '8001') {
-        this.API_URL = waidCore.config.getConfig('api.environment.test.url');
+        this.API_URL += waidCore.config.getConfig('api.environment.test.url');
       } else if (window.location.port == '8002') {
-        this.API_URL = waidCore.config.getConfig('api.environment.staging.url');
+        this.API_URL += waidCore.config.getConfig('api.environment.staging.url');
       } else {
-        this.API_URL = waidCore.config.getConfig('api.environment.production.url');
+        this.API_URL += waidCore.config.getConfig('api.environment.production.url');
       }
       // new Fingerprint2().get(function (result, components) {
       //   that.fp = result;
