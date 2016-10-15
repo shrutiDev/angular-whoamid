@@ -9,6 +9,7 @@
     <div ng-show="showProfilePage('overview')" ng-controller="WAIDIDMUserProfileOverviewCtrl">
       <div>
         <h3>Overzicht</h3>
+        <h4>Algemene gegevens</h4>
         <dl class="dl-horizontal">
           <dt>Avatar</dt>
           <dd><img ng-show="model.avatar_thumb_50_50" ng-src="{{ model.avatar_thumb_50_50 }}"></dd>
@@ -30,7 +31,7 @@
       
 
       <div>
-        <h3>Interesses</h3>
+        <h4>Interesses</h4>
         <dl class="dl-horizontal">
           <dt>Leuk</dt>
           <dd>{{ model.like_tags }}</dd>
@@ -43,7 +44,7 @@
       </div>
 
       <div>
-        <h3>E-mail adressen</h3>
+        <h4>E-mail adressen</h4>
         <dl class="dl-horizontal" ng-repeat="email in emails">
           <dt>
             <span class="glyphicon glyphicon-eye-close text-danger" ng-show="!email.is_verified"></span>
@@ -55,7 +56,7 @@
       </div>
 
       <div>
-        <h3>Gebruikersnaam</h3>
+        <h4>Gebruikersnaam</h4>
         <dl class="dl-horizontal">
           <dt>Gebruikersnaam</dt>
           <dd>{{ model.username }}</dd>
@@ -64,7 +65,7 @@
       </div>
 
       <div>
-        <h3>Wachtwoord</h3>
+        <h4>Wachtwoord</h4>
         <dl class="dl-horizontal">
           <dt>Wachtwoord</dt>
           <dd>******</dd>
@@ -76,7 +77,7 @@
 
     <div ng-show="showProfilePage('emails')" ng-controller="WAIDIDMUserProfileEmailCtrl">
       <div>
-        <h3>E-Mail adresses</h3>
+        <h4>E-Mail adresses</h4>
           <div class="input-group input-group-sm">
             <input type="add_email" class="form-control" id="add_email" placeholder="Email" ng-model="emailAdd">
             <span class="input-group-btn">
@@ -124,7 +125,7 @@
 
     <div ng-show="showProfilePage('main')" ng-controller="WAIDIDMUserProfileMainCtrl">
       <div>
-        <h3>Algemene gegevens</h3>
+        <h4>Algemene gegevens</h4>
         <form>
           <div class="form-group">
             <label for="username">Weergave naam</label>
@@ -175,7 +176,7 @@
 
     <div ng-show="showProfilePage('interests')" ng-controller="WAIDIDMUserProfileInterestsCtrl">
       <div>
-        <h3>Interesses</h3>
+        <h4>Interesses</h4>
         <p>Om de kwaliteit en gebruiksvriendelijkheid te verbeteren willen we graag weten waar jouw interesses liggen.
         Uiteraart is dit niet verplicht maar we stellen het wel op prijs!</p>
         <form>
@@ -199,7 +200,7 @@
 
     <div ng-show="showProfilePage('username')" ng-controller="WAIDIDMUserProfileUsernameCtrl">
       <div>
-        <h3>Gebruikersnaam</h3>
+        <h4>Gebruikersnaam</h4>
         <form>
           <div class="form-group">
             <label for="username">Gebruikersnaam</label>
@@ -214,7 +215,7 @@
 
     <div ng-show="showProfilePage('password')" ng-controller="WAIDIDMUserProfilePasswordCtrl">
       <div>
-        <h3>wachtwoord wijzigen</h3>
+        <h4>wachtwoord wijzigen</h4>
         <form>
             <div class="form-group">
               <label for="password">Wachtwoord</label>

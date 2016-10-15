@@ -52,7 +52,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
 }).controller('WAIDIDMUserProfileOverviewCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
   $scope.model = waidCore.user;
   waidService.userEmailListGet().then(function (data) {
-    $scope.emails = data;
+    console.log(data);
+    $scope.emails = data.results;
   });
   // Update stuff
   $rootScope.$watch('waid.user', function(data){
@@ -170,7 +171,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   };
   $scope.loadEmailList = function () {
     waidService.userEmailListGet().then(function (data) {
-      $scope.initEmails(data);
+      $scope.initEmails(data.results);
     });
   };
 
@@ -193,7 +194,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   $scope.goToSocialLogin = function (provider) {
     $window.location.assign(provider.url);
   };
-  
+
   $scope.$watch('waid.isInit', function (isInit) {
     if (isInit) {
       $scope.getProviders();
