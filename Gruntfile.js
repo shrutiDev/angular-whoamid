@@ -170,25 +170,36 @@ module.exports = function (grunt) {
               ],
               dest: 'dist/bootstrap3/waid-dependencies.js'
           }
+        },
+        
+        // Javascript compression
+        uglify: {
+            options: {
+                compress: {},
+                mangle: false,
+                beautify: false
+            },
+            base:{
+                files: { 
+                    'dist/waid.min.js': ['dist/waid.js']
+                }
+            },
+            waiddependenciesjs:{
+                files: { 
+                    'dist/waid-dependencies.min.js': ['dist/waid-dependencies.js']
+                }
+            },
+            bootstrap3js:{
+                files: { 
+                    'dist/bootstrap3/waid.min.js': ['dist/bootstrap3/waid.js']
+                }
+            },
+            bootstrap3dependenciesjs:{
+                files: { 
+                    'dist/bootstrap3/waid-dependencies.min.js': ['dist/bootstrap3/waid-dependencies.js']
+                }
+            }
         }
-        // // Javascript compression
-        // uglify: {
-        //     options: {
-        //         compress: {},
-        //         mangle: false,
-        //         beautify: false
-        //     },
-        //     base:{
-        //         files: { 
-        //             'dist/waid.min.js': ['dist/waid.js']
-        //         }
-        //     },
-        //     bootstrap3noconflict:{
-        //         files: { 
-        //             'dist/bootstrap3/noconflict.min.js': ['dist/bootstrap3/noconflict.js']
-        //         }
-        //     }
-        // }
 
     });
 
@@ -203,5 +214,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-purifycss');
 
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['copy', 'concat', 'sass', 'watch']);
+    grunt.registerTask('default', ['copy', 'concat', 'sass', 'uglify', 'watch']);
 }
