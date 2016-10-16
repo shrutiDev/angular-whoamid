@@ -5,9 +5,7 @@ angular.module('waid.rating.directives', [
 ]).directive('waidRating', function (waidCore) {
   return {
     restrict: 'E',
-    scope: {
-      objectId: '@?'
-    },
+    scope: { objectId: '@?' },
     controller: 'WAIDRatingCtrl',
     templateUrl: function (elem, attrs) {
       return attrs.templateUrl || waidCore.config.getTemplateUrl('rating', 'ratingWidget');

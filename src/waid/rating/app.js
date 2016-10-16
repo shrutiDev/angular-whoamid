@@ -5,10 +5,7 @@ angular.module('waid.rating', [
   'waid.rating.directives'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.setConfig('rating', {
-    'templates': {
-      'ratingWidget': '/templates/rating/widget.html'
-    },
-    'translations': {
-    }
+    'templates': { 'ratingWidget': '/templates/rating/widget.html' },
+    'translations': {}
   });
 });

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootScope, $cookies) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -24,22 +24,22 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
     this[key] = config;
   };
   waid.config.getTemplateUrl = function (module, key) {
-    if (typeof this[module]['templates'][key] == 'undefined') {
+    if (typeof this[module].templates[key] == 'undefined') {
       console.log(key + ' template does not exist!');
     }
-    return waid.config.baseTemplatePath + this[module]['templates'][key];
+    return waid.config.baseTemplatePath + this[module].templates[key];
   };
-  waid.config.getTemplate = function(url) {
+  waid.config.getTemplate = function (url) {
     return waid.config.baseTemplatePath + url;
   };
   waid.config.getTranslation = function (module, key) {
-    return this[module]['translations'][key];
+    return this[module].translations[key];
   };
   waid.config.getConfig = function (key) {
     if (key.indexOf('.') !== -1) {
-        var parts = key.split('.');
+      var parts = key.split('.');
     } else {
-        var parts = new Array(key);
+      var parts = new Array(key);
     }
     if (parts.length > 0) {
       var config = this;
@@ -76,33 +76,29 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
     $rootScope.waid.application = false;
     $rootScope.waid.user = false;
     $rootScope.waid.isLoggedIn = false;
-    $cookies.remove('waid', {'path':'/'});
+    $cookies.remove('waid', { 'path': '/' });
   };
-
-  waid.saveWaidData = function() {
+  waid.saveWaidData = function () {
     var waid = {
-      'account':$rootScope.waid.account,
-      'application':$rootScope.waid.application,
-      'token':$rootScope.waid.token
-    }
+      'account': $rootScope.waid.account,
+      'application': $rootScope.waid.application,
+      'token': $rootScope.waid.token
+    };
     $cookies.putObject('waid', waid, { 'path': '/' });
-  }
-
-  waid.getWaidData = function() {
+  };
+  waid.getWaidData = function () {
     var waid = $cookies.getObject('waid');
     if (waid) {
       return waid;
     }
     return false;
-  }
-
+  };
   waid.utils = {};
   waid.user = false;
   waid.account = false;
   waid.application = false;
   waid.isInit = false;
   waid.isLoggedIn = false;
-
   $rootScope.waid = waid;
   return waid;
 });

@@ -257,7 +257,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       data.url = $location.absUrl();
       return this._makeRequest('POST', this._getAppUrl('/rating/'), 'application.rating', data);
     },
-    'ratingGet': function(object_id) {
+    'ratingGet': function (object_id) {
       return this._makeRequest('GET', this._getAppUrl('/rating/' + object_id + '/'), 'application.rating');
     },
     'articlesListGet': function () {
@@ -266,7 +266,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'articlesGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
     },
-    'applicationGet': function(id) {
+    'applicationGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/'), 'application');
     },
     'adminCommentsListGet': function (params) {

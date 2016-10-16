@@ -9,34 +9,30 @@ angular.module('waid.core.strategy', [
     }
     return false;
   };
-
-  waidCore.getAlCodeUrl = function() {
-      var url = $location.absUrl();
-      if ($location.$$html5 == false) {
-        if ($location.absUrl().indexOf('#') == -1) {
-          url += '#';
-        }
+  waidCore.getAlCodeUrl = function () {
+    var url = $location.absUrl();
+    if ($location.$$html5 == false) {
+      if ($location.absUrl().indexOf('#') == -1) {
+        url += '#';
       }
-      if ($location.absUrl().indexOf('?') == -1 || $location.absUrl().indexOf('#')) {
-        url += '?waidAlCode=[code]';
-      } else {
-        url += '&waidAlCode=[code]';
-      }
-      return url;
+    }
+    if ($location.absUrl().indexOf('?') == -1 || $location.absUrl().indexOf('#')) {
+      url += '?waidAlCode=[code]';
+    } else {
+      url += '&waidAlCode=[code]';
+    }
+    return url;
   };
-
   waidCore.logout = function () {
     waidService.userLogoutPost();
     waidService.user = false;
     waidCore.isLoggedIn = false;
   };
-
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
     waidService.user = false;
     waidCore.isLoggedIn = false;
   };
-
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
     input.focus();
@@ -48,35 +44,28 @@ angular.module('waid.core.strategy', [
     input.focus();
     $rootScope.waid.closeEmoticonsModal();
   };
-
   // Retrieve basic account and application data
   waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
       delete data.main_application;
-
       waidCore.account = data;
       waidCore.application = application;
-
-      waidService.applicationGet().then(function(data){
+      waidService.applicationGet().then(function (data) {
         waidCore.application = data;
       });
-
       waidCore.saveWaidData();
     });
   };
-
   // Main initializer for waid
   waidCore.initialize = function () {
     // Check url params to set account and application manually
     var waidAccountId = $location.search().waidAccountId;
     var waidApplicationId = $location.search().waidApplicationId;
-
     // Set fingerpint
     new Fingerprint2().get(function (result, components) {
-        waidService.fp = result;
+      waidService.fp = result;
     });
-
     if (waidAccountId && waidApplicationId) {
       waidCore.account.id = waidAccountId;
       waidCore.application.id = waidApplicationId;
@@ -85,8 +74,7 @@ angular.module('waid.core.strategy', [
     if (waidCore.account.id && waidCore.application.id) {
       // Try to set by cookie
       var waid = waidCore.getWaidData();
-      if (waid && waid.account && waid.account.id == waidCore.account.id 
-        && waid.application && waid.application.id == waidCore.application.id) {
+      if (waid && waid.account && waid.account.id == waidCore.account.id && waid.application && waid.application.id == waidCore.application.id) {
         try {
           waidCore.account = waid.account;
           waidCore.application = waid.application;
@@ -115,8 +103,6 @@ angular.module('waid.core.strategy', [
       }
     }
   };
-
-  //
   waidCore.loginCheck = function (data) {
     if (typeof data.profile_status != 'undefined' && data.profile_status.length > 0) {
       if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -127,32 +113,30 @@ angular.module('waid.core.strategy', [
       }
     }
   };
-
   $rootScope.$watch('waid', function (waid) {
-    
     if (typeof waid != 'undefined') {
       if (!waid.isInit && waid.account && waid.application) {
         if (waid.token && !waid.isLoggedIn) {
-          waidService.authenticate().then(function(){
-             waid.isLoggedIn = true;
-             waid.isInit = true;
-          }, function(){
-             waid.isLoggedIn = false;
-             waid.isInit = true;
-          })
+          waidService.authenticate().then(function () {
+            waid.isLoggedIn = true;
+            waid.isInit = true;
+          }, function () {
+            waid.isLoggedIn = false;
+            waid.isInit = true;
+          });
         } else {
           waid.isLoggedIn = false;
           waid.isInit = true;
         }
       }
-
-      var waidAlCode = $location.search().waidAlCode;
-      if (waidAlCode) {
-        waidService.userAutoLoginGet(waidAlCode).then(function (data) {
-          $location.search('waidAlCode', null);
-        });
+      if (waid.isInit) {
+        var waidAlCode = $location.search().waidAlCode;
+        if (waidAlCode) {
+          waidService.userAutoLoginGet(waidAlCode).then(function (data) {
+            $location.search('waidAlCode', null);
+          });
+        }
       }
-      
     }
   }, true);
 });

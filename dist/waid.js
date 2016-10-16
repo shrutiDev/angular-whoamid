@@ -24,7 +24,7 @@ angular.module('waid', [
     'templates': {
       'core': '/templates/core/core.html',
       'emoticonsModal': '/templates/core/emoticons-modal.html',
-      'modalWindow' : '/templates/core/modal/window.html'
+      'modalWindow': '/templates/core/modal/window.html'
     },
     'errorCodes': {
       'auth-cancelled': 'Authentication was canceled by the user.',
@@ -42,13 +42,13 @@ angular.module('waid', [
       'emoticons_nature': 'Natuur',
       'emoticons_objects': 'Objecten',
       'emoticons_places': 'Plaatsen',
-      'terms_and_conditions':'<p><b>{{ waid.application.name }}</b> besteedt continue zorg en aandacht aan de samenstelling van de inhoud op onze sites. Op onze sites worden diverse interactiemogelijkheden aangeboden. De redactie bekijkt de berichten en reacties, die naar onze fora worden gestuurd niet vooraf - tenzij uitdrukkelijk anders aangegeven. Berichten die evident onrechtmatig zijn, worden zo spoedig mogelijk verwijderd. Het kan evenwel voorkomen dat u dergelijke berichten korte tijd aantreft. Wij distantiÃ«ren ons nadrukkelijk van deze berichten en verontschuldigen ons er bij voorbaat voor. Het is mogelijk dat de informatie die op de sites wordt gepubliceerd onvolledig is of onjuistheden bevat. Het is niet altijd mogelijk fouten te voorkomen. {{ waid.application.name }} is niet verantwoordelijk voor meningen en boodschappen van gebruikers van (forum)pagina\'s. De meningen en boodschappen op de forumpagina\'s geven niet de mening of het beleid van {{ waid.application.name }} weer. Ditzelfde geldt voor informatie van derden waarvan u via links op onze websites kennisneemt. Wij sluiten alle aansprakelijkheid uit voor enigerlei directe of indirecte schade, van welke aard dan ook, die voortvloeit uit het gebruik van informatie die op of via onze websites is verkregen. {{ waid.application.name }} behoudt zich het recht voor - tenzij schriftelijk anders overeengekomen met de auteur - ingezonden materiaal te verwijderen in te korten en/of aan te passen. Dit geldt zowel voor tekst als muziek- en beeldmateriaal. Deze website is alleen bedoeld voor eigen raadpleging via normaal browser-bezoek. Het is derhalve niet toegestaan om de website op geautomatiseerde wijze te (laten) raadplegen, bijvoorbeeld via scripts, spiders en/of bots. Eventuele hyperlinks dienen bezoekers rechtstreeks te leiden naar de context, waarbinnen de publieke omroep content aanbiedt. Video- en audiostreams mogen bijvoorbeeld alleen worden vertoond via een link naar een omroeppagina of embedded omroepplayer. Overneming, inframing, herpublicatie, bewerking of toevoeging zijn niet toegestaan. Eveneens is het niet toegestaan technische beveiligingen te omzeilen of te verwijderen, of dit voor anderen mogelijk te maken. {{ waid.application.name }} kan besluiten (delen van ) bijdragen van gebruikers op internetsites te publiceren c.q. over te nemen in andere media, bijvoorbeeld maar niet beperkt tot televisie, radio, internetsites, mobiele informatiedragers en printmedia. Door bijdragen te leveren op fora en andere {{ waid.application.name }} vergelijkbare internetsites stemmen bezoekers op voorhand onvoorwaardelijk en eeuwigdurend in met bovengenoemd gebruik van (delen van) hun bijdragen. Wanneer rechtens komt vast te staan dat {{ waid.application.name }} daartoe gehouden is, zal {{ waid.application.name }} mogen overgaan tot het aan derde(n) verstrekken van naam, adres, woonplaats of ip-nummer van een bezoeker/gebruiker.</p>'
+      'terms_and_conditions': '<p><b>{{ waid.application.name }}</b> besteedt continue zorg en aandacht aan de samenstelling van de inhoud op onze sites. Op onze sites worden diverse interactiemogelijkheden aangeboden. De redactie bekijkt de berichten en reacties, die naar onze fora worden gestuurd niet vooraf - tenzij uitdrukkelijk anders aangegeven. Berichten die evident onrechtmatig zijn, worden zo spoedig mogelijk verwijderd. Het kan evenwel voorkomen dat u dergelijke berichten korte tijd aantreft. Wij distantiÃ\xABren ons nadrukkelijk van deze berichten en verontschuldigen ons er bij voorbaat voor. Het is mogelijk dat de informatie die op de sites wordt gepubliceerd onvolledig is of onjuistheden bevat. Het is niet altijd mogelijk fouten te voorkomen. {{ waid.application.name }} is niet verantwoordelijk voor meningen en boodschappen van gebruikers van (forum)pagina\'s. De meningen en boodschappen op de forumpagina\'s geven niet de mening of het beleid van {{ waid.application.name }} weer. Ditzelfde geldt voor informatie van derden waarvan u via links op onze websites kennisneemt. Wij sluiten alle aansprakelijkheid uit voor enigerlei directe of indirecte schade, van welke aard dan ook, die voortvloeit uit het gebruik van informatie die op of via onze websites is verkregen. {{ waid.application.name }} behoudt zich het recht voor - tenzij schriftelijk anders overeengekomen met de auteur - ingezonden materiaal te verwijderen in te korten en/of aan te passen. Dit geldt zowel voor tekst als muziek- en beeldmateriaal. Deze website is alleen bedoeld voor eigen raadpleging via normaal browser-bezoek. Het is derhalve niet toegestaan om de website op geautomatiseerde wijze te (laten) raadplegen, bijvoorbeeld via scripts, spiders en/of bots. Eventuele hyperlinks dienen bezoekers rechtstreeks te leiden naar de context, waarbinnen de publieke omroep content aanbiedt. Video- en audiostreams mogen bijvoorbeeld alleen worden vertoond via een link naar een omroeppagina of embedded omroepplayer. Overneming, inframing, herpublicatie, bewerking of toevoeging zijn niet toegestaan. Eveneens is het niet toegestaan technische beveiligingen te omzeilen of te verwijderen, of dit voor anderen mogelijk te maken. {{ waid.application.name }} kan besluiten (delen van ) bijdragen van gebruikers op internetsites te publiceren c.q. over te nemen in andere media, bijvoorbeeld maar niet beperkt tot televisie, radio, internetsites, mobiele informatiedragers en printmedia. Door bijdragen te leveren op fora en andere {{ waid.application.name }} vergelijkbare internetsites stemmen bezoekers op voorhand onvoorwaardelijk en eeuwigdurend in met bovengenoemd gebruik van (delen van) hun bijdragen. Wanneer rechtens komt vast te staan dat {{ waid.application.name }} daartoe gehouden is, zal {{ waid.application.name }} mogen overgaan tot het aan derde(n) verstrekken van naam, adres, woonplaats of ip-nummer van een bezoeker/gebruiker.</p>'
     }
   });
   waidService.initialize();
 });
 'use strict';
-angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootScope, $cookies) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -73,22 +73,22 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
     this[key] = config;
   };
   waid.config.getTemplateUrl = function (module, key) {
-    if (typeof this[module]['templates'][key] == 'undefined') {
+    if (typeof this[module].templates[key] == 'undefined') {
       console.log(key + ' template does not exist!');
     }
-    return waid.config.baseTemplatePath + this[module]['templates'][key];
+    return waid.config.baseTemplatePath + this[module].templates[key];
   };
-  waid.config.getTemplate = function(url) {
+  waid.config.getTemplate = function (url) {
     return waid.config.baseTemplatePath + url;
   };
   waid.config.getTranslation = function (module, key) {
-    return this[module]['translations'][key];
+    return this[module].translations[key];
   };
   waid.config.getConfig = function (key) {
     if (key.indexOf('.') !== -1) {
-        var parts = key.split('.');
+      var parts = key.split('.');
     } else {
-        var parts = new Array(key);
+      var parts = new Array(key);
     }
     if (parts.length > 0) {
       var config = this;
@@ -125,33 +125,29 @@ angular.module('waid.core', ['ngCookies',]).service('waidCore', function ($rootS
     $rootScope.waid.application = false;
     $rootScope.waid.user = false;
     $rootScope.waid.isLoggedIn = false;
-    $cookies.remove('waid', {'path':'/'});
+    $cookies.remove('waid', { 'path': '/' });
   };
-
-  waid.saveWaidData = function() {
+  waid.saveWaidData = function () {
     var waid = {
-      'account':$rootScope.waid.account,
-      'application':$rootScope.waid.application,
-      'token':$rootScope.waid.token
-    }
+      'account': $rootScope.waid.account,
+      'application': $rootScope.waid.application,
+      'token': $rootScope.waid.token
+    };
     $cookies.putObject('waid', waid, { 'path': '/' });
-  }
-
-  waid.getWaidData = function() {
+  };
+  waid.getWaidData = function () {
     var waid = $cookies.getObject('waid');
     if (waid) {
       return waid;
     }
     return false;
-  }
-
+  };
   waid.utils = {};
   waid.user = false;
   waid.account = false;
   waid.application = false;
   waid.isInit = false;
   waid.isLoggedIn = false;
-
   $rootScope.waid = waid;
   return waid;
 });
@@ -166,34 +162,30 @@ angular.module('waid.core.strategy', [
     }
     return false;
   };
-
-  waidCore.getAlCodeUrl = function() {
-      var url = $location.absUrl();
-      if ($location.$$html5 == false) {
-        if ($location.absUrl().indexOf('#') == -1) {
-          url += '#';
-        }
+  waidCore.getAlCodeUrl = function () {
+    var url = $location.absUrl();
+    if ($location.$$html5 == false) {
+      if ($location.absUrl().indexOf('#') == -1) {
+        url += '#';
       }
-      if ($location.absUrl().indexOf('?') == -1 || $location.absUrl().indexOf('#')) {
-        url += '?waidAlCode=[code]';
-      } else {
-        url += '&waidAlCode=[code]';
-      }
-      return url;
+    }
+    if ($location.absUrl().indexOf('?') == -1 || $location.absUrl().indexOf('#')) {
+      url += '?waidAlCode=[code]';
+    } else {
+      url += '&waidAlCode=[code]';
+    }
+    return url;
   };
-
   waidCore.logout = function () {
     waidService.userLogoutPost();
     waidService.user = false;
     waidCore.isLoggedIn = false;
   };
-
   waidCore.logoutAll = function () {
     waidService.userLogoutAllPost();
     waidService.user = false;
     waidCore.isLoggedIn = false;
   };
-
   waidCore.addEmoticon = function (emoticon) {
     var input = document.getElementById($rootScope.targetId);
     input.focus();
@@ -205,35 +197,28 @@ angular.module('waid.core.strategy', [
     input.focus();
     $rootScope.waid.closeEmoticonsModal();
   };
-
   // Retrieve basic account and application data
   waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {
       var application = data.main_application;
       delete data.main_application;
-
       waidCore.account = data;
       waidCore.application = application;
-
-      waidService.applicationGet().then(function(data){
+      waidService.applicationGet().then(function (data) {
         waidCore.application = data;
       });
-
       waidCore.saveWaidData();
     });
   };
-
   // Main initializer for waid
   waidCore.initialize = function () {
     // Check url params to set account and application manually
     var waidAccountId = $location.search().waidAccountId;
     var waidApplicationId = $location.search().waidApplicationId;
-
     // Set fingerpint
     new Fingerprint2().get(function (result, components) {
-        waidService.fp = result;
+      waidService.fp = result;
     });
-
     if (waidAccountId && waidApplicationId) {
       waidCore.account.id = waidAccountId;
       waidCore.application.id = waidApplicationId;
@@ -242,8 +227,7 @@ angular.module('waid.core.strategy', [
     if (waidCore.account.id && waidCore.application.id) {
       // Try to set by cookie
       var waid = waidCore.getWaidData();
-      if (waid && waid.account && waid.account.id == waidCore.account.id 
-        && waid.application && waid.application.id == waidCore.application.id) {
+      if (waid && waid.account && waid.account.id == waidCore.account.id && waid.application && waid.application.id == waidCore.application.id) {
         try {
           waidCore.account = waid.account;
           waidCore.application = waid.application;
@@ -272,8 +256,6 @@ angular.module('waid.core.strategy', [
       }
     }
   };
-
-  //
   waidCore.loginCheck = function (data) {
     if (typeof data.profile_status != 'undefined' && data.profile_status.length > 0) {
       if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -284,32 +266,30 @@ angular.module('waid.core.strategy', [
       }
     }
   };
-
   $rootScope.$watch('waid', function (waid) {
-    
     if (typeof waid != 'undefined') {
       if (!waid.isInit && waid.account && waid.application) {
         if (waid.token && !waid.isLoggedIn) {
-          waidService.authenticate().then(function(){
-             waid.isLoggedIn = true;
-             waid.isInit = true;
-          }, function(){
-             waid.isLoggedIn = false;
-             waid.isInit = true;
-          })
+          waidService.authenticate().then(function () {
+            waid.isLoggedIn = true;
+            waid.isInit = true;
+          }, function () {
+            waid.isLoggedIn = false;
+            waid.isInit = true;
+          });
         } else {
           waid.isLoggedIn = false;
           waid.isInit = true;
         }
       }
-
-      var waidAlCode = $location.search().waidAlCode;
-      if (waidAlCode) {
-        waidService.userAutoLoginGet(waidAlCode).then(function (data) {
-          $location.search('waidAlCode', null);
-        });
+      if (waid.isInit) {
+        var waidAlCode = $location.search().waidAlCode;
+        if (waidAlCode) {
+          waidService.userAutoLoginGet(waidAlCode).then(function (data) {
+            $location.search('waidAlCode', null);
+          });
+        }
       }
-      
     }
   }, true);
 });
@@ -572,7 +552,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       data.url = $location.absUrl();
       return this._makeRequest('POST', this._getAppUrl('/rating/'), 'application.rating', data);
     },
-    'ratingGet': function(object_id) {
+    'ratingGet': function (object_id) {
       return this._makeRequest('GET', this._getAppUrl('/rating/' + object_id + '/'), 'application.rating');
     },
     'articlesListGet': function () {
@@ -581,7 +561,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'articlesGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
     },
-    'applicationGet': function(id) {
+    'applicationGet': function (id) {
       return this._makeRequest('GET', this._getAppUrl('/'), 'application');
     },
     'adminCommentsListGet': function (params) {
@@ -1371,7 +1351,7 @@ angular.module('waid.core.directives', [
 angular.module('waid.idm', [
   'waid.core',
   'waid.idm.controllers',
-  'waid.idm.directives',
+  'waid.idm.directives'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.setConfig('idm', {
     'templates': {
@@ -1382,7 +1362,7 @@ angular.module('waid.idm', [
       'lostLoginModal': '/templates/idm/lost-login-modal.html',
       'loginAndRegisterModal': '/templates/idm/login-and-register-modal.html',
       'userProfileModal': '/templates/idm/user-profile-modal.html',
-      'loginAndRegisterHome' : '/templates/idm/login-and-register-home.html',
+      'loginAndRegisterHome': '/templates/idm/login-and-register-home.html',
       'socialLogin': '/templates/idm/social-login.html',
       'login': '/templates/idm/login.html',
       'register': '/templates/idm/register.html',
@@ -1393,121 +1373,130 @@ angular.module('waid.idm', [
     'translations': {
       'loggedin_success': 'Succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
-      'complete_profile_email_allready_sent':'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.',
+      'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.',
       'male': 'Man',
       'female': 'Vrouw',
       'avatar': 'Avatar',
       'nickname': 'Nickname',
       'date_of_birth': 'Geboortedatum',
-      'gender':'Geslacht',
-      'overview':'Overzicht',
-      'edit_overview':'Algemene gegevens aanpassen',
-      'interests':'Interesses',
-      'fun':'Leuk',
-      'not_fun':'Niet leuk',
-      'edit_interests':'Interesses aanpassen',
-      'email_addresses':'E-mail adressen',
+      'gender': 'Geslacht',
+      'overview': 'Overzicht',
+      'edit_overview': 'Algemene gegevens aanpassen',
+      'interests': 'Interesses',
+      'fun': 'Leuk',
+      'not_fun': 'Niet leuk',
+      'edit_interests': 'Interesses aanpassen',
+      'email_addresses': 'E-mail adressen',
       'edit_email_addresses': 'E-mail adressen aanpassen',
-      'username':'Gebruikersnaam',
-      'edit_username':'Gebruikersnaam wijzigen',
-      'password':'Wachtwoord',
-      'edit_password':'Wachtwoord wijzigen',
-      'login_and_register_home_social_login_title':'Social login/registratie',
-      'login_and_register_home_login_title':'Inloggen',
-      'login_and_register_home_register_title':'Registreren',
-      'login_and_register_home_social_login_intro':'<p>Social login zorgt ervoor dat je snel kan aanmelden met jouw social media account.</p><p>Je word doorverwezen naar de social account met verdere informatie en instructies.</p><p>Zodra je daar akkoord geeft word je weer doorverwezen naar deze site en is jouw account aangemaakt!</p>',
-      'login_and_register_modal_close_button':'Sluiten',
-      'login_and_register_modal_title':'Inloggen of registreren',
-      'profile_overview_title':'Overzicht',
-      'profile_main_title':'Algemeen',
-      'profile_interests_title':'Interesses',
-      'profile_emails_title':'E-mail adressen',
-      'profile_username_title':'Gebruikersnaam',
-      'profile_password_title':'Wachtwoord',
-      'profile_logout_title':'Uitloggen',
-      'complete_profile_modal_title':'Bevestig uw gegevens',
-      'complete_profile_modal_close_button':'Niet verdergaan en uitloggen',
-      'login_lost_login_link':'Login gegevens kwijt?',
-      'login_submit':'Inloggen',
-      'login_form_password_label':'Wachtwoord',
-      'login_form_username_label':'Gebruikersnaam',
-      'lost_login_modal_title':'Login gegevens kwijt?',
-      'lost_login_modal_close_button':'Sluiten',
-      'lost_login_submit_button':'Inlog gegevens ophalen',
-      'lost_lostin_form_email':'E-mail',
-      'register_form_username':'Username',
-      'register_form_email':'E-Mail',
-      'register_form_password':'Wachtwoord',
-      'register_submit_register':'Registreren',
-      'register_submit_register_complete':'Registratie afronden'
+      'username': 'Gebruikersnaam',
+      'edit_username': 'Gebruikersnaam wijzigen',
+      'password': 'Wachtwoord',
+      'edit_password': 'Wachtwoord wijzigen',
+      'login_and_register_home_social_login_title': 'Social login/registratie',
+      'login_and_register_home_login_title': 'Inloggen',
+      'login_and_register_home_register_title': 'Registreren',
+      'login_and_register_home_social_login_intro': '<p>Social login zorgt ervoor dat je snel kan aanmelden met jouw social media account.</p><p>Je word doorverwezen naar de social account met verdere informatie en instructies.</p><p>Zodra je daar akkoord geeft word je weer doorverwezen naar deze site en is jouw account aangemaakt!</p>',
+      'login_and_register_modal_close_button': 'Sluiten',
+      'login_and_register_modal_title': 'Inloggen of registreren',
+      'profile_overview_title': 'Overzicht',
+      'profile_main_title': 'Algemeen',
+      'profile_interests_title': 'Interesses',
+      'profile_emails_title': 'E-mail adressen',
+      'profile_username_title': 'Gebruikersnaam',
+      'profile_password_title': 'Wachtwoord',
+      'profile_logout_title': 'Uitloggen',
+      'complete_profile_modal_title': 'Bevestig uw gegevens',
+      'complete_profile_modal_close_button': 'Niet verdergaan en uitloggen',
+      'login_lost_login_link': 'Login gegevens kwijt?',
+      'login_submit': 'Inloggen',
+      'login_form_password_label': 'Wachtwoord',
+      'login_form_username_label': 'Gebruikersnaam',
+      'lost_login_modal_title': 'Login gegevens kwijt?',
+      'lost_login_modal_close_button': 'Sluiten',
+      'lost_login_submit_button': 'Inlog gegevens ophalen',
+      'lost_lostin_form_email': 'E-mail',
+      'register_form_username': 'Username',
+      'register_form_email': 'E-Mail',
+      'register_form_password': 'Wachtwoord',
+      'register_submit_register': 'Registreren',
+      'register_submit_register_complete': 'Registratie afronden'
     },
     'profile': {
       'fieldSet': [
         {
-          'key':'overview',
-          'order':10,
-          'template':'overview.html'
+          'key': 'overview',
+          'order': 10,
+          'template': 'overview.html'
         },
         {
           'key': 'main',
-          'order':20,
-          'fields':['title', 'nickname', 'date_of_birth']
+          'order': 20,
+          'fields': [
+            'title',
+            'nickname',
+            'date_of_birth'
+          ]
         },
         {
-          'key':'interests',
-          'order':30,
-          'fields':['like','dislike']
+          'key': 'interests',
+          'order': 30,
+          'fields': [
+            'like',
+            'dislike'
+          ]
         },
         {
-          'key':'emails',
-          'order':40,
-          'fields':['like','dislike']
+          'key': 'emails',
+          'order': 40,
+          'fields': [
+            'like',
+            'dislike'
+          ]
         },
         {
-          'key':'username',
-          'order':50,
-          'fields':['like','dislike']
+          'key': 'username',
+          'order': 50,
+          'fields': [
+            'like',
+            'dislike'
+          ]
         },
         {
-          'key':'password',
-          'order':60,
-          'fields':['like','dislike']
+          'key': 'password',
+          'order': 60,
+          'fields': [
+            'like',
+            'dislike'
+          ]
         }
       ],
       'fieldDefinitions': [
         {
           'name': 'firsname',
           'type': 'BooleanField',
-          'storeType':'metadata',
+          'storeType': 'metadata',
           'default': false,
           'autoValue': 'now',
-          'validators': [
-            {
+          'validators': [{
               'type': 'length',
               'min': 1,
               'max': 10
-            }
-          ]
+            }]
         },
         {
           'name': 'email',
           'type': 'EmailField',
-          'storeType':'system',
-          
-          'fieldDefinitions':[
-            {
-              'name':'email',
-              'type':'system',
-              'order':1
-            }
-          ],
-          'validators': [
-            {
+          'storeType': 'system',
+          'fieldDefinitions': [{
+              'name': 'email',
+              'type': 'system',
+              'order': 1
+            }],
+          'validators': [{
               'type': 'length',
               'min': 1,
               'max': 10
-            }
-          ]
+            }]
         }
       ]
     }
@@ -1571,7 +1560,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
     $scope.emails = data.results;
   });
   // Update stuff
-  $rootScope.$watch('waid.user', function(data){
+  $rootScope.$watch('waid.user', function (data) {
     $scope.model = data;
   }, true);
 }).controller('WAIDIDMUserProfileMainCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter, $timeout) {
@@ -1689,13 +1678,11 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
       $scope.initEmails(data.results);
     });
   };
-
-  $scope.$watch('waid.isInit', function(isInit) {
+  $scope.$watch('waid.isInit', function (isInit) {
     if (isInit) {
       $scope.loadEmailList();
     }
   }, true);
-
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -1709,7 +1696,6 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   $scope.goToSocialLogin = function (provider) {
     $window.location.assign(provider.url);
   };
-
   $scope.$watch('waid.isInit', function (isInit) {
     if (isInit) {
       $scope.getProviders();
@@ -1811,7 +1797,7 @@ angular.module('waid.comments', [
       'voteOrderOldestFirst': 'Oudste eerst',
       'voteOrderTopFirst': 'Top comments',
       'addEmoticonButtonText': 'Emoticon toevoegen',
-      'isLockedTitle':'Comment is gelocked'
+      'isLockedTitle': 'Comment is gelocked'
     }
   });
 });
@@ -1824,7 +1810,6 @@ angular.module('waid.comments.controllers', [
   $scope.ordering = angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
   $scope.orderingEnabled = angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
   $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
-
   $scope.waid = $rootScope.waid;
   $scope.comment = { 'comment': '' };
   $scope.orderCommentList = function (ordering) {
@@ -1851,7 +1836,6 @@ angular.module('waid.comments.controllers', [
     if (comment.is_locked) {
       return false;
     }
-
     comment.is_edit = true;
   };
   $scope.updateComment = function (comment) {
@@ -1927,11 +1911,8 @@ angular.module('waid.rating', [
   'waid.rating.directives'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.setConfig('rating', {
-    'templates': {
-      'ratingWidget': '/templates/rating/widget.html'
-    },
-    'translations': {
-    }
+    'templates': { 'ratingWidget': '/templates/rating/widget.html' },
+    'translations': {}
   });
 });
 'use strict';
@@ -1941,73 +1922,77 @@ angular.module('waid.rating.controllers', [
   'waid.core.app.strategy'
 ]).controller('WAIDRatingCtrl', function ($scope, $rootScope, waidService, waidCoreStrategy, waidCoreAppStrategy) {
   $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
-
   // Fixed for now..
   $scope.stars = [
-    {'active':false, 'value':1},
-    {'active':false, 'value':2},
-    {'active':false, 'value':3},
-    {'active':false, 'value':4},
-    {'active':false, 'value':5}
+    {
+      'active': false,
+      'value': 1
+    },
+    {
+      'active': false,
+      'value': 2
+    },
+    {
+      'active': false,
+      'value': 3
+    },
+    {
+      'active': false,
+      'value': 4
+    },
+    {
+      'active': false,
+      'value': 5
+    }
   ];
-
-
   $scope.rating = {
-    'average':0,
-    'total_votes':0,
-    'rating':[]
-  }
-
+    'average': 0,
+    'total_votes': 0,
+    'rating': []
+  };
   $scope.rate = function (value) {
     if (!$rootScope.waid.user) {
       $rootScope.waid.openLoginAndRegisterHomeModal();
     } else {
-
       var data = {
         'object_id': $scope.objectId,
-        'value':value,
-      }
-
-      waidService.ratingPost(data).then(function(data){
+        'value': value
+      };
+      waidService.ratingPost(data).then(function (data) {
         $scope.rating = data;
         $scope.rateOut();
-      })
+      });
     }
   };
-
   $scope.rateOver = function (value) {
-    for (var i=0; $scope.stars.length > i; i++){
+    for (var i = 0; $scope.stars.length > i; i++) {
       if (i < value) {
         $scope.stars[i].active = true;
       } else {
         $scope.stars[i].active = false;
       }
     }
-  }
-
+  };
   // Rateout initialises the rating based on the current rating object
-  $scope.rateOut = function() {
-    var average_rounded = Math.round($scope.rating.average)
-    for (var i=0; $scope.stars.length > i; i++){
+  $scope.rateOut = function () {
+    var average_rounded = Math.round($scope.rating.average);
+    for (var i = 0; $scope.stars.length > i; i++) {
       if (i < average_rounded) {
         $scope.stars[i].active = true;
       } else {
         $scope.stars[i].active = false;
       }
     }
-  }
-
-
-  $rootScope.$watch('waid.isInit', function(isInit){
-    if (typeof isInit != "undefined" && isInit) {
-      waidService.ratingGet($scope.objectId).then(function(data){
+  };
+  $rootScope.$watch('waid.isInit', function (isInit) {
+    if (typeof isInit != 'undefined' && isInit) {
+      waidService.ratingGet($scope.objectId).then(function (data) {
         $scope.rating = data;
         // Init rating on view
         $scope.rateOut();
       });
     }
   });
-
 });
 'use strict';
 angular.module('waid.rating.directives', [
@@ -2016,9 +2001,7 @@ angular.module('waid.rating.directives', [
 ]).directive('waidRating', function (waidCore) {
   return {
     restrict: 'E',
-    scope: {
-      objectId: '@?'
-    },
+    scope: { objectId: '@?' },
     controller: 'WAIDRatingCtrl',
     templateUrl: function (elem, attrs) {
       return attrs.templateUrl || waidCore.config.getTemplateUrl('rating', 'ratingWidget');

@@ -7,7 +7,6 @@ angular.module('waid.comments.controllers', [
   $scope.ordering = angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
   $scope.orderingEnabled = angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
   $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
-
   $scope.waid = $rootScope.waid;
   $scope.comment = { 'comment': '' };
   $scope.orderCommentList = function (ordering) {
@@ -34,7 +33,6 @@ angular.module('waid.comments.controllers', [
     if (comment.is_locked) {
       return false;
     }
-
     comment.is_edit = true;
   };
   $scope.updateComment = function (comment) {
