@@ -133,7 +133,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         return deferred.promise;
       } else { // If dependent on initialisation, return promise of isInit
         var deferred = $q.defer();
-        $rootScope.$watch('waid.isInit', function(isInit){
+        var unregister = $rootScope.$watch('waid.isInit', function(isInit){
           if (isInit) {
             that.request({
               'method': method,
@@ -142,9 +142,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
             }).then(function (data) {
               $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.ok', data);
               deferred.resolve(data);
+              unregister();
             }, function (data) {
               $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.error', data);
               deferred.reject(data);
+              unregister();
             });
           }
         });
@@ -177,7 +179,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userAutoLoginGet': function (code) {
       var that = this;
       this._clearAuthorizationData();
-      return this._makeRequest('GET', 'app', '/user/autologin/' + code + '/', 'application.userAutoLogin').then(function (data) {
+      return this._makeRequest('GET', 'app', '/user/autologin/' + code + '/', 'application.userAutoLogin', null, true).then(function (data) {
         that._login(data.token);
         return data;
       });
@@ -190,7 +192,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       var that = this;
       return this._makeRequest('POST', 'app', '/user/logout/', 'application.userLogout').then(function (data) {
         that._clearAuthorizationData();
-        waidCore.user = false;
         return data;
       });
     },
@@ -198,7 +199,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       var that = this;
       return this._makeRequest('POST', 'app', '/user/logout-all/', 'application.userLogoutAll').then(function (data) {
         that._clearAuthorizationData();
-        waidCore.user = false;
         return data;
       });
     },

@@ -27,7 +27,7 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     if (typeof this[module].templates[key] == 'undefined') {
       console.log(key + ' template does not exist!');
     }
-    return waid.config.baseTemplatePath + this[module].templates[key];
+    return waid.config.baseTemplatePath + this[module].templates[key] + '?version=' + waid.config.version;
   };
   waid.config.getTemplate = function (url) {
     return waid.config.baseTemplatePath + url;
@@ -71,11 +71,14 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     waid.closeLostLoginModal();
     waid.closeTermsAndConditionsModal();
   };
+
+
   waid.clearWaidData = function () {
     $rootScope.waid.account = false;
     $rootScope.waid.application = false;
     $rootScope.waid.user = false;
     $rootScope.waid.isLoggedIn = false;
+    $rootScope.waid.token = false;
     $cookies.remove('waid', { 'path': '/' });
   };
   waid.saveWaidData = function () {
@@ -93,6 +96,12 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     }
     return false;
   };
+  waid.clearUserData = function(){
+    $rootScope.waid.user = false;
+    $rootScope.waid.isLoggedIn = false;
+    $rootScope.waid.token = false;
+    waid.saveWaidData();
+  }
   waid.utils = {};
   waid.user = false;
   waid.account = false;

@@ -19,25 +19,6 @@ module.exports = function (grunt) {
             }
         },
 
-        // purifycss: {
-        //     options: {},
-        //     // bootstrap3themesimplexnoconflict: {
-        //     //   src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
-        //     //   css: ['dist/bootstrap3/css/themes/simplex-noconflict.css'],
-        //     //   dest: 'dist/bootstrap3/css/themes/simplex-noconflict.css'
-        //     // },
-        //     // bootstrap3themeslatenoconflict: {
-        //     //   src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
-        //     //   css: ['dist/bootstrap3/css/themes/slate-noconflict.css'],
-        //     //   dest: 'dist/bootstrap3/css/themes/slate-noconflict.css'
-        //     // },
-        //     //  bootstrap3themeyetinoconflict: {
-        //     //   src: ['dist/bootstrap3/noconflict.js', 'dist/bootstrap3/templates.js'],
-        //     //   css: ['dist/bootstrap3/css/themes/yeti-noconflict.css'],
-        //     //   dest: 'dist/bootstrap3/css/themes/yeti-noconflict.css'
-        //     // },
-        // },
-
         sass: {
             options: {
                 includePaths: [],
@@ -199,6 +180,18 @@ module.exports = function (grunt) {
                     'dist/bootstrap3/waid-dependencies.min.js': ['dist/bootstrap3/waid-dependencies.js']
                 }
             }
+        },
+
+        cssmin: {
+          target: {
+            files: [{
+              expand: true,
+              cwd: 'dist/bootstrap3/css/',
+              src: ['*.css', '!*.min.css'],
+              dest: 'dist/bootstrap3/css/',
+              ext: '.min.css'
+            }]
+          }
         }
 
     });
@@ -214,5 +207,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-purifycss');
 
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['copy', 'concat', 'sass', 'uglify', 'watch']);
+    grunt.registerTask('default', ['copy', 'concat', 'sass', 'uglify', 'cssmin', 'watch']);
 }
