@@ -668,5 +668,5 @@ angular.module('waid.core.controllers', [
   waidCore.account = { 'id': angular.isDefined($scope.accountId) ? $scope.accountId : false };
   waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
-  $scope.waid = waidCore;
+  $rootScope.waid = waidCore;
 });

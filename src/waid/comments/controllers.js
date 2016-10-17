@@ -54,13 +54,13 @@ angular.module('waid.comments.controllers', [
       'object_id': $scope.objectId,
       'ordering': $scope.ordering
     }).then(function (data) {
-      for (var i = 0; i < data.length; i++) {
-        data[i].is_edit = false;
-        if (data[i].user.id == $rootScope.waid.user.id) {
-          data[i].is_owner = true;
+      for (var i = 0; i < data.results.length; i++) {
+        data.results[i].is_edit = false;
+        if (data.results[i].user.id == $rootScope.waid.user.id) {
+          data.results[i].is_owner = true;
         }
       }
-      $scope.comments = data;
+      $scope.comments = data.results;
     });
   };
   $scope.post = function () {

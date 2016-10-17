@@ -67,13 +67,9 @@ angular.module('waid.rating.controllers', [
       }
     }
   };
-  $rootScope.$watch('waid.isInit', function (isInit) {
-    if (typeof isInit != 'undefined' && isInit) {
-      waidService.ratingGet($scope.objectId).then(function (data) {
-        $scope.rating = data;
-        // Init rating on view
-        $scope.rateOut();
-      });
-    }
+  waidService.ratingGet($scope.objectId).then(function (data) {
+    $scope.rating = data;
+    // Init rating on view
+    $scope.rateOut();
   });
 });

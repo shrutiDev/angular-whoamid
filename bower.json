@@ -10,7 +10,8 @@
     "angular-sanitize": "1.2.16",
     "angular-route": "1.2.16",
     "angular-html5-storage": "~0.0.5",
-    "isotope": "~3.0.1"
+    "isotope": "~3.0.1",
+    "angular-isotope": "~0.1.14"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",

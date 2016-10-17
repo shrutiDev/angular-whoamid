@@ -102,49 +102,74 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       });
       return deferred.promise;
     },
-    '_makeRequest': function (method, path, broadcast, data) {
-      var deferred = $q.defer();
-      this.request({
-        'method': method,
-        'url': path,
-        'data': data
-      }).then(function (data) {
-        $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.ok', data);
-        deferred.resolve(data);
-      }, function (data) {
-        $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.error', data);
-        deferred.reject(data);
-      });
-      return deferred.promise;
+    '_buildUrl': function (type, path) {
+      switch(type) {
+        case 'admin':
+          return '/admin/' + this.apiVersion + '/' + waidCore.account.id + path;
+        case 'app':
+          return '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + path;
+        case 'public':
+          return '/public/' + this.apiVersion + path;
+        default:
+          return '';
+      }
     },
-    '_getAdminUrl': function (url) {
-      return '/admin/' + this.apiVersion + '/' + waidCore.account.id + url;
-    },
-    '_getAppUrl': function (url) {
-      return '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + url;
-    },
-    '_getPublicUrl': function (url) {
-      return '/public/' + this.apiVersion + url;
+    '_makeRequest': function (method, type, path, broadcast, data, skipIsInit) {
+      var that = this;
+      // If not dependend on initialisation then return promise of request
+      if (typeof skipIsInit != 'undefined' && skipIsInit == true) {
+        var deferred = $q.defer();
+        that.request({
+          'method': method,
+          'url': that._buildUrl(type, path),
+          'data': data
+        }).then(function (data) {
+          $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.ok', data);
+          deferred.resolve(data);
+        }, function (data) {
+          $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.error', data);
+          deferred.reject(data);
+        });
+        return deferred.promise;
+      } else { // If dependent on initialisation, return promise of isInit
+        var deferred = $q.defer();
+        $rootScope.$watch('waid.isInit', function(isInit){
+          if (isInit) {
+            that.request({
+              'method': method,
+              'url':  that._buildUrl(type, path),
+              'data': data
+            }).then(function (data) {
+              $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.ok', data);
+              deferred.resolve(data);
+            }, function (data) {
+              $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.error', data);
+              deferred.reject(data);
+            });
+          }
+        });
+        return deferred.promise;
+      }
     },
     'userRegisterPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
         data.return_url = waidCore.getAlCodeUrl();
       }
-      return this._makeRequest('POST', this._getAppUrl('/user/register/'), 'application.userRegister', data);
+      return this._makeRequest('POST', 'app', '/user/register/', 'application.userRegister', data);
     },
     'userCompleteProfilePost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
         data.return_url = waidCore.getAlCodeUrl();
       }
-      return this._makeRequest('POST', this._getAppUrl('/user/complete-profile/'), 'application.userCompleteProfile', data);
+      return this._makeRequest('POST', 'app', '/user/complete-profile/', 'application.userCompleteProfile', data);
     },
     'userCompleteProfileGet': function () {
-      return this._makeRequest('GET', this._getAppUrl('/user/complete-profile/'), 'application.userCompleteProfile');
+      return this._makeRequest('GET', 'app', '/user/complete-profile/', 'application.userCompleteProfile');
     },
     'userLoginPost': function (data) {
       this._clearAuthorizationData();
       var that = this;
-      return this._makeRequest('POST', this._getAppUrl('/user/login/'), 'application.userLogin', data).then(function (data) {
+      return this._makeRequest('POST', 'app', '/user/login/', 'application.userLogin', data).then(function (data) {
         that._login(data.token);
         return data;
       });
@@ -152,18 +177,18 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userAutoLoginGet': function (code) {
       var that = this;
       this._clearAuthorizationData();
-      return this._makeRequest('GET', this._getAppUrl('/user/autologin/' + code + '/'), 'application.userAutoLogin').then(function (data) {
+      return this._makeRequest('GET', 'app', '/user/autologin/' + code + '/', 'application.userAutoLogin').then(function (data) {
         that._login(data.token);
         return data;
       });
     },
     'userLostLoginPost': function (data) {
       this._clearAuthorizationData();
-      return this._makeRequest('POST', this._getAppUrl('/user/lost-login/'), 'application.userLostLogin', data);
+      return this._makeRequest('POST', 'app', '/user/lost-login/', 'application.userLostLogin', data);
     },
     'userLogoutPost': function () {
       var that = this;
-      return this._makeRequest('POST', this._getAppUrl('/user/logout/'), 'application.userLogout').then(function (data) {
+      return this._makeRequest('POST', 'app', '/user/logout/', 'application.userLogout').then(function (data) {
         that._clearAuthorizationData();
         waidCore.user = false;
         return data;
@@ -171,54 +196,54 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userLogoutAllPost': function () {
       var that = this;
-      return this._makeRequest('POST', this._getAppUrl('/user/logout-all/'), 'application.userLogoutAll').then(function (data) {
+      return this._makeRequest('POST', 'app', '/user/logout-all/', 'application.userLogoutAll').then(function (data) {
         that._clearAuthorizationData();
         waidCore.user = false;
         return data;
       });
     },
     'userProfileGet': function () {
-      return this._makeRequest('GET', this._getAppUrl('/user/profile/'), 'application.userProfile');
+      return this._makeRequest('GET', 'app', '/user/profile/', 'application.userProfile');
     },
     'userPasswordPut': function (data) {
-      return this._makeRequest('PUT', this._getAppUrl('/user/password/'), 'application.userPassword', data);
+      return this._makeRequest('PUT', 'app', '/user/password/', 'application.userPassword', data);
     },
     'userProfilePatch': function (data) {
-      return this._makeRequest('PATCH', this._getAppUrl('/user/profile/'), 'application.userProfile', data);
+      return this._makeRequest('PATCH', 'app', '/user/profile/', 'application.userProfile', data);
     },
     'userUsernamePut': function (data) {
-      return this._makeRequest('PUT', this._getAppUrl('/user/username/'), 'application.userUsername', data);
+      return this._makeRequest('PUT', 'app', '/user/username/', 'application.userUsername', data);
     },
     'userEmailListGet': function () {
-      return this._makeRequest('GET', this._getAppUrl('/user/email/'), 'application.userEmailList');
+      return this._makeRequest('GET', 'app', '/user/email/', 'application.userEmailList');
     },
     'userEmailPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
         data.return_url = waidCore.getAlCodeUrl();
       }
-      return this._makeRequest('POST', this._getAppUrl('/user/email/'), 'application.userEmail', data);
+      return this._makeRequest('POST', 'app', '/user/email/', 'application.userEmail', data);
     },
     'userEmailDelete': function (id) {
-      return this._makeRequest('DELETE', this._getAppUrl('/user/email/' + id + '/'), 'application.userEmail');
+      return this._makeRequest('DELETE', 'app', '/user/email/' + id + '/', 'application.userEmail');
     },
     'userAvatarPut': function (fd) {
-      return this._makeFileRequest('PUT', this._getAppUrl('/user/avatar/'), 'application.userAvatar', fd);
+      return this._makeFileRequest('PUT', 'app', '/user/avatar/', 'application.userAvatar', fd);
     },
     'socialProviderListGet': function () {
-      return this._makeRequest('GET', this._getAppUrl('/social/providers/'), 'application.socialProviderList');
+      return this._makeRequest('GET', 'app', '/social/providers/', 'application.socialProviderList');
     },
     'userCommentsPatch': function (id, data) {
-      return this._makeRequest('PATCH', this._getAppUrl('/user/comments/' + id + '/'), 'application.userComments', data);
+      return this._makeRequest('PATCH', 'app', '/user/comments/' + id + '/', 'application.userComments', data);
     },
     'userCommentsPost': function (data) {
       if (typeof data.object_id != 'undefined' && data.object_id == 'currenturl') {
         data.object_id = waidCore.slugify($location.absUrl());
       }
       data.url = $location.absUrl();
-      return this._makeRequest('POST', this._getAppUrl('/user/comments/'), 'application.userComments', data);
+      return this._makeRequest('POST', 'app', '/user/comments/', 'application.userComments', data);
     },
     'userCommentsDelete': function (id) {
-      return this._makeRequest('DELETE', this._getAppUrl('/user/comments/' + id + '/'), 'application.userComments');
+      return this._makeRequest('DELETE', 'app', '/user/comments/' + id + '/', 'application.userComments');
     },
     'userCommentsListGet': function (params) {
       if (typeof params != 'undefined') {
@@ -229,7 +254,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', this._getAppUrl('/user/comments/' + query), 'application.userCommentsList');
+      return this._makeRequest('GET', 'app', '/user/comments/' + query, 'application.userCommentsList');
     },
     'commentsListGet': function (params) {
       if (typeof params != 'undefined') {
@@ -240,34 +265,34 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', this._getAppUrl('/comments/' + query), 'application.commentsList');
+      return this._makeRequest('GET', 'app', '/comments/' + query, 'application.commentsList');
     },
     'commentsVotePost': function (id, vote) {
       var data = { 'vote': vote };
-      return this._makeRequest('POST', this._getAppUrl('/comments/' + id + '/vote/'), 'application.commentsVote', data);
+      return this._makeRequest('POST', 'app', '/comments/' + id + '/vote/', 'application.commentsVote', data);
     },
     'commentsMarkPost': function (id, mark) {
       var data = { 'mark': mark };
-      return this._makeRequest('POST', this._getAppUrl('/comments/' + id + '/mark/'), 'application.commentsMark', data);
+      return this._makeRequest('POST', 'app', '/comments/' + id + '/mark/', 'application.commentsMark', data);
     },
     'ratingPost': function (data) {
       if (typeof data.object_id != 'undefined' && data.object_id == 'currenturl') {
         data.object_id = waidCore.slugify($location.absUrl());
       }
       data.url = $location.absUrl();
-      return this._makeRequest('POST', this._getAppUrl('/rating/'), 'application.rating', data);
+      return this._makeRequest('POST', 'app', '/rating/', 'application.rating', data);
     },
     'ratingGet': function (object_id) {
-      return this._makeRequest('GET', this._getAppUrl('/rating/' + object_id + '/'), 'application.rating');
+      return this._makeRequest('GET', 'app', '/rating/' + object_id + '/', 'application.rating');
     },
     'articlesListGet': function () {
-      return this._makeRequest('GET', this._getAppUrl('/articles/'), 'application.articlesList');
+      return this._makeRequest('GET', 'app', '/articles/', 'application.articlesList');
     },
     'articlesGet': function (id) {
-      return this._makeRequest('GET', this._getAppUrl('/articles/' + id + '/'), 'application.articles');
+      return this._makeRequest('GET', 'app', '/articles/' + id + '/', 'application.articles');
     },
     'applicationGet': function (id) {
-      return this._makeRequest('GET', this._getAppUrl('/'), 'application');
+      return this._makeRequest('GET', 'app', '/', 'application');
     },
     'adminCommentsListGet': function (params) {
       if (typeof params != 'undefined') {
@@ -275,52 +300,52 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', this._getAdminUrl('/comments/' + query), 'admin.commentsListGet');
+      return this._makeRequest('GET', 'admin', '/comments/' + query, 'admin.commentsListGet');
     },
     'adminDefaultEmailTemplatesGet': function () {
       if (!this.adminDefaultEmailTemplatesGetRunning) {
-        this.adminDefaultEmailTemplatesGetRunning = this._makeRequest('GET', this._getAdminUrl('/default-email-templates/'), 'application.adminDefaultEmailTemplates');
+        this.adminDefaultEmailTemplatesGetRunning = this._makeRequest('GET', 'admin', '/default-email-templates/', 'application.adminDefaultEmailTemplates');
       }
       return this.adminDefaultEmailTemplatesGetRunning;
     },
     'adminCommentsPatch': function (id, data) {
-      return this._makeRequest('PATCH', this._getAdminUrl('/comments/' + id + '/'), 'admin.commentsPatch', data);
+      return this._makeRequest('PATCH', 'admin', '/comments/' + id + '/', 'admin.commentsPatch', data);
     },
     'adminCommentsDelete': function (id) {
-      return this._makeRequest('DELETE', this._getAdminUrl('/comments/' + id + '/'), 'admin.CommentsDelete');
+      return this._makeRequest('DELETE', 'admin', '/comments/' + id + '/', 'admin.CommentsDelete');
     },
     'adminAccountGet': function () {
-      return this._makeRequest('GET', this._getAdminUrl('/account/'), 'admin.account');
+      return this._makeRequest('GET', 'admin', '/account/', 'admin.account');
     },
     'adminAccountPatch': function (data) {
-      return this._makeRequest('PATCH', this._getAdminUrl('/account/'), 'admin.account', data);
+      return this._makeRequest('PATCH', 'admin', '/account/', 'admin.account', data);
     },
     'adminApplicationListGet': function () {
-      return this._makeRequest('GET', this._getAdminUrl('/application/'), 'admin.applicationList');
+      return this._makeRequest('GET', 'admin', '/application/', 'admin.applicationList');
     },
     'adminApplicationGet': function (id) {
-      return this._makeRequest('GET', this._getAdminUrl('/application/' + id + '/'), 'admin.application');
+      return this._makeRequest('GET', 'admin', '/application/' + id + '/', 'admin.application');
     },
     'adminApplicationPatch': function (data) {
-      return this._makeRequest('PATCH', this._getAdminUrl('/application/' + data.id + '/'), 'admin.application', data);
+      return this._makeRequest('PATCH', 'admin', '/application/' + data.id + '/', 'admin.application', data);
     },
     'publicAccountGet': function (account) {
-      return this._makeRequest('GET', this._getPublicUrl('/account/' + account + '/'), 'public.account');
+      return this._makeRequest('GET', 'public', '/account/' + account + '/', 'public.account', null, true);
     },
     'publicAccountCreatePost': function (data) {
       data.redirect_to_url = $location.absUrl() + 'admin/' + data.slug + '/';
-      return this._makeRequest('POST', this._getPublicUrl('/account/create/'), 'admin.accountCreate', data);
+      return this._makeRequest('POST', 'public', '/account/create/', 'admin.accountCreate', data);
     },
     'authenticate': function () {
       var that = this;
       var deferred = $q.defer();
       if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
-        this.userProfileGet().then(function (data) {
+        this._makeRequest('GET', 'app', '/user/profile/', 'application.userProfile', null, true).then(function(data){
           that.authenticated = true;
           waidCore.user = data;
           $rootScope.$broadcast('waid.services.authenticate.ok', that);
           deferred.resolve(data);
-        }, function (data) {
+        }, function(data) {
           that.authenticated = false;
           $rootScope.$broadcast('waid.services.authenticate.error', that);
           deferred.reject(data);
@@ -331,9 +356,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         deferred.reject();
       }
       return deferred.promise;
-    },
-    'getAccountId': function () {
-      return waidCore.account.id;
     },
     'initialize': function (url) {
       var that = this;
@@ -347,10 +369,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         this.API_URL += waidCore.config.getConfig('api.environment.production.url');
       }
-      // new Fingerprint2().get(function (result, components) {
-      //   that.fp = result;
-      //   that.fpComponents = components;
-      // });
       return this;
     }
   };

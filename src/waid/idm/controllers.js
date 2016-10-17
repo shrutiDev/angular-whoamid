@@ -52,13 +52,12 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
 }).controller('WAIDIDMUserProfileOverviewCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
   $scope.model = waidCore.user;
   waidService.userEmailListGet().then(function (data) {
-    console.log(data);
     $scope.emails = data.results;
   });
   // Update stuff
-  $rootScope.$watch('waid.user', function (data) {
-    $scope.model = data;
-  }, true);
+  // $rootScope.$watch('waid.user', function (data) {
+  //   $scope.model = data;
+  // }, true);
 }).controller('WAIDIDMUserProfileMainCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter, $timeout) {
   $scope.model = waidCore.user;
   $scope.errors = [];
@@ -174,11 +173,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
       $scope.initEmails(data.results);
     });
   };
-  $scope.$watch('waid.isInit', function (isInit) {
-    if (isInit) {
-      $scope.loadEmailList();
-    }
-  }, true);
+  $scope.loadEmailList();
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -192,11 +187,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
   $scope.goToSocialLogin = function (provider) {
     $window.location.assign(provider.url);
   };
-  $scope.$watch('waid.isInit', function (isInit) {
-    if (isInit) {
-      $scope.getProviders();
-    }
-  }, true);
+
+  $scope.getProviders();
 }).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
   $scope.show = {};
   $scope.missingEmailVerification = false;
