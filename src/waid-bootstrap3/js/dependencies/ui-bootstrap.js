@@ -1688,7 +1688,7 @@ angular.module('ui.bootstrap.datepickerPopup', [
     restrict: 'A',
     transclude: true,
     templateUrl: function (element, attrs) {
-      return attrs.templateUrl || waidCore.config.getTemplate('/core/bootstrap3/templates/datepickerPopup/popup.html');
+      return attrs.templateUrl || waidCore.config.getTemplate('/templates/core/datepickerPopup/popup.html');
     }
   };
 });
@@ -2228,7 +2228,7 @@ angular.module('ui.bootstrap.datepicker', [
 ]).directive('uibDatepicker', function (waidCore) {
   return {
     templateUrl: function (element, attrs) {
-      return attrs.templateUrl || waidCore.config.getTemplate('/core/bootstrap3/templates/datepicker/datepicker.html');
+      return attrs.templateUrl || waidCore.config.getTemplate('/templates/core/datepicker/datepicker.html');
     },
     scope: { datepickerOptions: '=?' },
     require: [
@@ -2246,7 +2246,7 @@ angular.module('ui.bootstrap.datepicker', [
 }).directive('uibDaypicker', function (waidCore) {
   return {
     templateUrl: function (element, attrs) {
-      return attrs.templateUrl || waidCore.config.getTemplate('/core/bootstrap3/templates/datepicker/day.html');
+      return attrs.templateUrl || waidCore.config.getTemplate('/templates/core/datepicker/day.html');
     },
     require: [
       '^uibDatepicker',
@@ -2262,7 +2262,7 @@ angular.module('ui.bootstrap.datepicker', [
 }).directive('uibMonthpicker', function (waidCore) {
   return {
     templateUrl: function (element, attrs) {
-      return attrs.templateUrl || waidCore.config.getTemplate('/core/bootstrap3/templates/datepicker/month.html');
+      return attrs.templateUrl || waidCore.config.getTemplate('/templates/core/datepicker/month.html');
     },
     require: [
       '^uibDatepicker',
@@ -2278,7 +2278,7 @@ angular.module('ui.bootstrap.datepicker', [
 }).directive('uibYearpicker', function (waidCore) {
   return {
     templateUrl: function (element, attrs) {
-      return attrs.templateUrl || waidCore.config.getTemplate('/core/bootstrap3/templates/datepicker/year.html');
+      return attrs.templateUrl || waidCore.config.getTemplate('/templates/core/datepicker/year.html');
     },
     require: [
       '^uibDatepicker',
