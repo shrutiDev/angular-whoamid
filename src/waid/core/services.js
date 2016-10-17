@@ -18,6 +18,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         $http.defaults.headers.common.Authorization = null;
       }
       $http.defaults.headers.common.FPID = this.fp;
+      $http.defaults.headers.common.CID = 'AngularJS ' + waidCore.config.version;
       // Extend headers
       var headers = {};
       if (typeof args.headers != 'undefined') {
