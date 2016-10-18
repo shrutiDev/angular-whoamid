@@ -87,11 +87,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       this.authenticated = false;
       waidCore.token = null;
     },
-    '_makeFileRequest': function (method, path, broadcast, data) {
+    '_makeFileRequest': function (method, type, path, broadcast, data) {
       var deferred = $q.defer();
       this.request({
         'method': method,
-        'url': path,
+        'url': _buildUrl(type, path),
         'data': data,
         'headers': { 'Content-Type': undefined }
       }).then(function (data) {
