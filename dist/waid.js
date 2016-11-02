@@ -47,7 +47,18 @@ angular.module('waid', [
       'terms_and_conditions': '<p><b>{{ waid.application.name }}</b> besteedt continue zorg en aandacht aan de samenstelling van de inhoud op onze sites. Op onze sites worden diverse interactiemogelijkheden aangeboden. De redactie bekijkt de berichten en reacties, die naar onze fora worden gestuurd niet vooraf - tenzij uitdrukkelijk anders aangegeven. Berichten die evident onrechtmatig zijn, worden zo spoedig mogelijk verwijderd. Het kan evenwel voorkomen dat u dergelijke berichten korte tijd aantreft. Wij distantiÃ\xABren ons nadrukkelijk van deze berichten en verontschuldigen ons er bij voorbaat voor. Het is mogelijk dat de informatie die op de sites wordt gepubliceerd onvolledig is of onjuistheden bevat. Het is niet altijd mogelijk fouten te voorkomen. {{ waid.application.name }} is niet verantwoordelijk voor meningen en boodschappen van gebruikers van (forum)pagina\'s. De meningen en boodschappen op de forumpagina\'s geven niet de mening of het beleid van {{ waid.application.name }} weer. Ditzelfde geldt voor informatie van derden waarvan u via links op onze websites kennisneemt. Wij sluiten alle aansprakelijkheid uit voor enigerlei directe of indirecte schade, van welke aard dan ook, die voortvloeit uit het gebruik van informatie die op of via onze websites is verkregen. {{ waid.application.name }} behoudt zich het recht voor - tenzij schriftelijk anders overeengekomen met de auteur - ingezonden materiaal te verwijderen in te korten en/of aan te passen. Dit geldt zowel voor tekst als muziek- en beeldmateriaal. Deze website is alleen bedoeld voor eigen raadpleging via normaal browser-bezoek. Het is derhalve niet toegestaan om de website op geautomatiseerde wijze te (laten) raadplegen, bijvoorbeeld via scripts, spiders en/of bots. Eventuele hyperlinks dienen bezoekers rechtstreeks te leiden naar de context, waarbinnen de publieke omroep content aanbiedt. Video- en audiostreams mogen bijvoorbeeld alleen worden vertoond via een link naar een omroeppagina of embedded omroepplayer. Overneming, inframing, herpublicatie, bewerking of toevoeging zijn niet toegestaan. Eveneens is het niet toegestaan technische beveiligingen te omzeilen of te verwijderen, of dit voor anderen mogelijk te maken. {{ waid.application.name }} kan besluiten (delen van ) bijdragen van gebruikers op internetsites te publiceren c.q. over te nemen in andere media, bijvoorbeeld maar niet beperkt tot televisie, radio, internetsites, mobiele informatiedragers en printmedia. Door bijdragen te leveren op fora en andere {{ waid.application.name }} vergelijkbare internetsites stemmen bezoekers op voorhand onvoorwaardelijk en eeuwigdurend in met bovengenoemd gebruik van (delen van) hun bijdragen. Wanneer rechtens komt vast te staan dat {{ waid.application.name }} daartoe gehouden is, zal {{ waid.application.name }} mogen overgaan tot het aan derde(n) verstrekken van naam, adres, woonplaats of ip-nummer van een bezoeker/gebruiker.</p>'
     }
   });
-  waidService.initialize();
+
+  if (window.location.port == '8080' || window.location.port == '8000') {
+    var url = waidCore.config.getConfig('api.environment.development.url');
+  } else if (window.location.port == '8001') {
+    var url = waidCore.config.getConfig('api.environment.test.url');
+  } else if (window.location.port == '8002') {
+    var url = waidCore.config.getConfig('api.environment.staging.url');
+  } else {
+    var url = waidCore.config.getConfig('api.environment.production.url');
+  }
+
+  waidService.initialize(url);
 });
 'use strict';
 angular.module('waid.core', 
@@ -198,17 +209,6 @@ angular.module('waid.core.strategy', [
     }, function(){
       waidCore.clearUserData();
     });
-  };
-  waidCore.addEmoticon = function (emoticon) {
-    var input = document.getElementById($rootScope.targetId);
-    input.focus();
-    input.value = [
-      input.value.slice(0, input.selectionStart),
-      emoticon,
-      input.value.slice(input.selectionStart)
-    ].join('');
-    input.focus();
-    $rootScope.waid.closeEmoticonsModal();
   };
   // Retrieve basic account and application data
   waidCore.initRetrieveData = function (accountId, applicationId) {
@@ -532,6 +532,9 @@ angular.module('waid.core.services', [
     },
     'userLostLoginPost': function (data) {
       this._clearAuthorizationData();
+      if (typeof data.return_url == 'undefined' || data.return_url == '') {
+        data.return_url = waidCore.getAlCodeUrl();
+      }
       return this._makeRequest('POST', 'app', '/user/lost-login/', 'application.userLostLogin', data);
     },
     'userLogoutPost': function () {
@@ -706,15 +709,7 @@ angular.module('waid.core.services', [
     'initialize': function (url) {
       var that = this;
       this.API_URL = $window.location.protocol + '//';
-      if (window.location.port == '8080' || window.location.port == '8000') {
-        this.API_URL += waidCore.config.getConfig('api.environment.development.url');
-      } else if (window.location.port == '8001') {
-        this.API_URL += waidCore.config.getConfig('api.environment.test.url');
-      } else if (window.location.port == '8002') {
-        this.API_URL += waidCore.config.getConfig('api.environment.staging.url');
-      } else {
-        this.API_URL += waidCore.config.getConfig('api.environment.production.url');
-      }
+      this.API_URL += url;
       return this;
     }
   };
@@ -728,9 +723,15 @@ angular.module('waid.core.controllers', [
   'waid.idm.controllers',
   'waid.core.strategy',
   'waid.core.app.strategy'
-]).controller('WAIDCoreEmoticonModalCtrl', function ($scope, $rootScope) {
+]).controller('WAIDCoreEmoticonModalCtrl', function ($scope, $rootScope, comment, selectionStart) {
+  $scope.addEmoji = function (emoji) {
+    comment = comment.slice(0, selectionStart) + emoji + comment.slice(selectionStart);
+    $rootScope.waid.closeEmoticonsModal(comment);
+  };
+
   $scope.emoticons = {
     'people': [
+      'test',
       '\uD83D\uDE04',
       '\uD83D\uDE06',
       '\uD83D\uDE0A',
@@ -1385,7 +1386,6 @@ angular.module('waid.core.controllers', [
     ]
   };
 }).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore) { 
-  console.log('WaidCoreCtrl');
   if (angular.isDefined($rootScope.config)) {
     waidCore.config.patchConfig($rootScope.config);
   }
@@ -1449,7 +1449,7 @@ angular.module('waid.idm', [
       'edit':'Wijzigen',
       'loggedin_success': 'Succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
-      'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.',
+      'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mailadres in en dan word er een nieuwe activatie link toegestuurd.',
       'male': 'Man',
       'female': 'Vrouw',
       'emails': 'E-mail adressen',
@@ -1473,10 +1473,10 @@ angular.module('waid.idm', [
       'password': 'Wachtwoord',
       'password_confirm':'Wachtwoord bevestiging',
       'edit_password': 'Wachtwoord wijzigen',
-      'login_and_register_home_social_login_title': 'Social login/registratie',
+      'login_and_register_home_social_login_title': 'Log in met jouw Social account',
       'login_and_register_home_login_title': 'Inloggen',
       'login_and_register_home_register_title': 'Registreren',
-      'login_and_register_home_social_login_intro': '<p>Social login zorgt ervoor dat je snel kan aanmelden met jouw social media account.</p><p>Je word doorverwezen naar de social account met verdere informatie en instructies.</p><p>Zodra je daar akkoord geeft word je weer doorverwezen naar deze site en is jouw account aangemaakt!</p>',
+      'login_and_register_home_social_login_intro': '<p>Maak gebruik van jouw social media account bij Facebook, Twitter of LinkedIn om snel en gemakkelijk in te loggen.</p>',
       'login_and_register_modal_close_button': 'Sluiten',
       'login_and_register_modal_title': 'Inloggen of registreren',
       'profile_overview_title': 'Overzicht',
@@ -1495,9 +1495,9 @@ angular.module('waid.idm', [
       'lost_login_modal_title': 'Login gegevens kwijt?',
       'lost_login_modal_close_button': 'Sluiten',
       'lost_login_submit_button': 'Inlog gegevens ophalen',
-      'lost_lostin_form_email': 'E-mail',
+      'lost_lostin_form_email': 'E-mailadres',
       'register_form_username': 'Gebruikersnaam',
-      'register_form_email': 'E-Mail',
+      'register_form_email': 'E-mailadres',
       'register_form_password': 'Wachtwoord',
       'register_submit_register': 'Registreren',
       'register_submit_register_complete': 'Registratie afronden',
@@ -1872,17 +1872,6 @@ angular.module('waid.idm.controllers', [
       $scope.loadEmailList();
     });
   }
-
-  // // Format date string to javascript date
-  // $scope.$watch('model.date_of_birth', function (date) {
-  //   if (typeof date != 'undefined' && date != null) {
-  //     var dateParts = date.split('-');
-  //     $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-  //   }
-  // });
-
-}).controller('WAIDIDMUserProfileHomeCtrl', function ($scope, $rootScope, waidService, $routeParams) {
-  
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
 }).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService) {
@@ -1907,21 +1896,6 @@ angular.module('waid.idm.controllers', [
       $scope.errors = data;
     });
   };
-}).controller('WAIDIDMUserProfileInterestsCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
-  
-}).controller('WAIDIDMUserProfileOverviewCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
-  $scope.model = waidCore.user;
-  waidService.userEmailListGet().then(function (data) {
-    $scope.emails = data.results;
-  });
-}).controller('WAIDIDMUserProfileMainCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter, $timeout) {
-
-}).controller('WAIDIDMUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
- 
-}).controller('WAIDIDMUserProfileUsernameCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter) {
-
-}).controller('WAIDIDMUserProfileEmailCtrl', function ($scope, $rootScope, $location, waidService) {
-  
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -1935,7 +1909,6 @@ angular.module('waid.idm.controllers', [
   $scope.goToSocialLogin = function (provider) {
     $window.location.assign(provider.url);
   };
-
   $scope.getProviders();
 }).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
   $scope.show = {};
@@ -2050,7 +2023,7 @@ angular.module('waid.comments.controllers', [
   'waid.core',
   'waid.core.strategy',
   'waid.core.app.strategy'
-]).controller('WAIDCommentsCtrl', function ($scope, $rootScope, waidService, $q, waidCoreStrategy, waidCoreAppStrategy) {
+]).controller('WAIDCommentsCtrl', function ($scope, $rootScope, waidService, $q, waidCore, waidCoreStrategy, waidCoreAppStrategy) {
   $scope.ordering = angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
   $scope.orderingEnabled = angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
   $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
@@ -2117,6 +2090,27 @@ angular.module('waid.comments.controllers', [
       $scope.loadComments();
     });
   };
+
+  $scope.addEmoji = function(targetId, comment){
+    if (comment.id) {
+      var commentText = comment.comment_formatted;
+    } else {
+      var commentText = comment.comment;
+    }
+    waidCore.openEmoticonsModal(targetId, commentText).then(function(data){
+      if (comment.id) {
+        for (var i = 0; i < $scope.comments.length; i++) {
+          if ($scope.comments[i].id = comment.id) {
+            $scope.comments[i].comment = data;
+            $scope.comments[i].comment_formatted = data;
+          }
+        }
+      } else {
+        $scope.comment.comment = data;
+      }
+    });
+  }
+
   $scope.$watch('objectId', function (objectId) {
     if (objectId != '') {
       $scope.loadComments();

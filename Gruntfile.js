@@ -137,7 +137,7 @@ module.exports = function (grunt) {
               src: [
                 'src/dependencies/angular-slugify.js',
                 'src/dependencies/elastic.js',
-                'src/dependencies/fingerprint2.js',
+                'src/dependencies/fingerprint2.js'
               ],
               dest: 'dist/waid-dependencies.js'
           },

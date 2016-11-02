@@ -6,7 +6,7 @@ angular.module('waid.core.app.strategy', [
   'angular-growl',
   'slugifier',
   'angular-confirm'
-]).service('waidCoreAppStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl, Slug) {
+]).service('waidCoreAppStrategy', function ($q, $rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl, Slug) {
   var emoticonsModalInstance = null;
   var termsAndConditionsModalInstance = null;
   var completeProfileModalInstance = null;
@@ -30,19 +30,32 @@ angular.module('waid.core.app.strategy', [
     this.closeLoginAndRegisterModal();
     this.closeUserProfileModal();
   };
-  waidCore.openEmoticonsModal = function (targetId) {
-    $rootScope.targetId = targetId;
+  waidCore.openEmoticonsModal = function (targetId, comment) {
+    var input = document.getElementById(targetId);
     emoticonsModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('core', 'emoticonsModal'),
       controller: 'WAIDCoreEmoticonModalCtrl',
+      resolve: {
+        comment:function(){
+          return comment;
+        },
+        selectionStart:function(){
+          return input.selectionStart;
+        }
+      },
       size: 'lg',
       backdrop: 'static'
     });
+    return emoticonsModalInstance.result;
   };
-  waidCore.closeEmoticonsModal = function () {
+  waidCore.closeEmoticonsModal = function (comment) {
     if (emoticonsModalInstance) {
-      emoticonsModalInstance.dismiss('close');
+      if (typeof comment != 'undefined') {
+        emoticonsModalInstance.close(comment);
+      } else {
+        emoticonsModalInstance.dismiss('close');
+      }
     }
   };
   waidCore.openTermsAndConditionsModal = function (template) {
@@ -160,7 +173,7 @@ angular.module('waid.core.app.strategy', [
     waidCore.closeAllModals();
   });
   $rootScope.$on('waid.services.application.userRegister.post.ok', function (event, data) {
-    growl.addSuccessMessage('Geregistreerd als nieuwe gebruiker! Controleer je mail om de account te verifieren.', { ttl: -1 });
+    growl.addSuccessMessage('Je account is aangemaakt. Ga naar je mailbox om je account te verifiëren.', { ttl: -1 });
   });
   $rootScope.$on('waid.services.application.userRegister.post.ok', function (event, data) {
     waidCore.closeAllModals();

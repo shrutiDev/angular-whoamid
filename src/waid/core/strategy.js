@@ -31,17 +31,6 @@ angular.module('waid.core.strategy', [
       waidCore.clearUserData();
     });
   };
-  waidCore.addEmoticon = function (emoticon) {
-    var input = document.getElementById($rootScope.targetId);
-    input.focus();
-    input.value = [
-      input.value.slice(0, input.selectionStart),
-      emoticon,
-      input.value.slice(input.selectionStart)
-    ].join('');
-    input.focus();
-    $rootScope.waid.closeEmoticonsModal();
-  };
   // Retrieve basic account and application data
   waidCore.initRetrieveData = function (accountId, applicationId) {
     waidService.publicAccountGet(accountId).then(function (data) {

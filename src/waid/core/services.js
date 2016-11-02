@@ -201,6 +201,9 @@ angular.module('waid.core.services', [
     },
     'userLostLoginPost': function (data) {
       this._clearAuthorizationData();
+      if (typeof data.return_url == 'undefined' || data.return_url == '') {
+        data.return_url = waidCore.getAlCodeUrl();
+      }
       return this._makeRequest('POST', 'app', '/user/lost-login/', 'application.userLostLogin', data);
     },
     'userLogoutPost': function () {
@@ -375,15 +378,7 @@ angular.module('waid.core.services', [
     'initialize': function (url) {
       var that = this;
       this.API_URL = $window.location.protocol + '//';
-      if (window.location.port == '8080' || window.location.port == '8000') {
-        this.API_URL += waidCore.config.getConfig('api.environment.development.url');
-      } else if (window.location.port == '8001') {
-        this.API_URL += waidCore.config.getConfig('api.environment.test.url');
-      } else if (window.location.port == '8002') {
-        this.API_URL += waidCore.config.getConfig('api.environment.staging.url');
-      } else {
-        this.API_URL += waidCore.config.getConfig('api.environment.production.url');
-      }
+      this.API_URL += url;
       return this;
     }
   };

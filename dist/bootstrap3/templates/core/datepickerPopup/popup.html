@@ -3,10 +3,10 @@
     <li ng-transclude></li>
     <li ng-if="showButtonBar" class="uib-button-bar">
       <span class="btn-group pull-left">
-        <button type="button" class="btn btn-sm btn-info uib-datepicker-current" ng-click="select('today', $event)" ng-disabled="isDisabled('today')">{{ getText('current') }}</button>
-        <button type="button" class="btn btn-sm btn-danger uib-clear" ng-click="select(null, $event)">{{ getText('clear') }}</button>
+        <button type="button" class="btn btn-sm btn-info uib-datepicker-current" ng-click="select('today', $event)" ng-disabled="isDisabled('today')">Vandaag</button>
+        <button type="button" class="btn btn-sm btn-danger uib-clear" ng-click="select(null, $event)">Wissen</button>
       </span>
-      <button type="button" class="btn btn-sm btn-success pull-right uib-close" ng-click="close($event)">{{ getText('close') }}</button>
+      <button type="button" class="btn btn-sm btn-success pull-right uib-close" ng-click="close($event)">Sluiten</button>
     </li>
   </ul>
 </div>

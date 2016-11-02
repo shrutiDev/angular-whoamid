@@ -257,17 +257,6 @@ angular.module('waid.idm.controllers', [
       $scope.loadEmailList();
     });
   }
-
-  // // Format date string to javascript date
-  // $scope.$watch('model.date_of_birth', function (date) {
-  //   if (typeof date != 'undefined' && date != null) {
-  //     var dateParts = date.split('-');
-  //     $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-  //   }
-  // });
-
-}).controller('WAIDIDMUserProfileHomeCtrl', function ($scope, $rootScope, waidService, $routeParams) {
-  
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
 }).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService) {
@@ -292,21 +281,6 @@ angular.module('waid.idm.controllers', [
       $scope.errors = data;
     });
   };
-}).controller('WAIDIDMUserProfileInterestsCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
-  
-}).controller('WAIDIDMUserProfileOverviewCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
-  $scope.model = waidCore.user;
-  waidService.userEmailListGet().then(function (data) {
-    $scope.emails = data.results;
-  });
-}).controller('WAIDIDMUserProfileMainCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter, $timeout) {
-
-}).controller('WAIDIDMUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
- 
-}).controller('WAIDIDMUserProfileUsernameCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter) {
-
-}).controller('WAIDIDMUserProfileEmailCtrl', function ($scope, $rootScope, $location, waidService) {
-  
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -320,7 +294,6 @@ angular.module('waid.idm.controllers', [
   $scope.goToSocialLogin = function (provider) {
     $window.location.assign(provider.url);
   };
-
   $scope.getProviders();
 }).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
   $scope.show = {};

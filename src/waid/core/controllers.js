@@ -5,9 +5,15 @@ angular.module('waid.core.controllers', [
   'waid.idm.controllers',
   'waid.core.strategy',
   'waid.core.app.strategy'
-]).controller('WAIDCoreEmoticonModalCtrl', function ($scope, $rootScope) {
+]).controller('WAIDCoreEmoticonModalCtrl', function ($scope, $rootScope, comment, selectionStart) {
+  $scope.addEmoji = function (emoji) {
+    comment = comment.slice(0, selectionStart) + emoji + comment.slice(selectionStart);
+    $rootScope.waid.closeEmoticonsModal(comment);
+  };
+
   $scope.emoticons = {
     'people': [
+      'test',
       '\uD83D\uDE04',
       '\uD83D\uDE06',
       '\uD83D\uDE0A',
@@ -662,7 +668,6 @@ angular.module('waid.core.controllers', [
     ]
   };
 }).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore) { 
-  console.log('WaidCoreCtrl');
   if (angular.isDefined($rootScope.config)) {
     waidCore.config.patchConfig($rootScope.config);
   }

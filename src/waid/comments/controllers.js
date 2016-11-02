@@ -3,7 +3,7 @@ angular.module('waid.comments.controllers', [
   'waid.core',
   'waid.core.strategy',
   'waid.core.app.strategy'
-]).controller('WAIDCommentsCtrl', function ($scope, $rootScope, waidService, $q, waidCoreStrategy, waidCoreAppStrategy) {
+]).controller('WAIDCommentsCtrl', function ($scope, $rootScope, waidService, $q, waidCore, waidCoreStrategy, waidCoreAppStrategy) {
   $scope.ordering = angular.isDefined($scope.ordering) ? $scope.ordering : '-created';
   $scope.orderingEnabled = angular.isDefined($scope.orderingEnabled) && $scope.orderingEnabled == 'false' ? false : true;
   $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
@@ -70,6 +70,27 @@ angular.module('waid.comments.controllers', [
       $scope.loadComments();
     });
   };
+
+  $scope.addEmoji = function(targetId, comment){
+    if (comment.id) {
+      var commentText = comment.comment_formatted;
+    } else {
+      var commentText = comment.comment;
+    }
+    waidCore.openEmoticonsModal(targetId, commentText).then(function(data){
+      if (comment.id) {
+        for (var i = 0; i < $scope.comments.length; i++) {
+          if ($scope.comments[i].id = comment.id) {
+            $scope.comments[i].comment = data;
+            $scope.comments[i].comment_formatted = data;
+          }
+        }
+      } else {
+        $scope.comment.comment = data;
+      }
+    });
+  }
+
   $scope.$watch('objectId', function (objectId) {
     if (objectId != '') {
       $scope.loadComments();

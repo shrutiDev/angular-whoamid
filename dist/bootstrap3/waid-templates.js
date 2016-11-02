@@ -20,7 +20,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "      <button type=\"button\" class=\"btn btn-default btn-xs pull-right\" ng-click=\"post()\">\n" +
     "          <span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.postCommentButton') }}\n" +
     "      </button> \n" +
-    "      <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"waid.openEmoticonsModal('add_comment')\">\n" +
+    "      <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"addEmoji('add_comment', comment)\">\n" +
     "          😄&nbsp;{{ ::waid.config.getConfig('comments.translations.addEmoticonButtonText') }}\n" +
     "      </button> \n" +
     "      {{ currentEmoticonComment }}\n" +
@@ -73,7 +73,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "        <button type=\"button\" class=\"btn btn-default btn-xs pull-right\" ng-click=\"updateComment(comment)\">\n" +
     "          <span class=\"glyphicon glyphicon-check\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.updateCommentButton') }}\n" +
     "        </button>\n" +
-    "        <button type=\"button\" class=\"btn btn-default btn-xs pull-left\"\" ng-click=\"waid.openEmoticonsModal('edit_comment_' + comment.id)\">\n" +
+    "        <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"addEmoji('edit_comment_' + comment.id, comment)\">\n" +
     "            😄&nbsp;{{ ::waid.config.getConfig('comments.translations.addEmoticonButtonText') }}\n" +
     "        </button>\n" +
     "        </p>\n" +
@@ -234,10 +234,10 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    <li ng-transclude></li>\n" +
     "    <li ng-if=\"showButtonBar\" class=\"uib-button-bar\">\n" +
     "      <span class=\"btn-group pull-left\">\n" +
-    "        <button type=\"button\" class=\"btn btn-sm btn-info uib-datepicker-current\" ng-click=\"select('today', $event)\" ng-disabled=\"isDisabled('today')\">{{ getText('current') }}</button>\n" +
-    "        <button type=\"button\" class=\"btn btn-sm btn-danger uib-clear\" ng-click=\"select(null, $event)\">{{ getText('clear') }}</button>\n" +
+    "        <button type=\"button\" class=\"btn btn-sm btn-info uib-datepicker-current\" ng-click=\"select('today', $event)\" ng-disabled=\"isDisabled('today')\">Vandaag</button>\n" +
+    "        <button type=\"button\" class=\"btn btn-sm btn-danger uib-clear\" ng-click=\"select(null, $event)\">Wissen</button>\n" +
     "      </span>\n" +
-    "      <button type=\"button\" class=\"btn btn-sm btn-success pull-right uib-close\" ng-click=\"close($event)\">{{ getText('close') }}</button>\n" +
+    "      <button type=\"button\" class=\"btn btn-sm btn-success pull-right uib-close\" ng-click=\"close($event)\">Sluiten</button>\n" +
     "    </li>\n" +
     "  </ul>\n" +
     "</div>\n"
@@ -253,7 +253,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "	<div ng-repeat=\"(key, group) in emoticons\">\n" +
     "		<h4>{{ waid.config.getTranslation('core', 'emoticons_' + key) }}</h4>\n" +
     "		<p>\n" +
-    "		<span class=\"emoticon_select\" ng-repeat=\"emoticon in group track by $index\" ng-click=\"waid.addEmoticon(emoticon)\">{{ emoticon }}</span>\n" +
+    "		<span class=\"emoticon_select\" ng-repeat=\"emoticon in group track by $index\" ng-click=\"addEmoji(emoticon)\">{{ emoticon }}</span>\n" +
     "		</p>\n" +
     "	</div>\n" +
     "	</div>\n" +

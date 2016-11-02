@@ -6,7 +6,7 @@
 	<div ng-repeat="(key, group) in emoticons">
 		<h4>{{ waid.config.getTranslation('core', 'emoticons_' + key) }}</h4>
 		<p>
-		<span class="emoticon_select" ng-repeat="emoticon in group track by $index" ng-click="waid.addEmoticon(emoticon)">{{ emoticon }}</span>
+		<span class="emoticon_select" ng-repeat="emoticon in group track by $index" ng-click="addEmoji(emoticon)">{{ emoticon }}</span>
 		</p>
 	</div>
 	</div>
