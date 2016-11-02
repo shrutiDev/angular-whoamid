@@ -8,7 +8,8 @@ angular.module('waid', [
   'waid.core.directives',
   'waid.idm',
   'waid.comments',
-  'waid.rating'
+  'waid.rating',
+  'monospaced.elastic',
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
   waidCore.config.version = '0.0.1';
@@ -49,7 +50,10 @@ angular.module('waid', [
   waidService.initialize();
 });
 'use strict';
-angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', 
+  [
+    'ngCookies'
+  ]).service('waidCore', function ($rootScope, $cookies) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -77,10 +81,10 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     if (typeof this[module].templates[key] == 'undefined') {
       console.log(key + ' template does not exist!');
     }
-    return waid.config.baseTemplatePath + this[module].templates[key] + '?version=' + waid.config.version;
+    return waid.config.baseTemplatePath + this[module].templates[key] + '?v=' + waid.config.version;
   };
   waid.config.getTemplate = function (url) {
-    return waid.config.baseTemplatePath + url;
+    return waid.config.baseTemplatePath + url + '?v=' + waid.config.version;;
   };
   waid.config.getTranslation = function (module, key) {
     return this[module].translations[key];
@@ -158,6 +162,7 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
   waid.application = false;
   waid.isInit = false;
   waid.isLoggedIn = false;
+  waid.isLoading = false;
   $rootScope.waid = waid;
   return waid;
 });
@@ -166,12 +171,6 @@ angular.module('waid.core.strategy', [
   'waid.core',
   'waid.core.services'
 ]).service('waidCoreStrategy', function ($rootScope, waidCore, waidService, $location, $cookies, $q) {
-  waidCore.checkLoading = function () {
-    if (waidService.running.length > 0) {
-      return true;
-    }
-    return false;
-  };
   waidCore.getAlCodeUrl = function () {
     var url = $location.absUrl();
     if ($location.$$html5 == false) {
@@ -331,7 +330,9 @@ angular.module('waid.core.strategy', [
   };
 });
 'use strict';
-angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
+angular.module('waid.core.services', [
+  'waid.core'
+]).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
   var service = {
     'API_URL': '',
     'apiVersion': 'v1',
@@ -360,6 +361,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       args = args || {};
       var deferred = $q.defer(), url = this.API_URL + args.url, method = args.method || 'GET', params = params, data = args.data || {};
       that.running.push(url);
+      waidCore.isLoading = true;
       // Fire the request, as configured.
       $http({
         url: url,
@@ -372,12 +374,22 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         var index = this.running.indexOf(url);
         if (index > -1) {
           this.running.splice(index, 1);
+          if (this.running.length > 0) {
+            waidCore.isLoading = true;
+          } else {
+            waidCore.isLoading = false;
+          }
         }
         deferred.resolve(data, status);
       })).error(angular.bind(this, function (data, status, headers, config) {
         var index = this.running.indexOf(url);
         if (index > -1) {
           this.running.splice(index, 1);
+          if (this.running.length > 0) {
+            waidCore.isLoading = true;
+          } else {
+            waidCore.isLoading = false;
+          }
         }
         // Set request status
         if (data) {
@@ -420,10 +432,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       waidCore.token = null;
     },
     '_makeFileRequest': function (method, type, path, broadcast, data) {
+      var that = this;
       var deferred = $q.defer();
       this.request({
         'method': method,
-        'url': _buildUrl(type, path),
+        'url': that._buildUrl(type, path),
         'data': data,
         'headers': { 'Content-Type': undefined }
       }).then(function (data) {
@@ -450,7 +463,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     '_makeRequest': function (method, type, path, broadcast, data, skipIsInit) {
       var that = this;
       // If not dependend on initialisation then return promise of request
-      if (typeof skipIsInit != 'undefined' && skipIsInit == true) {
+      if (waidCore.isInit || (typeof skipIsInit != 'undefined' && skipIsInit == true)) {
         var deferred = $q.defer();
         that.request({
           'method': method,
@@ -1371,7 +1384,8 @@ angular.module('waid.core.controllers', [
       '\uD83D\uDEA9'
     ]
   };
-}).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore) {
+}).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore) { 
+  console.log('WaidCoreCtrl');
   if (angular.isDefined($rootScope.config)) {
     waidCore.config.patchConfig($rootScope.config);
   }
@@ -1379,6 +1393,7 @@ angular.module('waid.core.controllers', [
   waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
   $rootScope.waid = waidCore;
+  $scope.waid = waidCore;
 });
 'use strict';
 angular.module('waid.core.directives', [
@@ -1397,10 +1412,12 @@ angular.module('waid.core.directives', [
       return attrs.templateUrl || waidCore.config.getTemplateUrl('core', 'core');
     }
   };
-}).directive('waidTermsAndContitions', function (waidCore) {
+}).directive('waidTranslation', function (waidCore) {
   return {
     restrict: 'E',
-    template: waidCore.config.getTranslation('core', 'terms_and_conditions')
+    template: function(elem, attr){
+      return waidCore.config.getTranslation(attr.module, attr.key)
+    }
   };
 });
 'use strict';
@@ -1411,6 +1428,8 @@ angular.module('waid.idm', [
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.setConfig('idm', {
     'templates': {
+      'profile':'/templates/idm/profile.html',
+      'overview':'/templates/idm/overview.html',
       'userProfileNavbar': '/templates/idm/user-profile-navbar.html',
       'userProfileStatusButton': '/templates/idm/user-profile-status-button.html',
       'termsAndConditionsModal': '/templates/idm/terms-and-conditions-modal.html',
@@ -1424,29 +1443,35 @@ angular.module('waid.idm', [
       'register': '/templates/idm/register.html',
       'lostLogin': '/templates/idm/lost-login.html',
       'userProfileMenu': '/templates/idm/user-profile-menu.html',
-      'userProfileHome': '/templates/idm/user-profile-home.html'
+      'userProfileHome': '/templates/idm/user-profile-home.html',
     },
     'translations': {
+      'edit':'Wijzigen',
       'loggedin_success': 'Succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
       'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.',
       'male': 'Man',
       'female': 'Vrouw',
+      'emails': 'E-mail adressen',
       'avatar': 'Avatar',
-      'nickname': 'Nickname',
+      'display_name': 'Nickname',
       'date_of_birth': 'Geboortedatum',
       'gender': 'Geslacht',
       'overview': 'Overzicht',
+      'main':'Algemeen',
       'edit_overview': 'Algemene gegevens aanpassen',
       'interests': 'Interesses',
-      'fun': 'Leuk',
-      'not_fun': 'Niet leuk',
+      'like_tags': 'Wat vind je leuk?',
+      'like_tags_help':'Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.',
+      'dislike_tags': 'Wat vind je echt niet leuk?',
+      'dislike_tags_help': 'Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.',
       'edit_interests': 'Interesses aanpassen',
       'email_addresses': 'E-mail adressen',
       'edit_email_addresses': 'E-mail adressen aanpassen',
       'username': 'Gebruikersnaam',
       'edit_username': 'Gebruikersnaam wijzigen',
       'password': 'Wachtwoord',
+      'password_confirm':'Wachtwoord bevestiging',
       'edit_password': 'Wachtwoord wijzigen',
       'login_and_register_home_social_login_title': 'Social login/registratie',
       'login_and_register_home_login_title': 'Inloggen',
@@ -1471,111 +1496,393 @@ angular.module('waid.idm', [
       'lost_login_modal_close_button': 'Sluiten',
       'lost_login_submit_button': 'Inlog gegevens ophalen',
       'lost_lostin_form_email': 'E-mail',
-      'register_form_username': 'Username',
+      'register_form_username': 'Gebruikersnaam',
       'register_form_email': 'E-Mail',
       'register_form_password': 'Wachtwoord',
       'register_submit_register': 'Registreren',
-      'register_submit_register_complete': 'Registratie afronden'
+      'register_submit_register_complete': 'Registratie afronden',
+      'terms_and_conditions_check' : 'Ik ga akkoord met de <a ng-click="waid.openTermsAndConditionsModal()">algemene voorwaarden</a>.',
+      'terms_and_condition_modal_title' : 'Algemene voorwaarden',
+      'terms_and_condition_modal_close': 'Sluiten'
+
     },
-    'profile': {
+    'profileDefinition': {
       'fieldSet': [
         {
           'key': 'overview',
           'order': 10,
-          'template': 'overview.html'
+          'templateKey': 'overview'
         },
         {
           'key': 'main',
           'order': 20,
-          'fields': [
-            'title',
-            'nickname',
-            'date_of_birth'
+          'fieldDefinitions': [
+          
+            {
+              'order':10,
+              'name': 'display_name',
+              'labelKey':'display_name',
+              'type': 'input'
+            },
+            {
+              'order':20,
+              'name': 'date_of_birth',
+              'labelKey':'date_of_birth',
+              'type': 'date'
+            },
+            {
+              'order':30,
+              'name': 'gender',
+              'labelKey':'gender',
+              'type': 'gender'
+            },
+            {
+              'order':40,
+              'name': 'avatar_thumb_50_50',
+              'labelKey':'avatar',
+              'type': 'avatar'
+            }
           ]
         },
         {
           'key': 'interests',
           'order': 30,
-          'fields': [
-            'like',
-            'dislike'
+          'fieldDefinitions': [
+            {
+              'order':10,
+              'name': 'like_tags',
+              'labelKey':'like_tags',
+              'helpKey':'like_tags_help',
+              'type': 'textarea'
+            },
+            {
+              'order':20,
+              'name': 'dislike_tags',
+              'labelKey':'dislike_tags',
+              'helpKey':'dislike_tags_help',
+              'type': 'textarea'
+            }
           ]
         },
         {
           'key': 'emails',
           'order': 40,
-          'fields': [
-            'like',
-            'dislike'
+          'noSaveButton': true,
+          'fieldDefinitions': [
+            {
+            'order':10,
+            'noLabel':true,
+            'name': 'emails',
+            'labelKey':'emails',
+            'type': 'multipleEmail'
+            }
           ]
         },
         {
           'key': 'username',
           'order': 50,
-          'fields': [
-            'like',
-            'dislike'
+          'fieldDefinitions': [
+            {
+              'order':10,
+              'name': 'username',
+              'labelKey':'username',
+              'type': 'input'
+            }
           ]
         },
         {
           'key': 'password',
           'order': 60,
-          'fields': [
-            'like',
-            'dislike'
+          'fieldDefinitions': [
+            {
+              'order':10,
+              'name': 'password',
+              'labelKey':'password',
+              'type': 'password'
+            },
+            {
+              'order':20,
+              'name':'password_confirm',
+              'labelKey':'password_confirm',
+              'type': 'password',
+              'hideFromOverview':true
+            }
           ]
-        }
-      ],
-      'fieldDefinitions': [
-        {
-          'name': 'firsname',
-          'type': 'BooleanField',
-          'storeType': 'metadata',
-          'default': false,
-          'autoValue': 'now',
-          'validators': [{
-              'type': 'length',
-              'min': 1,
-              'max': 10
-            }]
-        },
-        {
-          'name': 'email',
-          'type': 'EmailField',
-          'storeType': 'system',
-          'fieldDefinitions': [{
-              'name': 'email',
-              'type': 'system',
-              'order': 1
-            }],
-          'validators': [{
-              'type': 'length',
-              'min': 1,
-              'max': 10
-            }]
         }
       ]
     }
   });
 });
 'use strict';
-angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserProfileHomeCtrl', function ($scope, $rootScope, waidService, $routeParams) {
-  $scope.currentProfilePage = 'overview';
-  $scope.showProfilePage = function (page) {
-    return page == $scope.currentProfilePage ? true : false;
+angular.module('waid.idm.controllers', [
+  'waid.core'
+]).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
+  // Set profile definition
+  $scope.profileDefinition = waidCore.config['idm']['profileDefinition'];
+
+  // Default fieldset
+  $scope.currentFieldSet = 'overview';
+  
+  // Emails fields
+  $scope.inactiveEmails = [];
+  $scope.activeEmails = [];
+  $scope.email = {'add': ''}; // some weird stuff with model?
+
+  // Main errors array
+  $scope.errors = [];
+
+  // Flag if uploading of avatar is running.
+  $scope.isUploading = false;
+
+  // Holds field names that are changed.
+  $scope.changedFields = [];
+
+  $scope.showFieldSet = function (fieldSet) {
+    return fieldSet == $scope.currentFieldSet ? true : false;
   };
-  $scope.getActiveProfilePageMenuClass = function (page) {
-    return page == $scope.currentProfilePage ? 'active' : '';
+  $scope.getActiveFieldSetMenuClass = function (fieldSet) {
+    return fieldSet == $scope.currentFieldSet ? 'active' : '';
   };
-  $scope.goToProfilePage = function (page) {
-    $scope.currentProfilePage = page;
+  $scope.goToFieldSet = function (fieldSet) {
+    $scope.currentFieldSet = fieldSet;
+    $scope.errors = [];
   };
-  $rootScope.$on('waid.services.application.userProfile.patch.ok', function (event, data) {
-    $scope.currentProfilePage = 'overview';
-  });
-  $rootScope.$on('waid.services.application.userProfile.put.ok', function (event, data) {
-    $scope.currentProfilePage = 'overview';
-  });
+
+  $scope.getAllFieldDefinitions = function() {
+    var fieldDefinitions = [];
+    for(var i=0; $scope.profileDefinition.fieldSet.length > i; i++) {
+      if (typeof $scope.profileDefinition.fieldSet[i].fieldDefinitions != 'undefined') {
+        for(var a=0; $scope.profileDefinition.fieldSet[i].fieldDefinitions.length > a; a++) {
+          fieldDefinitions.push($scope.profileDefinition.fieldSet[i].fieldDefinitions[a]);
+        }
+      }
+    }
+    return fieldDefinitions;
+  }
+
+  $scope.dateOptions = {
+    dateDisabled: false,
+    maxDate: new Date(),
+    minDate: new Date(1940, 1, 1),
+    startingDay: 1,
+    datepickerMode: 'year'
+  };
+  $scope.popup = { opened: false };
+  $scope.open = function () {
+    $scope.popup.opened = true;
+  };
+
+  $scope.fieldChange = function(fieldName) {
+    if($scope.changedFields.indexOf(fieldName) == -1) {
+      $scope.changedFields.push(fieldName);
+    }
+  }
+
+  $scope.updateProfileInfo = function () {
+    var defer = $q.defer();
+    waidService.userProfileGet().then(function (data) {
+      var data = $scope.formatDataFromApi(data);
+      $scope.errors = [];
+      $scope.model = data;
+      waidCore.user = data;
+      defer.resolve(data);
+    }, function (data) {
+      $scope.errors = data;
+      defer.reject(data);
+    });
+    return defer.promise;
+  };
+  $scope.uploadFile = function (files) {
+    if (typeof files != 'undefined' && files.length > 0) {
+      $scope.isUploading = true;
+      var fd = new FormData();
+      fd.append('file', files[0]);
+      waidService.userAvatarPut(fd).then(function (data) {
+        $timeout(function () {
+          // Still buggy, save will redirect to overview...
+          $scope.save(true);
+          $scope.isUploading = false;
+        }, 1000);
+      });
+    }
+  };
+
+  $scope.formatDataFromApi = function (data){
+    fieldDefinitions = $scope.getAllFieldDefinitions();
+    for(var i=0; fieldDefinitions.length > i; i++) {
+      var fieldDefinition = fieldDefinitions[i];
+      // Format date
+      if (fieldDefinition.type == 'date') {
+        if (typeof data[fieldDefinition.name] != 'undefined' && data[fieldDefinition.name] && !(data[fieldDefinition.name] instanceof Date)) {
+          var dateParts = data[fieldDefinition.name].split('-');
+          data[fieldDefinition.name] = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+          continue;
+        }
+      }
+    }
+    return data;
+  }
+  $scope.formatDataToApi = function (data){
+    fieldDefinitions = $scope.getAllFieldDefinitions();
+    var fieldValues = {};
+    for(var i=0; fieldDefinitions.length > i; i++) {
+      var fieldDefinition = fieldDefinitions[i];
+      // Format date
+      if (fieldDefinition.type == 'date') {
+        if (typeof data[fieldDefinition.name] != 'undefined' && data[fieldDefinition.name] instanceof Date) {
+          fieldValues[fieldDefinition.name] = $filter('date')(data[fieldDefinition.name], 'yyyy-MM-dd');
+          continue;
+        }
+      }
+      fieldValues[fieldDefinition.name] = data[fieldDefinition.name];
+    }
+    return fieldValues
+  }
+  $scope.saveDefault = function(defaultProfilePostData) {
+    var defer = $q.defer();
+    waidService.userProfilePatch(defaultProfilePostData).then(function (data) {
+      defer.resolve(data);
+    }, function (data) {
+      angular.extend($scope.errors, data);
+      defer.reject(data);
+    });
+    return defer.promise;
+  }
+  $scope.saveUsername = function(usernameProfilePostData) {
+    var defer = $q.defer();
+    waidService.userUsernamePut(usernameProfilePostData).then(function (data) {
+      defer.resolve(data);
+    }, function (data) {
+      angular.extend($scope.errors, data);
+      defer.reject(data);
+    });
+    return defer.promise;
+  }
+  $scope.savePassword = function(passwordProfilePostData) {
+    var defer = $q.defer();
+    waidService.userPasswordPut(passwordProfilePostData).then(function (data) {
+      defer.resolve(data);
+    }, function (data) {
+      angular.extend($scope.errors, data);
+      defer.reject(data);
+    });
+    return defer.promise;
+  }
+  $scope.save = function (forceProfileUpdate) {
+    $scope.errors = [];
+    var dataPrepared = $scope.formatDataToApi($scope.model);
+
+    //var profilePostData = angular.copy($scope.model);
+    //console.log(profilePostData);
+    var defaultProfilePostData = {};
+    var passwordProfilePostData = {};
+    var usernameProfilePostData = {};
+    for (var key in dataPrepared) {
+      if ($scope.changedFields.indexOf(key) != -1) {
+        if (key == 'username') {
+          usernameProfilePostData[key] = dataPrepared[key];
+          continue;
+        }
+        if (key == 'password' || key == 'password_confirm') {
+          passwordProfilePostData[key] = dataPrepared[key];
+          continue;
+        }
+        defaultProfilePostData[key] = dataPrepared[key];
+      }
+    }
+    var promises = [];
+    
+    if (Object.keys(passwordProfilePostData).length) {
+      promises.push($scope.savePassword(passwordProfilePostData));
+    }
+
+    if (Object.keys(usernameProfilePostData).length) {
+      promises.push($scope.saveUsername(usernameProfilePostData));
+    }
+
+    if (Object.keys(defaultProfilePostData).length) {
+      promises.push($scope.saveDefault(defaultProfilePostData));
+    }
+
+    $q.all(promises)
+      .then(function(){
+        $scope.errors = [];
+        $rootScope.$broadcast('waid.idm.userProfile.save.ok');
+        $scope.currentFieldSet = 'overview';
+        if (forceProfileUpdate) {
+          $scope.updateProfileInfo();
+        }
+      }, function(errors) {
+        console.log('Naa');
+      });
+  };
+
+  $scope.initEmails = function (data) {
+    $scope.emails = data;
+    $scope.inactiveEmails = [];
+    $scope.activeEmails = [];
+    if (data.length > 0) {
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].is_verified == 1) {
+          $scope.activeEmails.push(data[i]);
+        } else {
+          $scope.inactiveEmails.push(data[i]);
+        }
+      }
+    }
+  };
+  $scope.addEmailEnter = function(keyEvent) {
+     if (keyEvent.which === 13) {
+        $scope.addEmail($scope.email.add);
+        keyEvent.preventDefault();
+     }
+  };
+  $scope.deleteEmail = function (id) {
+    waidService.userEmailDelete(id).then(function (data) {
+      $scope.errors = [];
+      $scope.loadEmailList();
+    }, function (data) {
+      $scope.errors = data;
+    });
+  };
+  $scope.addEmail = function () {
+    var data = { 'email': $scope.email.add };
+    waidService.userEmailPost(data).then(function (data) {
+      $scope.errors = [];
+      $scope.loadEmailList();
+      $scope.email.add = '';
+    }, function (data) {
+      $scope.errors = data;
+    });
+  };
+  $scope.loadEmailList = function () {
+    waidService.userEmailListGet().then(function (data) {
+      $scope.initEmails(data.results);
+    });
+  };
+
+  if (waidCore.user) {
+    waidCore.user = $scope.formatDataFromApi(waidCore.user);
+    $scope.model = waidCore.user;
+    $scope.loadEmailList();
+  } else {
+    $rootScope.$on('waid.core.isInit', function(user){
+      waidCore.user = $scope.formatDataFromApi(waidCore.user);
+      $scope.model = waidCore.user;
+      $scope.loadEmailList();
+    });
+  }
+
+  // // Format date string to javascript date
+  // $scope.$watch('model.date_of_birth', function (date) {
+  //   if (typeof date != 'undefined' && date != null) {
+  //     var dateParts = date.split('-');
+  //     $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+  //   }
+  // });
+
+}).controller('WAIDIDMUserProfileHomeCtrl', function ($scope, $rootScope, waidService, $routeParams) {
+  
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
 }).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService) {
@@ -1601,139 +1908,20 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
     });
   };
 }).controller('WAIDIDMUserProfileInterestsCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
-  $scope.model = waidCore.user;
-  $scope.save = function () {
-    waidService.userProfilePatch($scope.model).then(function (data) {
-      $scope.errors = [];
-    }, function (data) {
-      $scope.errors = data;
-    });
-  };
+  
 }).controller('WAIDIDMUserProfileOverviewCtrl', function ($scope, $rootScope, $location, waidCore, waidService) {
   $scope.model = waidCore.user;
   waidService.userEmailListGet().then(function (data) {
     $scope.emails = data.results;
   });
-  // Update stuff
-  // $rootScope.$watch('waid.user', function (data) {
-  //   $scope.model = data;
-  // }, true);
 }).controller('WAIDIDMUserProfileMainCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter, $timeout) {
-  $scope.model = waidCore.user;
-  $scope.errors = [];
-  $scope.profileDate = false;
-  $scope.isUploading = false;
-  $scope.dateOptions = {
-    dateDisabled: false,
-    maxDate: new Date(),
-    minDate: new Date(1940, 1, 1),
-    startingDay: 1,
-    datepickerMode: 'year'
-  };
-  $scope.popup = { opened: false };
-  $scope.open = function () {
-    $scope.popup.opened = true;
-  };
-  $scope.updateProfileInfo = function () {
-    waidService.userProfileGet().then(function (data) {
-      $scope.errors = [];
-      $scope.model = data;
-      waidCore.user = data;
-    }, function (data) {
-      $scope.errors = data;
-    });
-  };
-  $scope.uploadFile = function (files) {
-    $scope.isUploading = true;
-    var fd = new FormData();
-    fd.append('file', files[0]);
-    waidService.userAvatarPut(fd).then(function (data) {
-      $timeout(function () {
-        // Still buggy, save will redirect to overview...
-        $scope.save();
-        $scope.isUploading = false;
-      }, 1000);
-    });
-  };
-  $scope.save = function () {
-    if (typeof $scope.profileDate != 'undefined' && $scope.profileDate) {
-      $scope.model.date_of_birth = $filter('date')($scope.profileDate, 'yyyy-MM-dd');
-    }
-    waidService.userProfilePatch($scope.model).then(function (data) {
-      $scope.model = data;
-      waidCore.user = data;
-      $scope.errors = [];
-    }, function (data) {
-      $scope.errors = data;
-    });
-  };
-  // Format date string to javascript date
-  $scope.$watch('model.date_of_birth', function (date) {
-    if (typeof date != 'undefined' && date != null) {
-      var dateParts = date.split('-');
-      $scope.profileDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-    }
-  });
+
 }).controller('WAIDIDMUserProfilePasswordCtrl', function ($scope, $rootScope, $location, waidService, $filter) {
-  $scope.model = {};
-  $scope.save = function () {
-    waidService.userPasswordPut($scope.model).then(function (data) {
-      $scope.errors = [];
-      $scope.model = {};
-    }, function (data) {
-      $scope.errors = data;
-    });
-  };
+ 
 }).controller('WAIDIDMUserProfileUsernameCtrl', function ($scope, $rootScope, $location, waidCore, waidService, $filter) {
-  $scope.model = { 'username': waidCore.user.username };
-  $scope.save = function () {
-    waidService.userUsernamePut($scope.model).then(function (data) {
-      $scope.errors = [];
-    }, function (data) {
-      $scope.errors = data;
-    });
-  };
+
 }).controller('WAIDIDMUserProfileEmailCtrl', function ($scope, $rootScope, $location, waidService) {
-  $scope.inactiveEmails = [];
-  $scope.activeEmails = [];
-  $scope.emailAdd = '';
-  $scope.initEmails = function (data) {
-    $scope.inactiveEmails = [];
-    $scope.activeEmails = [];
-    if (data.length > 0) {
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].is_verified == 1) {
-          $scope.activeEmails.push(data[i]);
-        } else {
-          $scope.inactiveEmails.push(data[i]);
-        }
-      }
-    }
-  };
-  $scope.deleteEmail = function (id) {
-    waidService.userEmailDelete(id).then(function (data) {
-      $scope.errors = [];
-      $scope.loadEmailList();
-    }, function (data) {
-      $scope.errors = data;
-    });
-  };
-  $scope.addEmail = function () {
-    var data = { 'email': $scope.emailAdd };
-    waidService.userEmailPost(data).then(function (data) {
-      $scope.errors = [];
-      $scope.loadEmailList();
-      $scope.emailAdd = '';
-    }, function (data) {
-      $scope.errors = data;
-    });
-  };
-  $scope.loadEmailList = function () {
-    waidService.userEmailListGet().then(function (data) {
-      $scope.initEmails(data.results);
-    });
-  };
-  $scope.loadEmailList();
+  
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -1803,7 +1991,15 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMUserPro
 angular.module('waid.idm.directives', [
   'waid.core',
   'waid.idm.controllers'
-]).directive('waidUserProfileNavbar', function (waidCore) {
+]).directive('waidProfile', function (waidCore) {
+  return {
+    restrict: 'E',
+    controller: 'WAIDIDMProfileCtrl',
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'profile');
+    }
+  };
+}).directive('waidUserProfileNavbar', function (waidCore) {
   return {
     restrict: 'E',
     templateUrl: function (elem, attrs) {
@@ -1844,7 +2040,7 @@ angular.module('waid.comments', [
       'voteOrderNewestFirst': 'Nieuwste eerst',
       'voteOrderOldestFirst': 'Oudste eerst',
       'voteOrderTopFirst': 'Top comments',
-      'addEmoticonButtonText': 'Emoticon toevoegen',
+      'addEmoticonButtonText': 'Emoji toevoegen',
       'isLockedTitle': 'Comment is gelocked'
     }
   });

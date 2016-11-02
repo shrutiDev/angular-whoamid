@@ -24,7 +24,7 @@ angular.module('waid.comments', [
       'voteOrderNewestFirst': 'Nieuwste eerst',
       'voteOrderOldestFirst': 'Oudste eerst',
       'voteOrderTopFirst': 'Top comments',
-      'addEmoticonButtonText': 'Emoticon toevoegen',
+      'addEmoticonButtonText': 'Emoji toevoegen',
       'isLockedTitle': 'Comment is gelocked'
     }
   });

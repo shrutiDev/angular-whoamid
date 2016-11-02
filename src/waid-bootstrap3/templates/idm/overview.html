@@ -1,0 +1,71 @@
+
+      <div ng-repeat="fieldSet in profileDefinition.fieldSet">
+        <div ng-if="fieldSet.key != currentFieldSet">
+          <h5>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h5>
+          <div ng-if="fieldSet.fieldDefinitions">
+            <div ng-repeat="fieldDefinition in fieldSet.fieldDefinitions">
+              <ANY ng-switch="fieldDefinition.type" ng-if="!fieldDefinition.hideFromOverview">
+                <ANY ng-switch-when="input">
+                  <dl class="dl-horizontal">
+                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>
+                    <dd>{{ model[fieldDefinition.name] }}</dd>
+                  </dl>
+                </ANY>
+
+                <ANY ng-switch-when="date">
+                  <dl class="dl-horizontal">
+                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>
+                    <dd>{{ model[fieldDefinition.name] | date:'longDate' }}</dd>
+                  </dl>
+                </ANY>
+
+                <ANY ng-switch-when="password">
+                  <dl class="dl-horizontal">
+                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>
+                    <dd>*******</dd>
+                  </dl>
+                </ANY>
+
+                <ANY ng-switch-when="gender">
+                  <dl class="dl-horizontal">
+                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>
+                    <dd><span ng-show="model[fieldDefinition.name]=='F'">{{ waid.config.getConfig('idm.translations.female') }}</span><span ng-show="model[fieldDefinition.name]=='M'">{{ waid.config.getConfig('idm.translations.male') }}</span></dd>
+                  </dl>
+                </ANY>
+
+                <ANY ng-switch-when="avatar">
+                  <dl class="dl-horizontal">
+                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>
+                    <dd><img ng-show="model.avatar_thumb_50_50" ng-src="{{ model.avatar_thumb_50_50 }}"></dd>
+                  </dl>
+                </ANY>
+
+                <ANY ng-switch-when="textarea">
+                  <dl class="dl-horizontal">
+                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>
+                    <dd>{{ model[fieldDefinition.name] }}</dd>
+                  </dl>
+                </ANY>
+
+                <ANY ng-switch-when="multipleEmail">
+                  <dl class="dl-horizontal" ng-repeat="email in emails">
+                    <dt>
+                      <span class="glyphicon glyphicon-eye-close text-danger" ng-show="!email.is_verified"></span>
+                      <span class="glyphicon glyphicon-ok text-success" ng-show="email.is_verified"></span>
+                    </dt>
+                    <dd>{{ email.email }}</dd>
+                  </dl>
+                </ANY>
+
+
+                <ANY ng-switch-default>Invalid fieldDefinition</ANY>
+              </ANY>
+            </div>
+            <a class="btn btn-default btn-block" ng-click="goToFieldSet(fieldSet.key)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{ ::waid.config.getTranslation('idm', 'edit') }}</a>
+          </div>
+        </div>
+        
+
+
+     
+      </div>

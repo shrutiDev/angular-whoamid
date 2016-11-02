@@ -1,5 +1,7 @@
 'use strict';
-angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
+angular.module('waid.core.services', [
+  'waid.core'
+]).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
   var service = {
     'API_URL': '',
     'apiVersion': 'v1',
@@ -28,6 +30,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       args = args || {};
       var deferred = $q.defer(), url = this.API_URL + args.url, method = args.method || 'GET', params = params, data = args.data || {};
       that.running.push(url);
+      waidCore.isLoading = true;
       // Fire the request, as configured.
       $http({
         url: url,
@@ -40,12 +43,22 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         var index = this.running.indexOf(url);
         if (index > -1) {
           this.running.splice(index, 1);
+          if (this.running.length > 0) {
+            waidCore.isLoading = true;
+          } else {
+            waidCore.isLoading = false;
+          }
         }
         deferred.resolve(data, status);
       })).error(angular.bind(this, function (data, status, headers, config) {
         var index = this.running.indexOf(url);
         if (index > -1) {
           this.running.splice(index, 1);
+          if (this.running.length > 0) {
+            waidCore.isLoading = true;
+          } else {
+            waidCore.isLoading = false;
+          }
         }
         // Set request status
         if (data) {
@@ -88,10 +101,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       waidCore.token = null;
     },
     '_makeFileRequest': function (method, type, path, broadcast, data) {
+      var that = this;
       var deferred = $q.defer();
       this.request({
         'method': method,
-        'url': _buildUrl(type, path),
+        'url': that._buildUrl(type, path),
         'data': data,
         'headers': { 'Content-Type': undefined }
       }).then(function (data) {
@@ -118,7 +132,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     '_makeRequest': function (method, type, path, broadcast, data, skipIsInit) {
       var that = this;
       // If not dependend on initialisation then return promise of request
-      if (typeof skipIsInit != 'undefined' && skipIsInit == true) {
+      if (waidCore.isInit || (typeof skipIsInit != 'undefined' && skipIsInit == true)) {
         var deferred = $q.defer();
         that.request({
           'method': method,

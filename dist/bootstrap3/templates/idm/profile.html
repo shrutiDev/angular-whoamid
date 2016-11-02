@@ -1,0 +1,115 @@
+<div class="waid">
+  <div class="row">
+    <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs">
+      <div class="waid">
+        <ul class="nav nav-pills nav-stacked">
+          <li role="presentation" ng-repeat="menuItem in waid.config.getConfig('idm').profileDefinition.fieldSet" ng-class="getActiveFieldSetMenuClass(menuItem.key)"><a ng-click="goToFieldSet(menuItem.key)">{{ waid.config.getTranslation('idm', 'profile_' + menuItem.key + '_title') }}</a></li>
+          <li role="presentation" ng-click="waid.logout()"><a>Uitloggen</a></li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+      <div ng-repeat="fieldSet in profileDefinition.fieldSet" ng-show="showFieldSet(fieldSet.key)" ng-cloak>
+        <h4>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h4>
+        <div ng-if="fieldSet.templateKey"><ng-include src="waid.config.getTemplateUrl('idm', fieldSet.templateKey)"></ng-include></div>
+        <form ng-if="fieldSet.fieldDefinitions">
+          <div class="form-group" ng-repeat="fieldDefinition in fieldSet.fieldDefinitions">
+          	<label for="{{ fieldDefinition.name }}" ng-hide="fieldDefinition.noLabel">{{ ::waid.config.getTranslation('idm', 	fieldDefinition.labelKey ) }}</label>
+
+            <ANY ng-switch="fieldDefinition.type">
+              
+              <ANY ng-switch-when="input">
+                <input type="input" class="form-control" id="{{ fieldDefinition.name }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" />
+
+              </ANY>
+
+              <ANY ng-switch-when="date">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="{{ fieldDefinition.name }}" uib-datepicker-popup ng-model="model[fieldDefinition.name]" is-open="popup.opened" datepicker-options="dateOptions" close-text="Close" ng-change="fieldChange(fieldDefinition.name)"/>
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+                  </span>
+                </div>
+              </ANY>
+
+              <ANY ng-switch-when="gender">
+                <label class="radio-inline">
+                  <input type="radio" ng-model="model[fieldDefinition.name]" value="M" ng-change="fieldChange(fieldDefinition.name)"> {{ ::waid.config.getTranslation('idm', 'male') }}
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" ng-model="model[fieldDefinition.name]" value="F" ng-change="fieldChange(fieldDefinition.name)"> {{ ::waid.config.getTranslation('idm', 'female') }}
+                </label>
+              </ANY>
+
+              <ANY ng-switch-when="avatar">
+                <img ng-show="model.avatar_thumb_50_50" ng-src="{{ model.avatar_thumb_50_50 }}" />
+                <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
+                <input type="file" class="form-control" id="avatar" placeholder="Avatar" onchange="angular.element(this).scope().uploadFile(this.files)">
+              </ANY>
+
+              <ANY ng-switch-when="textarea">
+                <textarea class="form-control" rows="3" id="{{ fieldDefinition.name }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" msd-elastic></textarea>
+              </ANY>
+
+              <ANY ng-switch-when="password">
+                <input type="password" class="form-control" id="{{ fieldDefinition.name }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" />
+              </ANY>
+                  
+              <ANY ng-switch-when="multipleEmail">
+                <div class="input-group input-group-sm">
+                  <input type="add_email" class="form-control" id="add_email" placeholder="Email" ng-model="email.add" ng-keypress="addEmailEnter($event)" />
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="addEmail()">Toevoegen</button>
+                  </span>
+                </div>
+
+                <div class="alert alert-danger" ng-repeat="error in errors.email"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+           
+                <div ng-show="inactiveEmails.length > 0">
+                  <h4><span class="glyphicon glyphicon-eye-close text-danger"></span> Nog te valideren e-mail adressen</h4>
+                  <p>Onderstaande e-mail adressen dienen nog te worden gecontroleerd. Er is een mail gestuurd naar het adres met een activatie link. Als je deze niet hebt ontvangen kan je het email adres verwijderen en een nieuwe toevoegen</p> 
+                  <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="row in inactiveEmails track by row.id">
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                      {{ row.email }}
+                       <button class="btn btn-default btn-xs pull-right" type="button" ng-click="deleteEmail(row.id)" confirm="{{ row.email }} verwijderen ?"><span class="glyphicon glyphicon-remove text-danger"></span> Verwijderen</button>
+                    </li>
+                  </ul>
+                </div>
+
+                <div ng-show="activeEmails.length > 0">
+                  <h4><span class="glyphicon glyphicon-ok text-success"></span> Gevalideerde e-mail adressen</h4>
+                  <p>De e-mail adressen hieronder zijn geactiveerd. Deze e-mail adressen worden gebruikt om systeemberichten zoals activatie en notificatie mails naar u toe te sturen.</p>
+                  <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="row in activeEmails track by row.id">
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                      {{ row.email }}
+                       <button class="btn btn-default btn-xs pull-right" type="button" ng-click="deleteEmail(row.id)" confirm="{{ row.email }} verwijderen ?"><span class="glyphicon glyphicon-remove text-danger"></span> Verwijderen</button>
+                    </li>
+                  </ul>
+                </div>
+
+                <div ng-show="emails.length == 0">
+                  <h4><span class="glyphicon glyphicon-zoom-in"></span> Geen e-mail adressen bekend</h4>
+                  <p>Er zijn nog geen e-mail adressen bekend. Voeg hierboven een e-mail adres toe. Je ontvangt een bevestigings e-mail ter verificatie.</p>
+                  </div>
+                  <div class="alert alert-danger" ng-if="errors.detail"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{errors.detail}}
+                </div>
+              </ANY>
+
+              <p class="help-block" ng-if="fieldDefinition.helpKey">{{ ::waid.config.getTranslation('idm', fieldDefinition.helpKey) }}</p>
+              
+              <ANY ng-switch-default>Invalid fieldDefinition</ANY>
+
+              <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+        	  </ANY>
+            
+          </div>
+          <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+          <button type="submit" class="btn btn-default btn-block" ng-click="save()" ng-hide="fieldSet.noSaveButton" ng-cloak><i class="fa fa-floppy-o" aria-hidden="true"></i> Opslaan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,12 +3,6 @@ angular.module('waid.core.strategy', [
   'waid.core',
   'waid.core.services'
 ]).service('waidCoreStrategy', function ($rootScope, waidCore, waidService, $location, $cookies, $q) {
-  waidCore.checkLoading = function () {
-    if (waidService.running.length > 0) {
-      return true;
-    }
-    return false;
-  };
   waidCore.getAlCodeUrl = function () {
     var url = $location.absUrl();
     if ($location.$$html5 == false) {

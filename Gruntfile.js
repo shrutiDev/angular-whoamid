@@ -14,8 +14,8 @@ module.exports = function (grunt) {
                 tasks: ['concat']
             },
             bootstraptemplatecopy: { 
-                files: 'src/waid-bootstrap/templates/**/*.html',
-                tasks: ['copy']
+                files: 'src/waid-bootstrap3/templates/**/*.html',
+                tasks: ['copy', 'ngtemplates']
             }
         },
 
@@ -73,21 +73,25 @@ module.exports = function (grunt) {
         //   }
         // },
 
-        // ngtemplates: {
-        //   // Make all boostrap3 templates for caching
-        //   bootstrap3:{
-        //     options: {
-        //       prefix: '/',
-        //       bootstrap: function(module, script) {
-        //         return 'angular.module(\'waid.templates\',[]).run([\'$templateCache\', function($templateCache) { ' + "\n" + script + '}]);';
-        //       },
-        //       url:    function(url) { return url.replace('bootstrap3/', ''); }
-        //     },
-        //     cwd: 'src/',
-        //     src:      '**/bootstrap3/templates/**/**.html',
-        //     dest:     'dist/bootstrap3/templates.js'
-        //   }
-        // },
+        ngtemplates: {
+          // Make all boostrap3 templates for caching
+          bootstrap3:{
+            options: {
+              prefix: '/',
+              bootstrap: function(module, script) {
+                return 'angular.module(\'waid.templates\',[]).run([\'$templateCache\', function($templateCache) { ' + "\n" + script + '}]);';
+              },
+              url:    function(url) { 
+                url = url.replace('waid-bootstrap3/', ''); 
+                url = url.replace('.html', '.html?v=0.0.1'); 
+                return url
+              }
+            },
+            cwd: 'src/',
+            src:      '**/waid-bootstrap3/templates/**/**.html',
+            dest:     'dist/bootstrap3/waid-templates.js'
+          }
+        },
 
         copy: {
           main: {
@@ -207,5 +211,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-purifycss');
 
     // Register tasks, can be used on command line
-    grunt.registerTask('default', ['copy', 'concat', 'sass', 'uglify', 'cssmin', 'watch']);
+    grunt.registerTask('default', ['copy', 'concat', 'ngtemplates', 'sass', 'uglify', 'cssmin', 'watch']);
 }

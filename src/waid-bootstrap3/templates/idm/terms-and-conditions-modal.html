@@ -1,11 +1,11 @@
-<span class="waid">
+<div class="waid">
 	<div class="modal-header">
-	    <h3 class="modal-title">Algemene voorwaarden<i class="glyphicon glyphicon-remove pull-right" ng-click="waid.closeTermsAndConditionsModal()"></i></h3>
+	    <h3 class="modal-title">{{ ::waid.config.getTranslation('idm', 'terms_and_condition_modal_title') }} <i class="glyphicon glyphicon-remove pull-right" ng-click="waid.closeTermsAndConditionsModal()"></i></h3>
 	</div>
 	<div class="modal-body">
-		<waid-terms-and-contitions></waid-terms-and-contitions>
+		<waid-translation module="core" key="terms_and_conditions"></waid-translation>
 	</div>
 	<div class="modal-footer">
-	    <button class="btn btn-warning" type="button" ng-click="waid.closeTermsAndConditionsModal()">Sluiten</button>
+	    <button class="btn btn-warning" type="button" ng-click="waid.closeTermsAndConditionsModal()">{{ ::waid.config.getTranslation('idm', 'terms_and_condition_modal_close') }}</button>
 	</div>
-</span>
+</div>

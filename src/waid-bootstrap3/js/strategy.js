@@ -4,7 +4,8 @@ angular.module('waid.core.app.strategy', [
   'waid.core.services',
   'ui.bootstrap',
   'angular-growl',
-  'slugifier'
+  'slugifier',
+  'angular-confirm'
 ]).service('waidCoreAppStrategy', function ($rootScope, $uibModal, waidCore, waidService, $location, $cookies, growl, Slug) {
   var emoticonsModalInstance = null;
   var termsAndConditionsModalInstance = null;

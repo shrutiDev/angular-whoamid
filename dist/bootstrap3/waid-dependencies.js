@@ -726,9 +726,9 @@ angular.module('ui.bootstrap.modal', [
         backdropScope = $rootScope.$new(true);
         backdropScope.modalOptions = modal;
         backdropScope.index = currBackdropIndex;
-        backdropDomEl = angular.element('<div uib-modal-backdrop="modal-backdrop"></div>');
+        backdropDomEl = angular.element('<div uib-modal-backdrop="waid modal-backdrop"></div>');
         backdropDomEl.attr({
-          'class': 'modal-backdrop',
+          'class': 'waid modal-backdrop',
           'ng-style': '{\'z-index\': 1040 + (index && 1 || 0) + index*10}',
           'uib-modal-animation-class': 'fade',
           'modal-in-class': 'in'
@@ -752,7 +752,7 @@ angular.module('ui.bootstrap.modal', [
       topModalIndex = previousTopOpenedModal ? parseInt(previousTopOpenedModal.value.modalDomEl.attr('index'), 10) + 1 : 0;
       var angularDomEl = angular.element('<div uib-modal-window="modal-window"></div>');
       angularDomEl.attr({
-        'class': 'modal',
+        'class': 'waid modal',
         'template-url': modal.windowTemplateUrl,
         'window-top-class': modal.windowTopClass,
         'role': 'dialog',

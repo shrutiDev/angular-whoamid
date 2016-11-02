@@ -6,6 +6,8 @@ angular.module('waid.idm', [
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.setConfig('idm', {
     'templates': {
+      'profile':'/templates/idm/profile.html',
+      'overview':'/templates/idm/overview.html',
       'userProfileNavbar': '/templates/idm/user-profile-navbar.html',
       'userProfileStatusButton': '/templates/idm/user-profile-status-button.html',
       'termsAndConditionsModal': '/templates/idm/terms-and-conditions-modal.html',
@@ -19,29 +21,35 @@ angular.module('waid.idm', [
       'register': '/templates/idm/register.html',
       'lostLogin': '/templates/idm/lost-login.html',
       'userProfileMenu': '/templates/idm/user-profile-menu.html',
-      'userProfileHome': '/templates/idm/user-profile-home.html'
+      'userProfileHome': '/templates/idm/user-profile-home.html',
     },
     'translations': {
+      'edit':'Wijzigen',
       'loggedin_success': 'Succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
       'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mail adres in en dan word er een nieuwe activatie link toegestuurd.',
       'male': 'Man',
       'female': 'Vrouw',
+      'emails': 'E-mail adressen',
       'avatar': 'Avatar',
-      'nickname': 'Nickname',
+      'display_name': 'Nickname',
       'date_of_birth': 'Geboortedatum',
       'gender': 'Geslacht',
       'overview': 'Overzicht',
+      'main':'Algemeen',
       'edit_overview': 'Algemene gegevens aanpassen',
       'interests': 'Interesses',
-      'fun': 'Leuk',
-      'not_fun': 'Niet leuk',
+      'like_tags': 'Wat vind je leuk?',
+      'like_tags_help':'Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.',
+      'dislike_tags': 'Wat vind je echt niet leuk?',
+      'dislike_tags_help': 'Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.',
       'edit_interests': 'Interesses aanpassen',
       'email_addresses': 'E-mail adressen',
       'edit_email_addresses': 'E-mail adressen aanpassen',
       'username': 'Gebruikersnaam',
       'edit_username': 'Gebruikersnaam wijzigen',
       'password': 'Wachtwoord',
+      'password_confirm':'Wachtwoord bevestiging',
       'edit_password': 'Wachtwoord wijzigen',
       'login_and_register_home_social_login_title': 'Social login/registratie',
       'login_and_register_home_login_title': 'Inloggen',
@@ -66,88 +74,118 @@ angular.module('waid.idm', [
       'lost_login_modal_close_button': 'Sluiten',
       'lost_login_submit_button': 'Inlog gegevens ophalen',
       'lost_lostin_form_email': 'E-mail',
-      'register_form_username': 'Username',
+      'register_form_username': 'Gebruikersnaam',
       'register_form_email': 'E-Mail',
       'register_form_password': 'Wachtwoord',
       'register_submit_register': 'Registreren',
-      'register_submit_register_complete': 'Registratie afronden'
+      'register_submit_register_complete': 'Registratie afronden',
+      'terms_and_conditions_check' : 'Ik ga akkoord met de <a ng-click="waid.openTermsAndConditionsModal()">algemene voorwaarden</a>.',
+      'terms_and_condition_modal_title' : 'Algemene voorwaarden',
+      'terms_and_condition_modal_close': 'Sluiten'
+
     },
-    'profile': {
+    'profileDefinition': {
       'fieldSet': [
         {
           'key': 'overview',
           'order': 10,
-          'template': 'overview.html'
+          'templateKey': 'overview'
         },
         {
           'key': 'main',
           'order': 20,
-          'fields': [
-            'title',
-            'nickname',
-            'date_of_birth'
+          'fieldDefinitions': [
+          
+            {
+              'order':10,
+              'name': 'display_name',
+              'labelKey':'display_name',
+              'type': 'input'
+            },
+            {
+              'order':20,
+              'name': 'date_of_birth',
+              'labelKey':'date_of_birth',
+              'type': 'date'
+            },
+            {
+              'order':30,
+              'name': 'gender',
+              'labelKey':'gender',
+              'type': 'gender'
+            },
+            {
+              'order':40,
+              'name': 'avatar_thumb_50_50',
+              'labelKey':'avatar',
+              'type': 'avatar'
+            }
           ]
         },
         {
           'key': 'interests',
           'order': 30,
-          'fields': [
-            'like',
-            'dislike'
+          'fieldDefinitions': [
+            {
+              'order':10,
+              'name': 'like_tags',
+              'labelKey':'like_tags',
+              'helpKey':'like_tags_help',
+              'type': 'textarea'
+            },
+            {
+              'order':20,
+              'name': 'dislike_tags',
+              'labelKey':'dislike_tags',
+              'helpKey':'dislike_tags_help',
+              'type': 'textarea'
+            }
           ]
         },
         {
           'key': 'emails',
           'order': 40,
-          'fields': [
-            'like',
-            'dislike'
+          'noSaveButton': true,
+          'fieldDefinitions': [
+            {
+            'order':10,
+            'noLabel':true,
+            'name': 'emails',
+            'labelKey':'emails',
+            'type': 'multipleEmail'
+            }
           ]
         },
         {
           'key': 'username',
           'order': 50,
-          'fields': [
-            'like',
-            'dislike'
+          'fieldDefinitions': [
+            {
+              'order':10,
+              'name': 'username',
+              'labelKey':'username',
+              'type': 'input'
+            }
           ]
         },
         {
           'key': 'password',
           'order': 60,
-          'fields': [
-            'like',
-            'dislike'
+          'fieldDefinitions': [
+            {
+              'order':10,
+              'name': 'password',
+              'labelKey':'password',
+              'type': 'password'
+            },
+            {
+              'order':20,
+              'name':'password_confirm',
+              'labelKey':'password_confirm',
+              'type': 'password',
+              'hideFromOverview':true
+            }
           ]
-        }
-      ],
-      'fieldDefinitions': [
-        {
-          'name': 'firsname',
-          'type': 'BooleanField',
-          'storeType': 'metadata',
-          'default': false,
-          'autoValue': 'now',
-          'validators': [{
-              'type': 'length',
-              'min': 1,
-              'max': 10
-            }]
-        },
-        {
-          'name': 'email',
-          'type': 'EmailField',
-          'storeType': 'system',
-          'fieldDefinitions': [{
-              'name': 'email',
-              'type': 'system',
-              'order': 1
-            }],
-          'validators': [{
-              'type': 'length',
-              'min': 1,
-              'max': 10
-            }]
         }
       ]
     }

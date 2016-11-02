@@ -15,9 +15,11 @@ angular.module('waid.core.directives', [
       return attrs.templateUrl || waidCore.config.getTemplateUrl('core', 'core');
     }
   };
-}).directive('waidTermsAndContitions', function (waidCore) {
+}).directive('waidTranslation', function (waidCore) {
   return {
     restrict: 'E',
-    template: waidCore.config.getTranslation('core', 'terms_and_conditions')
+    template: function(elem, attr){
+      return waidCore.config.getTranslation(attr.module, attr.key)
+    }
   };
 });

@@ -2,7 +2,15 @@
 angular.module('waid.idm.directives', [
   'waid.core',
   'waid.idm.controllers'
-]).directive('waidUserProfileNavbar', function (waidCore) {
+]).directive('waidProfile', function (waidCore) {
+  return {
+    restrict: 'E',
+    controller: 'WAIDIDMProfileCtrl',
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'profile');
+    }
+  };
+}).directive('waidUserProfileNavbar', function (waidCore) {
   return {
     restrict: 'E',
     templateUrl: function (elem, attrs) {

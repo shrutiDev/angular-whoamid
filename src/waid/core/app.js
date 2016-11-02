@@ -8,7 +8,8 @@ angular.module('waid', [
   'waid.core.directives',
   'waid.idm',
   'waid.comments',
-  'waid.rating'
+  'waid.rating',
+  'monospaced.elastic',
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
   waidCore.config.version = '0.0.1';

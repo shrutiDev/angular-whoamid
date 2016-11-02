@@ -1,5 +1,8 @@
 'use strict';
-angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', 
+  [
+    'ngCookies'
+  ]).service('waidCore', function ($rootScope, $cookies) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -27,10 +30,10 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     if (typeof this[module].templates[key] == 'undefined') {
       console.log(key + ' template does not exist!');
     }
-    return waid.config.baseTemplatePath + this[module].templates[key] + '?version=' + waid.config.version;
+    return waid.config.baseTemplatePath + this[module].templates[key] + '?v=' + waid.config.version;
   };
   waid.config.getTemplate = function (url) {
-    return waid.config.baseTemplatePath + url;
+    return waid.config.baseTemplatePath + url + '?v=' + waid.config.version;;
   };
   waid.config.getTranslation = function (module, key) {
     return this[module].translations[key];
@@ -108,6 +111,7 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
   waid.application = false;
   waid.isInit = false;
   waid.isLoggedIn = false;
+  waid.isLoading = false;
   $rootScope.waid = waid;
   return waid;
 });

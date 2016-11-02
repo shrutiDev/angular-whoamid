@@ -661,7 +661,8 @@ angular.module('waid.core.controllers', [
       '\uD83D\uDEA9'
     ]
   };
-}).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore) {
+}).controller('WAIDCoreCtrl', function ($scope, $rootScope, waidCore) { 
+  console.log('WaidCoreCtrl');
   if (angular.isDefined($rootScope.config)) {
     waidCore.config.patchConfig($rootScope.config);
   }
@@ -669,4 +670,5 @@ angular.module('waid.core.controllers', [
   waidCore.application = { 'id': angular.isDefined($scope.applicationId) ? $scope.applicationId : false };
   waidCore.initialize();
   $rootScope.waid = waidCore;
+  $scope.waid = waidCore;
 });
