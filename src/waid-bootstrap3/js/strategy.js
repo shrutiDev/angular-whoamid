@@ -38,10 +38,10 @@ angular.module('waid.core.app.strategy', [
       templateUrl: waidCore.config.getTemplateUrl('core', 'emoticonsModal'),
       controller: 'WAIDCoreEmoticonModalCtrl',
       resolve: {
-        comment:function(){
+        comment: function () {
           return comment;
         },
-        selectionStart:function(){
+        selectionStart: function () {
           return input.selectionStart;
         }
       },

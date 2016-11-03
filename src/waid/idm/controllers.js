@@ -1,32 +1,25 @@
 'use strict';
-angular.module('waid.idm.controllers', [
-  'waid.core'
-]).controller('WAIDIDMTermsAndConditionsCtrl', function($scope, $rootScope, waidService, $interpolate){
-  waidService.documentGet('terms-and-conditions').then(function(data){
+angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAndConditionsCtrl', function ($scope, $rootScope, waidService, $interpolate) {
+  waidService.documentGet('terms-and-conditions').then(function (data) {
     var text = $interpolate(data.text)($rootScope);
     $scope.document = text;
   });
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
   // Set profile definition
-  $scope.profileDefinition = waidCore.config['idm']['profileDefinition'];
-
+  $scope.profileDefinition = waidCore.config.idm.profileDefinition;
   // Default fieldset
   $scope.currentFieldSet = 'overview';
-  
   // Emails fields
   $scope.inactiveEmails = [];
   $scope.activeEmails = [];
-  $scope.email = {'add': ''}; // some weird stuff with model?
-
+  $scope.email = { 'add': '' };
+  // some weird stuff with model?
   // Main errors array
   $scope.errors = [];
-
   // Flag if uploading of avatar is running.
   $scope.isUploading = false;
-
   // Holds field names that are changed.
   $scope.changedFields = [];
-
   $scope.showFieldSet = function (fieldSet) {
     return fieldSet == $scope.currentFieldSet ? true : false;
   };
@@ -37,19 +30,17 @@ angular.module('waid.idm.controllers', [
     $scope.currentFieldSet = fieldSet;
     $scope.errors = [];
   };
-
-  $scope.getAllFieldDefinitions = function() {
+  $scope.getAllFieldDefinitions = function () {
     var fieldDefinitions = [];
-    for(var i=0; $scope.profileDefinition.fieldSet.length > i; i++) {
+    for (var i = 0; $scope.profileDefinition.fieldSet.length > i; i++) {
       if (typeof $scope.profileDefinition.fieldSet[i].fieldDefinitions != 'undefined') {
-        for(var a=0; $scope.profileDefinition.fieldSet[i].fieldDefinitions.length > a; a++) {
+        for (var a = 0; $scope.profileDefinition.fieldSet[i].fieldDefinitions.length > a; a++) {
           fieldDefinitions.push($scope.profileDefinition.fieldSet[i].fieldDefinitions[a]);
         }
       }
     }
     return fieldDefinitions;
-  }
-
+  };
   $scope.dateOptions = {
     dateDisabled: false,
     maxDate: new Date(),
@@ -61,13 +52,11 @@ angular.module('waid.idm.controllers', [
   $scope.open = function () {
     $scope.popup.opened = true;
   };
-
-  $scope.fieldChange = function(fieldName) {
-    if($scope.changedFields.indexOf(fieldName) == -1) {
+  $scope.fieldChange = function (fieldName) {
+    if ($scope.changedFields.indexOf(fieldName) == -1) {
       $scope.changedFields.push(fieldName);
     }
-  }
-
+  };
   $scope.updateProfileInfo = function () {
     var defer = $q.defer();
     waidService.userProfileGet().then(function (data) {
@@ -96,10 +85,9 @@ angular.module('waid.idm.controllers', [
       });
     }
   };
-
-  $scope.formatDataFromApi = function (data){
+  $scope.formatDataFromApi = function (data) {
     var fieldDefinitions = $scope.getAllFieldDefinitions();
-    for(var i=0; fieldDefinitions.length > i; i++) {
+    for (var i = 0; fieldDefinitions.length > i; i++) {
       var fieldDefinition = fieldDefinitions[i];
       // Format date
       if (fieldDefinition.type == 'date') {
@@ -111,11 +99,11 @@ angular.module('waid.idm.controllers', [
       }
     }
     return data;
-  }
-  $scope.formatDataToApi = function (data){
+  };
+  $scope.formatDataToApi = function (data) {
     var fieldDefinitions = $scope.getAllFieldDefinitions();
     var fieldValues = {};
-    for(var i=0; fieldDefinitions.length > i; i++) {
+    for (var i = 0; fieldDefinitions.length > i; i++) {
       var fieldDefinition = fieldDefinitions[i];
       // Format date
       if (fieldDefinition.type == 'date') {
@@ -126,9 +114,9 @@ angular.module('waid.idm.controllers', [
       }
       fieldValues[fieldDefinition.name] = data[fieldDefinition.name];
     }
-    return fieldValues
-  }
-  $scope.saveDefault = function(defaultProfilePostData) {
+    return fieldValues;
+  };
+  $scope.saveDefault = function (defaultProfilePostData) {
     var defer = $q.defer();
     waidService.userProfilePatch(defaultProfilePostData).then(function (data) {
       defer.resolve(data);
@@ -137,8 +125,8 @@ angular.module('waid.idm.controllers', [
       defer.reject(data);
     });
     return defer.promise;
-  }
-  $scope.saveUsername = function(usernameProfilePostData) {
+  };
+  $scope.saveUsername = function (usernameProfilePostData) {
     var defer = $q.defer();
     waidService.userUsernamePut(usernameProfilePostData).then(function (data) {
       defer.resolve(data);
@@ -147,8 +135,8 @@ angular.module('waid.idm.controllers', [
       defer.reject(data);
     });
     return defer.promise;
-  }
-  $scope.savePassword = function(passwordProfilePostData) {
+  };
+  $scope.savePassword = function (passwordProfilePostData) {
     var defer = $q.defer();
     waidService.userPasswordPut(passwordProfilePostData).then(function (data) {
       defer.resolve(data);
@@ -157,11 +145,10 @@ angular.module('waid.idm.controllers', [
       defer.reject(data);
     });
     return defer.promise;
-  }
+  };
   $scope.save = function (forceProfileUpdate) {
     $scope.errors = [];
     var dataPrepared = $scope.formatDataToApi($scope.model);
-
     //var profilePostData = angular.copy($scope.model);
     //console.log(profilePostData);
     var defaultProfilePostData = {};
@@ -181,32 +168,26 @@ angular.module('waid.idm.controllers', [
       }
     }
     var promises = [];
-    
     if (Object.keys(passwordProfilePostData).length) {
       promises.push($scope.savePassword(passwordProfilePostData));
     }
-
     if (Object.keys(usernameProfilePostData).length) {
       promises.push($scope.saveUsername(usernameProfilePostData));
     }
-
     if (Object.keys(defaultProfilePostData).length) {
       promises.push($scope.saveDefault(defaultProfilePostData));
     }
-
-    $q.all(promises)
-      .then(function(){
-        $scope.errors = [];
-        $rootScope.$broadcast('waid.idm.userProfile.save.ok');
-        $scope.currentFieldSet = 'overview';
-        if (forceProfileUpdate) {
-          $scope.updateProfileInfo();
-        }
-      }, function(errors) {
-        console.log('Naa');
-      });
+    $q.all(promises).then(function () {
+      $scope.errors = [];
+      $rootScope.$broadcast('waid.idm.userProfile.save.ok');
+      $scope.currentFieldSet = 'overview';
+      if (forceProfileUpdate) {
+        $scope.updateProfileInfo();
+      }
+    }, function (errors) {
+      console.log('Naa');
+    });
   };
-
   $scope.initEmails = function (data) {
     $scope.emails = data;
     $scope.inactiveEmails = [];
@@ -221,11 +202,11 @@ angular.module('waid.idm.controllers', [
       }
     }
   };
-  $scope.addEmailEnter = function(keyEvent) {
-     if (keyEvent.which === 13) {
-        $scope.addEmail($scope.email.add);
-        keyEvent.preventDefault();
-     }
+  $scope.addEmailEnter = function (keyEvent) {
+    if (keyEvent.which === 13) {
+      $scope.addEmail($scope.email.add);
+      keyEvent.preventDefault();
+    }
   };
   $scope.deleteEmail = function (id) {
     waidService.userEmailDelete(id).then(function (data) {
@@ -250,13 +231,12 @@ angular.module('waid.idm.controllers', [
       $scope.initEmails(data.results);
     });
   };
-
   if (waidCore.user) {
     waidCore.user = $scope.formatDataFromApi(waidCore.user);
     $scope.model = waidCore.user;
     $scope.loadEmailList();
   } else {
-    $rootScope.$on('waid.core.isInit', function(user){
+    $rootScope.$on('waid.core.isInit', function (user) {
       waidCore.user = $scope.formatDataFromApi(waidCore.user);
       $scope.model = waidCore.user;
       $scope.loadEmailList();

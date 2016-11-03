@@ -6,8 +6,8 @@ angular.module('waid.idm', [
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.setConfig('idm', {
     'templates': {
-      'profile':'/templates/idm/profile.html',
-      'overview':'/templates/idm/overview.html',
+      'profile': '/templates/idm/profile.html',
+      'overview': '/templates/idm/overview.html',
       'userProfileNavbar': '/templates/idm/user-profile-navbar.html',
       'userProfileStatusButton': '/templates/idm/user-profile-status-button.html',
       'termsAndConditionsModal': '/templates/idm/terms-and-conditions-modal.html',
@@ -21,10 +21,10 @@ angular.module('waid.idm', [
       'register': '/templates/idm/register.html',
       'lostLogin': '/templates/idm/lost-login.html',
       'userProfileMenu': '/templates/idm/user-profile-menu.html',
-      'userProfileHome': '/templates/idm/user-profile-home.html',
+      'userProfileHome': '/templates/idm/user-profile-home.html'
     },
     'translations': {
-      'edit':'Wijzigen',
+      'edit': 'Wijzigen',
       'loggedin_success': 'Je bent succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
       'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mailadres in en dan word er een nieuwe activatie link toegestuurd.',
@@ -36,11 +36,11 @@ angular.module('waid.idm', [
       'date_of_birth': 'Geboortedatum',
       'gender': 'Geslacht',
       'overview': 'Overzicht',
-      'main':'Algemeen',
+      'main': 'Algemeen',
       'edit_overview': 'Algemene gegevens aanpassen',
       'interests': 'Interesses',
       'like_tags': 'Wat vind je leuk?',
-      'like_tags_help':'Probeer in kernwoorden te antwoorden, bijvoorbeeld: vakantie, Bali, fietsen, muziek, auto\'s, Audi etc. We proberen interessante content met deze woorden voor je te selecteren.',
+      'like_tags_help': 'Probeer in kernwoorden te antwoorden, bijvoorbeeld: vakantie, Bali, fietsen, muziek, auto\'s, Audi etc. We proberen interessante content met deze woorden voor je te selecteren.',
       'dislike_tags': 'Wat vind je echt niet leuk?',
       'edit_interests': 'Interesses aanpassen',
       'email_addresses': 'E-mail adressen',
@@ -48,7 +48,7 @@ angular.module('waid.idm', [
       'username': 'Gebruikersnaam',
       'edit_username': 'Gebruikersnaam wijzigen',
       'password': 'Wachtwoord',
-      'password_confirm':'Wachtwoord bevestiging',
+      'password_confirm': 'Wachtwoord bevestiging',
       'edit_password': 'Wachtwoord wijzigen',
       'login_and_register_home_social_login_title': 'Log in met jouw Social account',
       'login_and_register_home_login_title': 'Inloggen',
@@ -78,10 +78,9 @@ angular.module('waid.idm', [
       'register_form_password': 'Wachtwoord',
       'register_submit_register': 'Registreren',
       'register_submit_register_complete': 'Registratie afronden',
-      'terms_and_conditions_check' : 'Ik ga akkoord met de <a ng-click="waid.openTermsAndConditionsModal()">algemene voorwaarden</a>.',
-      'terms_and_condition_modal_title' : 'Algemene voorwaarden',
+      'terms_and_conditions_check': 'Ik ga akkoord met de <a ng-click="waid.openTermsAndConditionsModal()">algemene voorwaarden</a>.',
+      'terms_and_condition_modal_title': 'Algemene voorwaarden',
       'terms_and_condition_modal_close': 'Sluiten'
-
     },
     'profileDefinition': {
       'fieldSet': [
@@ -94,29 +93,28 @@ angular.module('waid.idm', [
           'key': 'main',
           'order': 20,
           'fieldDefinitions': [
-          
             {
-              'order':10,
+              'order': 10,
               'name': 'display_name',
-              'labelKey':'display_name',
+              'labelKey': 'display_name',
               'type': 'input'
             },
             {
-              'order':20,
+              'order': 20,
               'name': 'date_of_birth',
-              'labelKey':'date_of_birth',
+              'labelKey': 'date_of_birth',
               'type': 'date'
             },
             {
-              'order':30,
+              'order': 30,
               'name': 'gender',
-              'labelKey':'gender',
+              'labelKey': 'gender',
               'type': 'gender'
             },
             {
-              'order':40,
+              'order': 40,
               'name': 'avatar_thumb_50_50',
-              'labelKey':'avatar',
+              'labelKey': 'avatar',
               'type': 'avatar'
             }
           ]
@@ -126,16 +124,16 @@ angular.module('waid.idm', [
           'order': 30,
           'fieldDefinitions': [
             {
-              'order':10,
+              'order': 10,
               'name': 'like_tags',
-              'labelKey':'like_tags',
-              'helpKey':'like_tags_help',
+              'labelKey': 'like_tags',
+              'helpKey': 'like_tags_help',
               'type': 'textarea'
             },
             {
-              'order':20,
+              'order': 20,
               'name': 'dislike_tags',
-              'labelKey':'dislike_tags',
+              'labelKey': 'dislike_tags',
               'type': 'textarea'
             }
           ]
@@ -144,44 +142,40 @@ angular.module('waid.idm', [
           'key': 'emails',
           'order': 40,
           'noSaveButton': true,
-          'fieldDefinitions': [
-            {
-            'order':10,
-            'noLabel':true,
-            'name': 'emails',
-            'labelKey':'emails',
-            'type': 'multipleEmail'
-            }
-          ]
+          'fieldDefinitions': [{
+              'order': 10,
+              'noLabel': true,
+              'name': 'emails',
+              'labelKey': 'emails',
+              'type': 'multipleEmail'
+            }]
         },
         {
           'key': 'username',
           'order': 50,
-          'fieldDefinitions': [
-            {
-              'order':10,
+          'fieldDefinitions': [{
+              'order': 10,
               'name': 'username',
-              'labelKey':'username',
+              'labelKey': 'username',
               'type': 'input'
-            }
-          ]
+            }]
         },
         {
           'key': 'password',
           'order': 60,
           'fieldDefinitions': [
             {
-              'order':10,
+              'order': 10,
               'name': 'password',
-              'labelKey':'password',
+              'labelKey': 'password',
               'type': 'password'
             },
             {
-              'order':20,
-              'name':'password_confirm',
-              'labelKey':'password_confirm',
+              'order': 20,
+              'name': 'password_confirm',
+              'labelKey': 'password_confirm',
               'type': 'password',
-              'hideFromOverview':true
+              'hideFromOverview': true
             }
           ]
         }

@@ -70,14 +70,13 @@ angular.module('waid.comments.controllers', [
       $scope.loadComments();
     });
   };
-
-  $scope.addEmoji = function(targetId, comment){
+  $scope.addEmoji = function (targetId, comment) {
     if (comment.id) {
       var commentText = comment.comment_formatted;
     } else {
       var commentText = comment.comment;
     }
-    waidCore.openEmoticonsModal(targetId, commentText).then(function(data){
+    waidCore.openEmoticonsModal(targetId, commentText).then(function (data) {
       if (comment.id) {
         for (var i = 0; i < $scope.comments.length; i++) {
           if ($scope.comments[i].id = comment.id) {
@@ -89,8 +88,7 @@ angular.module('waid.comments.controllers', [
         $scope.comment.comment = data;
       }
     });
-  }
-
+  };
   $scope.$watch('objectId', function (objectId) {
     if (objectId != '') {
       $scope.loadComments();

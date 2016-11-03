@@ -18,16 +18,16 @@ angular.module('waid.core.strategy', [
     return url;
   };
   waidCore.logout = function () {
-    waidService.userLogoutPost().then(function(){
+    waidService.userLogoutPost().then(function () {
       waidCore.clearUserData();
-    }, function(){
+    }, function () {
       waidCore.clearUserData();
     });
   };
   waidCore.logoutAll = function () {
-    waidService.userLogoutAllPost().then(function(){
+    waidService.userLogoutAllPost().then(function () {
       waidCore.clearUserData();
-    }, function(){
+    }, function () {
       waidCore.clearUserData();
     });
   };
@@ -44,37 +44,33 @@ angular.module('waid.core.strategy', [
       waidCore.saveWaidData();
     });
   };
-  
-  waidCore.initAlCode = function(){
+  waidCore.initAlCode = function () {
     var deferred = $q.defer();
     var waidAlCode = $location.search().waidAlCode;
     if (waidAlCode) {
       waidService.userAutoLoginGet(waidAlCode).then(function (data) {
-         deferred.resolve(data);
-         $location.search('waidAlCode', null);
-      }, function(data) {
-         deferred.reject(data);
+        deferred.resolve(data);
+        $location.search('waidAlCode', null);
+      }, function (data) {
+        deferred.reject(data);
       });
     } else {
       deferred.resolve();
     }
-
     return deferred.promise;
-  }
-
-  waidCore.initFP = function() {
+  };
+  waidCore.initFP = function () {
     var deferred = $q.defer();
     new Fingerprint2().get(function (result, components) {
       waidService.fp = result;
       deferred.resolve(result);
     });
     return deferred.promise;
-  }
-
+  };
   // Main initializer for waid
   waidCore.initialize = function () {
     // Set fingerpint
-    waidCore.initFP().then(function(){
+    waidCore.initFP().then(function () {
       // Init if account and app are fixed
       if (waidCore.account.id && waidCore.application.id) {
         // Try to set by cookie
@@ -107,9 +103,8 @@ angular.module('waid.core.strategy', [
           waidService._clearAuthorizationData();
         }
       }
-
       // If all isset, then continue to validate user
-      waidCore.initAlCode().then(function(){
+      waidCore.initAlCode().then(function () {
         if (waidCore.isBaseVarsSet()) {
           if (waidCore.token) {
             waidService.authenticate().then(function () {
@@ -129,16 +124,13 @@ angular.module('waid.core.strategy', [
       });
     });
   };
-
-  waidCore.isBaseVarsSet = function() {
-     if (typeof waidCore.account != 'undefined' && typeof waidCore.application != 'undefined' &&
-         waidCore.account != false && waidCore.application != false) {
-        return true;
-     } else {
-        return false;
-     }
-  }
-
+  waidCore.isBaseVarsSet = function () {
+    if (typeof waidCore.account != 'undefined' && typeof waidCore.application != 'undefined' && waidCore.account != false && waidCore.application != false) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   waidCore.loginCheck = function (data) {
     if (typeof data.profile_status != 'undefined' && data.profile_status.length > 0) {
       if (data.profile_status.indexOf('profile_ok') !== -1) {

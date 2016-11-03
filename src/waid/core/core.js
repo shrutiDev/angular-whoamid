@@ -1,8 +1,5 @@
 'use strict';
-angular.module('waid.core', 
-  [
-    'ngCookies'
-  ]).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootScope, $cookies) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -33,7 +30,7 @@ angular.module('waid.core',
     return waid.config.baseTemplatePath + this[module].templates[key] + '?v=' + waid.config.version;
   };
   waid.config.getTemplate = function (url) {
-    return waid.config.baseTemplatePath + url + '?v=' + waid.config.version;;
+    return waid.config.baseTemplatePath + url + '?v=' + waid.config.version;
   };
   waid.config.getTranslation = function (module, key) {
     return this[module].translations[key];
@@ -68,8 +65,6 @@ angular.module('waid.core',
     waid.closeLostLoginModal();
     waid.closeTermsAndConditionsModal();
   };
-
-
   waid.clearWaidData = function () {
     $rootScope.waid.account = false;
     $rootScope.waid.application = false;
@@ -93,12 +88,12 @@ angular.module('waid.core',
     }
     return false;
   };
-  waid.clearUserData = function(){
+  waid.clearUserData = function () {
     $rootScope.waid.user = false;
     $rootScope.waid.isLoggedIn = false;
     $rootScope.waid.token = false;
     waid.saveWaidData();
-  }
+  };
   waid.utils = {};
   waid.user = false;
   waid.account = false;

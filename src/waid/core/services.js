@@ -1,7 +1,5 @@
 'use strict';
-angular.module('waid.core.services', [
-  'waid.core'
-]).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
+angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
   var service = {
     'API_URL': '',
     'apiVersion': 'v1',
@@ -119,21 +117,21 @@ angular.module('waid.core.services', [
       return deferred.promise;
     },
     '_buildUrl': function (type, path) {
-      switch(type) {
-        case 'admin':
-          return '/admin/' + this.apiVersion + '/' + waidCore.account.id + path;
-        case 'app':
-          return '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + path;
-        case 'public':
-          return '/public/' + this.apiVersion + path;
-        default:
-          return '';
+      switch (type) {
+      case 'admin':
+        return '/admin/' + this.apiVersion + '/' + waidCore.account.id + path;
+      case 'app':
+        return '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + path;
+      case 'public':
+        return '/public/' + this.apiVersion + path;
+      default:
+        return '';
       }
     },
     '_makeRequest': function (method, type, path, broadcast, data, skipIsInit) {
       var that = this;
       // If not dependend on initialisation then return promise of request
-      if (waidCore.isInit || (typeof skipIsInit != 'undefined' && skipIsInit == true)) {
+      if (waidCore.isInit || typeof skipIsInit != 'undefined' && skipIsInit == true) {
         var deferred = $q.defer();
         that.request({
           'method': method,
@@ -147,13 +145,14 @@ angular.module('waid.core.services', [
           deferred.reject(data);
         });
         return deferred.promise;
-      } else { // If dependent on initialisation, return promise of isInit
+      } else {
+        // If dependent on initialisation, return promise of isInit
         var deferred = $q.defer();
-        var unregister = $rootScope.$watch('waid.isInit', function(isInit){
+        var unregister = $rootScope.$watch('waid.isInit', function (isInit) {
           if (isInit) {
             that.request({
               'method': method,
-              'url':  that._buildUrl(type, path),
+              'url': that._buildUrl(type, path),
               'data': data
             }).then(function (data) {
               $rootScope.$broadcast('waid.services.' + broadcast + '.' + method.toLowerCase() + '.ok', data);
@@ -362,12 +361,12 @@ angular.module('waid.core.services', [
       var that = this;
       var deferred = $q.defer();
       if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
-        this._makeRequest('GET', 'app', '/user/profile/', 'application.userProfile', null, true).then(function(data){
+        this._makeRequest('GET', 'app', '/user/profile/', 'application.userProfile', null, true).then(function (data) {
           that.authenticated = true;
           waidCore.user = data;
           $rootScope.$broadcast('waid.services.authenticate.ok', that);
           deferred.resolve(data);
-        }, function(data) {
+        }, function (data) {
           that.authenticated = false;
           $rootScope.$broadcast('waid.services.authenticate.error', that);
           deferred.reject(data);

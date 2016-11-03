@@ -19,14 +19,14 @@ angular.module('waid.core.directives', [
 }).directive('waidTranslation', function (waidCore) {
   return {
     restrict: 'E',
-    template: function(elem, attr){
-      return waidCore.config.getTranslation(attr.module, attr.key)
+    template: function (elem, attr) {
+      return waidCore.config.getTranslation(attr.module, attr.key);
     }
   };
 }).directive('waidRenderTemplate', function (waidCore, waidService, $q) {
   return {
     restrict: 'E',
-    template: function(elem, attr) {
+    template: function (elem, attr) {
       return attr.template;
     }
   };

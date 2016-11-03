@@ -9,7 +9,7 @@ angular.module('waid', [
   'waid.idm',
   'waid.comments',
   'waid.rating',
-  'monospaced.elastic',
+  'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
   waidCore.config.version = '0.0.15';
@@ -47,7 +47,6 @@ angular.module('waid', [
       'terms_and_conditions': ''
     }
   });
-
   if (window.location.port == '8080' || window.location.port == '8000') {
     var url = waidCore.config.getConfig('api.environment.development.url');
   } else if (window.location.port == '8001') {
@@ -57,6 +56,5 @@ angular.module('waid', [
   } else {
     var url = waidCore.config.getConfig('api.environment.production.url');
   }
-
   waidService.initialize(url);
 });
