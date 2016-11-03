@@ -731,7 +731,6 @@ angular.module('waid.core.controllers', [
 
   $scope.emoticons = {
     'people': [
-      'test',
       '\uD83D\uDE04',
       '\uD83D\uDE06',
       '\uD83D\uDE0A',
