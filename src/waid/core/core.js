@@ -62,12 +62,6 @@ angular.module('waid.core',
     }
     return this[key];
   };
-  // waid.isAuthenticated = function () {
-  //   if (waid.user && waid.account && waid.application) {
-  //     return true;
-  //   }
-  //   return false;
-  // };
   waid.closeAllModals = function () {
     waid.closeUserProfileModal();
     waid.closeLoginAndRegisterModal();

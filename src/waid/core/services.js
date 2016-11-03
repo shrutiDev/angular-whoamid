@@ -93,6 +93,7 @@ angular.module('waid.core.services', [
     '_login': function (token) {
       waidCore.token = token;
       waidCore.isLoggedIn = true;
+      waidCore.authenticateCheck = false;
       waidCore.saveWaidData();
       this.authenticate();
     },
