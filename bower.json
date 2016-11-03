@@ -11,7 +11,12 @@
     "angular-route": "1.2.16",
     "angular-html5-storage": "~0.0.5",
     "isotope": "~3.0.1",
-    "angular-isotope": "~0.1.14"
+    "angular-isotope": "~0.1.14",
+    "textAngular": "~1.5.12",
+    "jquery.stellar": "~0.6.2",
+    "angular-bootstrap": "~2.2.0",
+    "angular-confirm-modal": "~1.2.6",
+    "angular-growl": "~0.4.0"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",
