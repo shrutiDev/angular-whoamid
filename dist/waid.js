@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.15';
+  waidCore.config.version = '0.0.16';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -1441,7 +1441,7 @@ angular.module('waid.idm', [
       'male': 'Man',
       'female': 'Vrouw',
       'emails': 'E-mail adressen',
-      'avatar': 'Avatar',
+      'avatar': 'Profielfoto',
       'display_name': 'Nickname',
       'date_of_birth': 'Geboortedatum',
       'gender': 'Geslacht',
@@ -1972,7 +1972,7 @@ angular.module('waid.comments', [
       'markCommentSpamTitle': 'Markeer als spam',
       'commentMarkedAsSpam': 'Gemarkeerd als spam!',
       'deleteCommentTitle': 'Verwijderen',
-      'confirmDeleteContentBody': 'Weet u zeker dat je de comment wilt verwijderen?',
+      'confirmDeleteContentBody': 'Weet je zeker dat je de comment wilt verwijderen?',
       'confirmDeleteContentTitle': 'Comment verwijderen?',
       'updateCommentButton': 'Aanpassen',
       'voteOrderNewestFirst': 'Nieuwste eerst',

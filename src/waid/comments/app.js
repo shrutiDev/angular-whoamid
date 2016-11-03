@@ -18,7 +18,7 @@ angular.module('waid.comments', [
       'markCommentSpamTitle': 'Markeer als spam',
       'commentMarkedAsSpam': 'Gemarkeerd als spam!',
       'deleteCommentTitle': 'Verwijderen',
-      'confirmDeleteContentBody': 'Weet u zeker dat je de comment wilt verwijderen?',
+      'confirmDeleteContentBody': 'Weet je zeker dat je de comment wilt verwijderen?',
       'confirmDeleteContentTitle': 'Comment verwijderen?',
       'updateCommentButton': 'Aanpassen',
       'voteOrderNewestFirst': 'Nieuwste eerst',

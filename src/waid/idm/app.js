@@ -31,7 +31,7 @@ angular.module('waid.idm', [
       'male': 'Man',
       'female': 'Vrouw',
       'emails': 'E-mail adressen',
-      'avatar': 'Avatar',
+      'avatar': 'Profielfoto',
       'display_name': 'Nickname',
       'date_of_birth': 'Geboortedatum',
       'gender': 'Geslacht',

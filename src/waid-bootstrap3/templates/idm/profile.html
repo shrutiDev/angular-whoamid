@@ -45,7 +45,7 @@
               <ANY ng-switch-when="avatar">
                 <img ng-show="model.avatar_thumb_50_50" ng-src="{{ model.avatar_thumb_50_50 }}" />
                 <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
-                <input type="file" class="form-control" id="avatar" placeholder="Avatar" onchange="angular.element(this).scope().uploadFile(this.files)">
+                <input type="file" class="form-control" id="avatar" placeholder="Profielfoto" onchange="angular.element(this).scope().uploadFile(this.files)">
               </ANY>
 
               <ANY ng-switch-when="textarea">
@@ -80,7 +80,7 @@
 
                 <div ng-show="activeEmails.length > 0">
                   <h4><span class="glyphicon glyphicon-ok text-success"></span> Gevalideerde e-mail adressen</h4>
-                  <p>De e-mail adressen hieronder zijn geactiveerd. Deze e-mail adressen worden gebruikt om systeemberichten zoals activatie en notificatie mails naar u toe te sturen.</p>
+                  <p>De e-mail adressen hieronder zijn geactiveerd. Deze e-mail adressen worden gebruikt om systeemberichten zoals activatie en notificatie e-mails naar je toe te sturen.</p>
                   <ul class="list-group">
                     <li class="list-group-item" ng-repeat="row in activeEmails track by row.id">
                       <span class="glyphicon glyphicon-chevron-right"></span>
