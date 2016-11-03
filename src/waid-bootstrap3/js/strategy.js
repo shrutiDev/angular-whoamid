@@ -61,6 +61,7 @@ angular.module('waid.core.app.strategy', [
   waidCore.openTermsAndConditionsModal = function (template) {
     termsAndConditionsModalInstance = $uibModal.open({
       animation: true,
+      controller: 'WAIDIDMTermsAndConditionsCtrl',
       templateUrl: waidCore.config.getTemplateUrl('idm', 'termsAndConditionsModal'),
       size: 'lg',
       backdrop: 'static'

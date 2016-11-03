@@ -1,7 +1,12 @@
 'use strict';
 angular.module('waid.idm.controllers', [
   'waid.core'
-]).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
+]).controller('WAIDIDMTermsAndConditionsCtrl', function($scope, $rootScope, waidService, $interpolate){
+  waidService.documentGet('terms-and-conditions').then(function(data){
+    var text = $interpolate(data.text)($rootScope);
+    $scope.document = text;
+  });
+}).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
   // Set profile definition
   $scope.profileDefinition = waidCore.config['idm']['profileDefinition'];
 

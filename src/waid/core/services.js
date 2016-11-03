@@ -312,6 +312,9 @@ angular.module('waid.core.services', [
     'applicationGet': function (id) {
       return this._makeRequest('GET', 'app', '/', 'application');
     },
+    'documentGet': function (doc) {
+      return this._makeRequest('GET', 'app', '/docs/' + doc + '/', 'applicationDocumentGet');
+    },
     'adminCommentsListGet': function (params) {
       if (typeof params != 'undefined') {
         var query = '?' + $.param(params);

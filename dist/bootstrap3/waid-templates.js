@@ -629,7 +629,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "	    <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'terms_and_condition_modal_title') }} <i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeTermsAndConditionsModal()\"></i></h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
-    "		<waid-translation module=\"core\" key=\"terms_and_conditions\"></waid-translation>\n" +
+    "		<div ng-bind-html=\"document\"></div>\n" +
     "	</div>\n" +
     "	<div class=\"modal-footer\">\n" +
     "	    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeTermsAndConditionsModal()\">{{ ::waid.config.getTranslation('idm', 'terms_and_condition_modal_close') }}</button>\n" +

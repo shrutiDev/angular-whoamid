@@ -3,7 +3,7 @@
 	    <h3 class="modal-title">{{ ::waid.config.getTranslation('idm', 'terms_and_condition_modal_title') }} <i class="glyphicon glyphicon-remove pull-right" ng-click="waid.closeTermsAndConditionsModal()"></i></h3>
 	</div>
 	<div class="modal-body">
-		<waid-translation module="core" key="terms_and_conditions"></waid-translation>
+		<div ng-bind-html="document"></div>
 	</div>
 	<div class="modal-footer">
 	    <button class="btn btn-warning" type="button" ng-click="waid.closeTermsAndConditionsModal()">{{ ::waid.config.getTranslation('idm', 'terms_and_condition_modal_close') }}</button>
