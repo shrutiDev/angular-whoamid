@@ -617,7 +617,14 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   $templateCache.put('/templates/idm/social-login.html?v=0.0.14',
     "<div class=\"waid\">\n" +
     "  <div id=\"login_view\" ng-controller=\"WAIDIDMSocialCtrl\">\n" +
-    "    <a class=\"btn btn-default\" role=\"button\" ng-repeat=\"provider in providers\" ng-click=\"goToSocialLogin(provider)\">{{ provider.backend }}</a>\n" +
+    "    <a class=\"btn btn-default btn-block\" role=\"button\" ng-repeat=\"provider in providers\" ng-click=\"goToSocialLogin(provider)\">\n" +
+    "    <ANY ng-switch=\"provider.backend\">\n" +
+    "	  <ANY ng-switch-when=\"facebook\"><i class=\"fa fa-facebook-square\" aria-hidden=\"true\"></i> Facebook</ANY>\n" +
+    "	  <ANY ng-switch-when=\"linkedin\"><i class=\"fa fa-linkedin-square\" aria-hidden=\"true\"></i> LinkedIn</ANY>\n" +
+    "	  <ANY ng-switch-when=\"twitter\"><i class=\"fa fa-twitter-square\" aria-hidden=\"true\"></i> Twitter</ANY>\n" +
+    "	  <ANY ng-switch-default>Unknown</ANY>\n" +
+    "	</ANY>\n" +
+    "    </a>\n" +
     "  </div>\n" +
     "</div>"
   );

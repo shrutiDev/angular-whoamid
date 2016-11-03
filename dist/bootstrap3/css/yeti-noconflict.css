@@ -1701,9 +1701,7 @@
   .waid sub {
     bottom: -0.25em; }
   .waid img {
-    border: 0;
-    width: inherit !important;
-    max-width: inherit !important; }
+    border: 0; }
   .waid svg:not(:root) {
     overflow: hidden; }
   .waid figure {
@@ -6726,5 +6724,9 @@
     transform: scale(1.25); }
   70% {
     transform: scale(1); } }
+  .waid img {
+    border: 0;
+    width: inherit !important;
+    max-width: inherit !important; }
 
 /*# sourceMappingURL=yeti-noconflict.css.map */

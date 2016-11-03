@@ -2359,9 +2359,7 @@ sub {
   bottom: -0.25em; }
 
 img {
-  border: 0;
-  width: inherit !important;
-  max-width: inherit !important; }
+  border: 0; }
 
 svg:not(:root) {
   overflow: hidden; }

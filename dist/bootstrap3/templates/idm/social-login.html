@@ -1,5 +1,12 @@
 <div class="waid">
   <div id="login_view" ng-controller="WAIDIDMSocialCtrl">
-    <a class="btn btn-default" role="button" ng-repeat="provider in providers" ng-click="goToSocialLogin(provider)">{{ provider.backend }}</a>
+    <a class="btn btn-default btn-block" role="button" ng-repeat="provider in providers" ng-click="goToSocialLogin(provider)">
+    <ANY ng-switch="provider.backend">
+	  <ANY ng-switch-when="facebook"><i class="fa fa-facebook-square" aria-hidden="true"></i> Facebook</ANY>
+	  <ANY ng-switch-when="linkedin"><i class="fa fa-linkedin-square" aria-hidden="true"></i> LinkedIn</ANY>
+	  <ANY ng-switch-when="twitter"><i class="fa fa-twitter-square" aria-hidden="true"></i> Twitter</ANY>
+	  <ANY ng-switch-default>Unknown</ANY>
+	</ANY>
+    </a>
   </div>
 </div>

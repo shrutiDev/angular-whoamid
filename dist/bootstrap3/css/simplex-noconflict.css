@@ -1,4 +1,9 @@
 @charset "UTF-8";
+#waid {
+  position: absolute;
+  width: 100px;
+  height: 100px; }
+
 .waid {
   /* HTML5 display-role reset for older browsers */
   /* makes the font 33% larger relative to the icon container */
@@ -25,7 +30,9 @@
     border: 0;
     font-size: 100%;
     font: inherit;
-    vertical-align: baseline; }
+    vertical-align: baseline;
+    background: inherit;
+    text-transform: inherit; }
   .waid article, .waid aside, .waid details, .waid figcaption, .waid figure,
   .waid footer, .waid header, .waid hgroup, .waid menu, .waid nav, .waid section {
     display: block; }
@@ -1694,9 +1701,7 @@
   .waid sub {
     bottom: -0.25em; }
   .waid img {
-    border: 0;
-    width: inherit !important;
-    max-width: inherit !important; }
+    border: 0; }
   .waid svg:not(:root) {
     overflow: hidden; }
   .waid figure {
@@ -6719,5 +6724,9 @@
     transform: scale(1.25); }
   70% {
     transform: scale(1); } }
+  .waid img {
+    border: 0;
+    width: inherit !important;
+    max-width: inherit !important; }
 
 /*# sourceMappingURL=simplex-noconflict.css.map */

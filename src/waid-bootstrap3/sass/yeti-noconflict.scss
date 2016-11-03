@@ -55,4 +55,10 @@
 	@import "_growl.scss";
 	@import "_font-awesome.scss";
 	@import "themes/yeti.sass";
+
+	img {
+	  border: 0;
+	  width: inherit!important;
+	  max-width: inherit!important;
+	}
 }

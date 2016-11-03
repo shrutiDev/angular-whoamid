@@ -25,7 +25,7 @@ angular.module('waid.idm', [
     },
     'translations': {
       'edit':'Wijzigen',
-      'loggedin_success': 'Succesvol ingelogd.',
+      'loggedin_success': 'Je bent succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
       'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mailadres in en dan word er een nieuwe activatie link toegestuurd.',
       'male': 'Man',
@@ -40,9 +40,8 @@ angular.module('waid.idm', [
       'edit_overview': 'Algemene gegevens aanpassen',
       'interests': 'Interesses',
       'like_tags': 'Wat vind je leuk?',
-      'like_tags_help':'Probeer in kernwoorden te antwoorden, dus : vakantie,bali,fietsen,muziek,autos,audi etc... We proberen interessante content met deze woorden voor u te selecteren.',
+      'like_tags_help':'Probeer in kernwoorden te antwoorden, bijvoorbeeld: vakantie, Bali, fietsen, muziek, auto\'s, Audi etc. We proberen interessante content met deze woorden voor je te selecteren.',
       'dislike_tags': 'Wat vind je echt niet leuk?',
-      'dislike_tags_help': 'Probeer in kernwoorden te antwoorden, dus : drank, drugs etc.. We proberen content met deze woorden voor jou te filteren.',
       'edit_interests': 'Interesses aanpassen',
       'email_addresses': 'E-mail adressen',
       'edit_email_addresses': 'E-mail adressen aanpassen',
@@ -137,7 +136,6 @@ angular.module('waid.idm', [
               'order':20,
               'name': 'dislike_tags',
               'labelKey':'dislike_tags',
-              'helpKey':'dislike_tags_help',
               'type': 'textarea'
             }
           ]
