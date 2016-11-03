@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic',
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.12';
+  waidCore.config.version = '0.0.13';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -1708,7 +1708,7 @@ angular.module('waid.idm.controllers', [
   };
 
   $scope.formatDataFromApi = function (data){
-    fieldDefinitions = $scope.getAllFieldDefinitions();
+    var fieldDefinitions = $scope.getAllFieldDefinitions();
     for(var i=0; fieldDefinitions.length > i; i++) {
       var fieldDefinition = fieldDefinitions[i];
       // Format date
@@ -1723,7 +1723,7 @@ angular.module('waid.idm.controllers', [
     return data;
   }
   $scope.formatDataToApi = function (data){
-    fieldDefinitions = $scope.getAllFieldDefinitions();
+    var fieldDefinitions = $scope.getAllFieldDefinitions();
     var fieldValues = {};
     for(var i=0; fieldDefinitions.length > i; i++) {
       var fieldDefinition = fieldDefinitions[i];
