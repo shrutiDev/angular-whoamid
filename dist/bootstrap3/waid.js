@@ -13,6 +13,7 @@ angular.module('waid.core.app.strategy', [
   var lostLoginModalInstance = null;
   var loginAndRegisterHomeModalInstance = null;
   var userProfileHomeModalInstance = null;
+  var loginCount = 0;
   waidCore.slugify = function (slug) {
     return Slug.slugify($location.absUrl());
   };
@@ -190,6 +191,13 @@ angular.module('waid.core.app.strategy', [
   });
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {
     waidCore.loginCheck(data);
+  });
+  $rootScope.$on('waid.services.application.userLogin.post.error', function (event, data) {
+    loginCount++;
+    if (loginCount > 3) {
+      waidCore.openLostLoginModal();
+      loginCount = 0;
+    }
   });
 }).config([
   'growlProvider',
