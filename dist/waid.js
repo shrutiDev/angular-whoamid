@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.16';
+  waidCore.config.version = '0.0.17';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -328,9 +328,10 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+  
   // Check last action, if nog logged in try to place latest action (post comment when not logged in)
   $rootScope.$on('waid.services.authenticate.ok', function (event, data) {
-    action = waidCore.getLastAction();
+    var action = waidCore.getLastAction();
     if (action.type == 'comment_post') {
       waidService.userCommentsPost(action.data).then(function(data){
         $rootScope.$broadcast('waid.core.lastAction.commentPost', data);
