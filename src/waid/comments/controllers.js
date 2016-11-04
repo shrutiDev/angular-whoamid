@@ -65,10 +65,16 @@ angular.module('waid.comments.controllers', [
   };
   $scope.post = function () {
     $scope.comment.object_id = $scope.objectId;
-    waidService.userCommentsPost($scope.comment).then(function (data) {
+    if (!$rootScope.waid.user) {
+      waidCore.setLastAction('comment_post', $scope.comment);
+      $rootScope.waid.openLoginAndRegisterHomeModal();
       $scope.comment.comment = '';
-      $scope.loadComments();
-    });
+    } else {
+      waidService.userCommentsPost($scope.comment).then(function (data) {
+        $scope.comment.comment = '';
+        $scope.loadComments();
+      });
+    }
   };
   $scope.addEmoji = function (targetId, comment) {
     if (comment.id) {
@@ -89,6 +95,11 @@ angular.module('waid.comments.controllers', [
       }
     });
   };
+
+  $scope.$on('waid.core.lastAction.commentPost', function(data) {
+    $scope.loadComments();
+  });
+
   $scope.$watch('objectId', function (objectId) {
     if (objectId != '') {
       $scope.loadComments();

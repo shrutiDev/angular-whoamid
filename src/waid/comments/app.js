@@ -10,8 +10,6 @@ angular.module('waid.comments', [
       'commentsOrderButton': '/templates/comments/comments-order-button.html'
     },
     'translations': {
-      'title': 'Comments',
-      'notLoggedInText': 'Om comments te plaatsen dien je een account te hebben, login of registreer je snel!',
       'postCommentButton': 'Plaats comment',
       'actionDropdownTitle': 'Opties',
       'editCommentTitle': 'Aanpassen',

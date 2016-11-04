@@ -80,6 +80,16 @@
     position: absolute;
     top: 50%;
     margin-top: -4.05em; }
+  .waid img {
+    border: 0;
+    width: inherit !important;
+    max-width: inherit !important; }
+  .waid .modal-content {
+    background-color: white;
+    color: black; }
+  .waid .comment {
+    width: 100%;
+    display: table; }
   .waid .uib-position-measure {
     display: block !important;
     visibility: hidden !important;
@@ -5858,7 +5868,8 @@
     left: 0;
     z-index: 1050;
     -webkit-overflow-scrolling: touch;
-    outline: 0; }
+    outline: 0;
+    color: initial; }
     .waid .modal.fade .modal-dialog {
       -webkit-transform: translate(0, -25%);
       -ms-transform: translate(0, -25%);
@@ -6724,9 +6735,5 @@
     transform: scale(1.25); }
   70% {
     transform: scale(1); } }
-  .waid img {
-    border: 0;
-    width: inherit !important;
-    max-width: inherit !important; }
 
 /*# sourceMappingURL=yeti-noconflict.css.map */

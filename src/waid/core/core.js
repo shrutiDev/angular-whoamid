@@ -59,6 +59,25 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     }
     return this[key];
   };
+  // Adds user action to queue, when user is loggedin it will handle all actions
+  waid.setLastAction = function (type, data) {
+    var object = {
+      'type':type,
+      'data':data
+    }
+    $cookies.putObject('waid_last_action', object, { 'path': '/' });
+  };
+
+  waid.getLastAction = function () {
+    var object = $cookies.getObject('waid_last_action');
+    if (object) {
+      return object;
+    }
+    return false;
+  };
+  waid.clearLastAction = function (){
+    $cookies.remove('waid_last_action', { 'path': '/' });
+  };
   waid.closeAllModals = function () {
     waid.closeUserProfileModal();
     waid.closeLoginAndRegisterModal();

@@ -97,10 +97,12 @@ angular.module('waid.core.strategy', [
           } catch (err) {
             waidCore.clearWaidData();
             waidService._clearAuthorizationData();
+            $rootScope.$broadcast('waid.core.initialize.failed', waidCore);
           }
         } else {
           waidCore.clearWaidData();
           waidService._clearAuthorizationData();
+          $rootScope.$broadcast('waid.core.initialize.failed', waidCore);
         }
       }
       // If all isset, then continue to validate user
@@ -141,4 +143,20 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+  // Check last action, if nog logged in try to place latest action (post comment when not logged in)
+  $rootScope.$on('waid.services.authenticate.ok', function (event, data) {
+    action = waidCore.getLastAction();
+    if (action.type == 'comment_post') {
+      waidService.userCommentsPost(action.data).then(function(data){
+        $rootScope.$broadcast('waid.core.lastAction.commentPost', data);
+      })
+    }
+    if (action.type == 'rating_post') {
+      waidService.ratingPost(action.data).then(function(data){
+        $rootScope.$broadcast('waid.core.lastAction.ratingPost', data);
+      });
+    }
+    waidCore.clearLastAction();
+  });
+
 });

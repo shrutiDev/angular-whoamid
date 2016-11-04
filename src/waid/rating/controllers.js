@@ -3,7 +3,7 @@ angular.module('waid.rating.controllers', [
   'waid.core',
   'waid.core.strategy',
   'waid.core.app.strategy'
-]).controller('WAIDRatingCtrl', function ($scope, $rootScope, waidService, waidCoreStrategy, waidCoreAppStrategy) {
+]).controller('WAIDRatingCtrl', function ($scope, $rootScope, waidCore, waidService, waidCoreStrategy, waidCoreAppStrategy) {
   $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
   // Fixed for now..
   $scope.stars = [
@@ -34,13 +34,14 @@ angular.module('waid.rating.controllers', [
     'rating': []
   };
   $scope.rate = function (value) {
+    var data = {
+      'object_id': $scope.objectId,
+      'value': value
+    };
     if (!$rootScope.waid.user) {
+      waidCore.setLastAction('rating_post', data);
       $rootScope.waid.openLoginAndRegisterHomeModal();
     } else {
-      var data = {
-        'object_id': $scope.objectId,
-        'value': value
-      };
       waidService.ratingPost(data).then(function (data) {
         $scope.rating = data;
         $scope.rateOut();
@@ -67,9 +68,22 @@ angular.module('waid.rating.controllers', [
       }
     }
   };
-  waidService.ratingGet($scope.objectId).then(function (data) {
-    $scope.rating = data;
-    // Init rating on view
-    $scope.rateOut();
+  
+  $scope.loadRating = function() {
+    waidService.ratingGet($scope.objectId).then(function (data) {
+      $scope.rating = data;
+      // Init rating on view
+      $scope.rateOut();
+    });
+  };
+  
+  $scope.$on('waid.core.lastAction.ratingPost', function(data) {
+    $scope.loadRating();
+  });
+
+  $scope.$watch('objectId', function (objectId) {
+    if (objectId != '') {
+      $scope.loadRating();
+    }
   });
 });

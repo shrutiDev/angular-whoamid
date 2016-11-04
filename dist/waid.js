@@ -119,6 +119,25 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     }
     return this[key];
   };
+  // Adds user action to queue, when user is loggedin it will handle all actions
+  waid.setLastAction = function (type, data) {
+    var object = {
+      'type':type,
+      'data':data
+    }
+    $cookies.putObject('waid_last_action', object, { 'path': '/' });
+  };
+
+  waid.getLastAction = function () {
+    var object = $cookies.getObject('waid_last_action');
+    if (object) {
+      return object;
+    }
+    return false;
+  };
+  waid.clearLastAction = function (){
+    $cookies.remove('waid_last_action', { 'path': '/' });
+  };
   waid.closeAllModals = function () {
     waid.closeUserProfileModal();
     waid.closeLoginAndRegisterModal();
@@ -263,10 +282,12 @@ angular.module('waid.core.strategy', [
           } catch (err) {
             waidCore.clearWaidData();
             waidService._clearAuthorizationData();
+            $rootScope.$broadcast('waid.core.initialize.failed', waidCore);
           }
         } else {
           waidCore.clearWaidData();
           waidService._clearAuthorizationData();
+          $rootScope.$broadcast('waid.core.initialize.failed', waidCore);
         }
       }
       // If all isset, then continue to validate user
@@ -307,6 +328,22 @@ angular.module('waid.core.strategy', [
       }
     }
   };
+  // Check last action, if nog logged in try to place latest action (post comment when not logged in)
+  $rootScope.$on('waid.services.authenticate.ok', function (event, data) {
+    action = waidCore.getLastAction();
+    if (action.type == 'comment_post') {
+      waidService.userCommentsPost(action.data).then(function(data){
+        $rootScope.$broadcast('waid.core.lastAction.commentPost', data);
+      })
+    }
+    if (action.type == 'rating_post') {
+      waidService.ratingPost(action.data).then(function(data){
+        $rootScope.$broadcast('waid.core.lastAction.ratingPost', data);
+      });
+    }
+    waidCore.clearLastAction();
+  });
+
 });
 'use strict';
 angular.module('waid.core.services', ['waid.core']).service('waidService', function ($q, $http, $cookies, $rootScope, $location, waidCore, $window) {
@@ -377,7 +414,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         }
         // Forbidden, send out event..
         if (status == 403) {
-          $rootScope.$broadcast('waid.services.request.error', data);
+          $rootScope.$broadcast('waid.services.request.noPermission', data);
         }
         if (status == 0) {
           if (data == '') {
@@ -665,7 +702,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'publicAccountCreatePost': function (data) {
       data.redirect_to_url = $location.absUrl() + 'admin/' + data.slug + '/';
-      return this._makeRequest('POST', 'public', '/account/create/', 'admin.accountCreate', data);
+      return this._makeRequest('POST', 'public', '/account/create/', 'admin.accountCreate', data, true);
     },
     'authenticate': function () {
       var that = this;
@@ -1964,8 +2001,6 @@ angular.module('waid.comments', [
       'commentsOrderButton': '/templates/comments/comments-order-button.html'
     },
     'translations': {
-      'title': 'Comments',
-      'notLoggedInText': 'Om comments te plaatsen dien je een account te hebben, login of registreer je snel!',
       'postCommentButton': 'Plaats comment',
       'actionDropdownTitle': 'Opties',
       'editCommentTitle': 'Aanpassen',
@@ -2050,10 +2085,16 @@ angular.module('waid.comments.controllers', [
   };
   $scope.post = function () {
     $scope.comment.object_id = $scope.objectId;
-    waidService.userCommentsPost($scope.comment).then(function (data) {
+    if (!$rootScope.waid.user) {
+      waidCore.setLastAction('comment_post', $scope.comment);
+      $rootScope.waid.openLoginAndRegisterHomeModal();
       $scope.comment.comment = '';
-      $scope.loadComments();
-    });
+    } else {
+      waidService.userCommentsPost($scope.comment).then(function (data) {
+        $scope.comment.comment = '';
+        $scope.loadComments();
+      });
+    }
   };
   $scope.addEmoji = function (targetId, comment) {
     if (comment.id) {
@@ -2074,6 +2115,11 @@ angular.module('waid.comments.controllers', [
       }
     });
   };
+
+  $scope.$on('waid.core.lastAction.commentPost', function(data) {
+    $scope.loadComments();
+  });
+
   $scope.$watch('objectId', function (objectId) {
     if (objectId != '') {
       $scope.loadComments();
@@ -2121,7 +2167,7 @@ angular.module('waid.rating.controllers', [
   'waid.core',
   'waid.core.strategy',
   'waid.core.app.strategy'
-]).controller('WAIDRatingCtrl', function ($scope, $rootScope, waidService, waidCoreStrategy, waidCoreAppStrategy) {
+]).controller('WAIDRatingCtrl', function ($scope, $rootScope, waidCore, waidService, waidCoreStrategy, waidCoreAppStrategy) {
   $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
   // Fixed for now..
   $scope.stars = [
@@ -2152,13 +2198,14 @@ angular.module('waid.rating.controllers', [
     'rating': []
   };
   $scope.rate = function (value) {
+    var data = {
+      'object_id': $scope.objectId,
+      'value': value
+    };
     if (!$rootScope.waid.user) {
+      waidCore.setLastAction('rating_post', data);
       $rootScope.waid.openLoginAndRegisterHomeModal();
     } else {
-      var data = {
-        'object_id': $scope.objectId,
-        'value': value
-      };
       waidService.ratingPost(data).then(function (data) {
         $scope.rating = data;
         $scope.rateOut();
@@ -2185,10 +2232,23 @@ angular.module('waid.rating.controllers', [
       }
     }
   };
-  waidService.ratingGet($scope.objectId).then(function (data) {
-    $scope.rating = data;
-    // Init rating on view
-    $scope.rateOut();
+  
+  $scope.loadRating = function() {
+    waidService.ratingGet($scope.objectId).then(function (data) {
+      $scope.rating = data;
+      // Init rating on view
+      $scope.rateOut();
+    });
+  };
+  
+  $scope.$on('waid.core.lastAction.ratingPost', function(data) {
+    $scope.loadRating();
+  });
+
+  $scope.$watch('objectId', function (objectId) {
+    if (objectId != '') {
+      $scope.loadRating();
+    }
   });
 });
 'use strict';

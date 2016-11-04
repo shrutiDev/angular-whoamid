@@ -67,7 +67,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         }
         // Forbidden, send out event..
         if (status == 403) {
-          $rootScope.$broadcast('waid.services.request.error', data);
+          $rootScope.$broadcast('waid.services.request.noPermission', data);
         }
         if (status == 0) {
           if (data == '') {
@@ -355,7 +355,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'publicAccountCreatePost': function (data) {
       data.redirect_to_url = $location.absUrl() + 'admin/' + data.slug + '/';
-      return this._makeRequest('POST', 'public', '/account/create/', 'admin.accountCreate', data);
+      return this._makeRequest('POST', 'public', '/account/create/', 'admin.accountCreate', data, true);
     },
     'authenticate': function () {
       var that = this;

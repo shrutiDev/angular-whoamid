@@ -48,3 +48,19 @@
     top: 50%;
     margin-top: -4.05em;
 }
+
+img {
+  border: 0;
+  width: inherit!important;
+  max-width: inherit!important;
+}
+
+.modal-content {
+    background-color:white;
+    color:black;
+}
+
+.comment {
+    width:100%;
+    display:table;
+}

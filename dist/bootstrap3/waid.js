@@ -126,7 +126,7 @@ angular.module('waid.core.app.strategy', [
       userProfileHomeModalInstance.dismiss('close');
     }
   };
-  $rootScope.$on('waid.services.request.error', function (event, data) {
+  $rootScope.$on('waid.services.request.noPermission', function (event, data) {
     if (waidService.token && waidCore.checkIfModalIsOpen('completeProfile') == false) {
       waidService.userCompleteProfileGet().then(function (data) {
         waidCore.loginCheck(data);
