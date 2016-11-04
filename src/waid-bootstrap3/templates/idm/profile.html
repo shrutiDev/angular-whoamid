@@ -34,6 +34,7 @@
               </ANY>
 
               <ANY ng-switch-when="gender">
+                <br />
                 <label class="radio-inline">
                   <input type="radio" ng-model="model[fieldDefinition.name]" value="M" ng-change="fieldChange(fieldDefinition.name)"> {{ ::waid.config.getTranslation('idm', 'male') }}
                 </label>
@@ -43,9 +44,17 @@
               </ANY>
 
               <ANY ng-switch-when="avatar">
-                <img ng-show="model.avatar_thumb_50_50" ng-src="{{ model.avatar_thumb_50_50 }}" />
-                <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
-                <input type="file" class="form-control" id="avatar" placeholder="Profielfoto" onchange="angular.element(this).scope().uploadFile(this.files)">
+                <div class="media">
+                  <div class="media-left">
+                    <a href="#">
+                      <img class="media-object" ng-show="model.avatar_thumb_50_50" ng-src="{{ model.avatar_thumb_50_50 }}" >
+                    </a>
+                  </div>
+                  <div class="media-body">
+                    <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
+                    <input type="file" class="form-control" id="avatar" placeholder="Profielfoto" onchange="angular.element(this).scope().uploadFile(this.files)">
+                  </div>
+                </div>
               </ANY>
 
               <ANY ng-switch-when="textarea">

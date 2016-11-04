@@ -491,6 +491,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"gender\">\n" +
+    "                <br />\n" +
     "                <label class=\"radio-inline\">\n" +
     "                  <input type=\"radio\" ng-model=\"model[fieldDefinition.name]\" value=\"M\" ng-change=\"fieldChange(fieldDefinition.name)\"> {{ ::waid.config.getTranslation('idm', 'male') }}\n" +
     "                </label>\n" +
@@ -500,9 +501,17 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"avatar\">\n" +
-    "                <img ng-show=\"model.avatar_thumb_50_50\" ng-src=\"{{ model.avatar_thumb_50_50 }}\" />\n" +
-    "                <div ng-show=\"isUploading\" class=\"alert alert-info\" role=\"alert\">Bezig met uploaden van foto.</div>\n" +
-    "                <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Profielfoto\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
+    "                <div class=\"media\">\n" +
+    "                  <div class=\"media-left\">\n" +
+    "                    <a href=\"#\">\n" +
+    "                      <img class=\"media-object\" ng-show=\"model.avatar_thumb_50_50\" ng-src=\"{{ model.avatar_thumb_50_50 }}\" >\n" +
+    "                    </a>\n" +
+    "                  </div>\n" +
+    "                  <div class=\"media-body\">\n" +
+    "                    <div ng-show=\"isUploading\" class=\"alert alert-info\" role=\"alert\">Bezig met uploaden van foto.</div>\n" +
+    "                    <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Profielfoto\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
+    "                  </div>\n" +
+    "                </div>\n" +
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"textarea\">\n" +
