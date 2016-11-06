@@ -51,6 +51,10 @@ angular.module('waid.core.strategy', [
       waidService.userAutoLoginGet(waidAlCode).then(function (data) {
         deferred.resolve(data);
         $location.search('waidAlCode', null);
+        // Fix facebook hash
+        if ($location.hash() == '_=_') {
+          $location.hash('');
+        }
       }, function (data) {
         deferred.reject(data);
       });
@@ -59,6 +63,17 @@ angular.module('waid.core.strategy', [
     }
     return deferred.promise;
   };
+  waidCore.initErrorCode = function() {
+    var waidErrorCode = $location.search().waidErrorCode;
+    if (waidErrorCode) {
+      $rootScope.$broadcast('waid.core.strategy.errorCode', {'errorCode':waidErrorCode});
+      $location.search('waidErrorCode', null);
+      // Fix facebook hash
+      if ($location.hash() == '_=_') {
+        $location.hash('');
+      }
+    }
+  }
   waidCore.initFP = function () {
     var deferred = $q.defer();
     new Fingerprint2().get(function (result, components) {
@@ -105,6 +120,10 @@ angular.module('waid.core.strategy', [
           $rootScope.$broadcast('waid.core.initialize.failed', waidCore);
         }
       }
+      
+      // Handle error code
+      waidCore.initErrorCode();
+
       // If all isset, then continue to validate user
       waidCore.initAlCode().then(function () {
         if (waidCore.isBaseVarsSet()) {
@@ -143,7 +162,7 @@ angular.module('waid.core.strategy', [
       }
     }
   };
-  
+
   // Check last action, if nog logged in try to place latest action (post comment when not logged in)
   $rootScope.$on('waid.services.authenticate.ok', function (event, data) {
     var action = waidCore.getLastAction();

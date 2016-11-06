@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.18';
+  waidCore.config.version = '0.0.19';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -27,17 +27,6 @@ angular.module('waid', [
       'core': '/templates/core/core.html',
       'emoticonsModal': '/templates/core/emoticons-modal.html',
       'modalWindow': '/templates/core/modal/window.html'
-    },
-    'errorCodes': {
-      'auth-cancelled': 'Authentication was canceled by the user.',
-      'auth-failed': 'Authentication failed for some reason.',
-      'auth-unknown-error': 'An unknown error stoped the authentication process.',
-      'auth-missing-parameter': 'A needed parameter to continue the process was missing, usually raised by the services that need some POST data like myOpenID.',
-      'auth-state-missing': 'The state parameter is missing from the server response.',
-      'auth-state-forbidden': 'The state parameter returned by the server is not the one sent.',
-      'auth-token-error': 'Unauthorized or access token error, it was invalid, impossible to authenticate or user removed permissions to it.',
-      'auth-already-associated': 'A different user has already associated the social account that the current user is trying to associate.',
-      'system-error': 'System error, failed for some reason.'
     },
     'translations': {
       'emoticons_people': 'Mensen',

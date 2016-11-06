@@ -192,6 +192,9 @@ angular.module('waid.core.app.strategy', [
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {
     waidCore.loginCheck(data);
   });
+  $rootScope.$on('waid.core.strategy.errorCode', function(event, data){
+    growl.addErrorMessage(waidCore.config.getTranslation('idm', data.errorCode));
+  });
   $rootScope.$on('waid.services.application.userLogin.post.error', function (event, data) {
     loginCount++;
     if (loginCount > 3) {

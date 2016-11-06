@@ -24,6 +24,15 @@ angular.module('waid.idm', [
       'userProfileHome': '/templates/idm/user-profile-home.html'
     },
     'translations': {
+      'auth-cancelled': 'Authenticatie is geannuleerd.',
+      'auth-failed': 'Authenticatie is gefaald. Ons excuus voor het ongemak.',
+      'auth-unknown-error': 'Een onbekende fout heeft zich voortgedaan. Ons excuus voor het ongemak.',
+      'auth-missing-parameter': 'A needed parameter to continue the process was missing, usually raised by the services that need some POST data like myOpenID.',
+      'auth-state-missing': 'The state parameter is missing from the server response.',
+      'auth-state-forbidden': 'The state parameter returned by the server is not the one sent.',
+      'auth-token-error': 'Geen permissie of toegang met de token. Kan hierdoor niet authenticeren. Controlleer de instellingen in de admin.',
+      'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account.',
+      'system-error': 'Systeem fout. Ons excuus voor het ongemak.',
       'edit': 'Wijzigen',
       'loggedin_success': 'Je bent succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',

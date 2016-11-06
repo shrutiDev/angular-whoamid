@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.18';
+  waidCore.config.version = '0.0.19';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -27,17 +27,6 @@ angular.module('waid', [
       'core': '/templates/core/core.html',
       'emoticonsModal': '/templates/core/emoticons-modal.html',
       'modalWindow': '/templates/core/modal/window.html'
-    },
-    'errorCodes': {
-      'auth-cancelled': 'Authentication was canceled by the user.',
-      'auth-failed': 'Authentication failed for some reason.',
-      'auth-unknown-error': 'An unknown error stoped the authentication process.',
-      'auth-missing-parameter': 'A needed parameter to continue the process was missing, usually raised by the services that need some POST data like myOpenID.',
-      'auth-state-missing': 'The state parameter is missing from the server response.',
-      'auth-state-forbidden': 'The state parameter returned by the server is not the one sent.',
-      'auth-token-error': 'Unauthorized or access token error, it was invalid, impossible to authenticate or user removed permissions to it.',
-      'auth-already-associated': 'A different user has already associated the social account that the current user is trying to associate.',
-      'system-error': 'System error, failed for some reason.'
     },
     'translations': {
       'emoticons_people': 'Mensen',
@@ -236,6 +225,10 @@ angular.module('waid.core.strategy', [
       waidService.userAutoLoginGet(waidAlCode).then(function (data) {
         deferred.resolve(data);
         $location.search('waidAlCode', null);
+        // Fix facebook hash
+        if ($location.hash() == '_=_') {
+          $location.hash('');
+        }
       }, function (data) {
         deferred.reject(data);
       });
@@ -244,6 +237,17 @@ angular.module('waid.core.strategy', [
     }
     return deferred.promise;
   };
+  waidCore.initErrorCode = function() {
+    var waidErrorCode = $location.search().waidErrorCode;
+    if (waidErrorCode) {
+      $rootScope.$broadcast('waid.core.strategy.errorCode', {'errorCode':waidErrorCode});
+      $location.search('waidErrorCode', null);
+      // Fix facebook hash
+      if ($location.hash() == '_=_') {
+        $location.hash('');
+      }
+    }
+  }
   waidCore.initFP = function () {
     var deferred = $q.defer();
     new Fingerprint2().get(function (result, components) {
@@ -290,6 +294,10 @@ angular.module('waid.core.strategy', [
           $rootScope.$broadcast('waid.core.initialize.failed', waidCore);
         }
       }
+      
+      // Handle error code
+      waidCore.initErrorCode();
+
       // If all isset, then continue to validate user
       waidCore.initAlCode().then(function () {
         if (waidCore.isBaseVarsSet()) {
@@ -328,7 +336,7 @@ angular.module('waid.core.strategy', [
       }
     }
   };
-  
+
   // Check last action, if nog logged in try to place latest action (post comment when not logged in)
   $rootScope.$on('waid.services.authenticate.ok', function (event, data) {
     var action = waidCore.getLastAction();
@@ -1472,6 +1480,15 @@ angular.module('waid.idm', [
       'userProfileHome': '/templates/idm/user-profile-home.html'
     },
     'translations': {
+      'auth-cancelled': 'Authenticatie is geannuleerd.',
+      'auth-failed': 'Authenticatie is gefaald. Ons excuus voor het ongemak.',
+      'auth-unknown-error': 'Een onbekende fout heeft zich voortgedaan. Ons excuus voor het ongemak.',
+      'auth-missing-parameter': 'A needed parameter to continue the process was missing, usually raised by the services that need some POST data like myOpenID.',
+      'auth-state-missing': 'The state parameter is missing from the server response.',
+      'auth-state-forbidden': 'The state parameter returned by the server is not the one sent.',
+      'auth-token-error': 'Geen permissie of toegang met de token. Kan hierdoor niet authenticeren. Controlleer de instellingen in de admin.',
+      'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account.',
+      'system-error': 'Systeem fout. Ons excuus voor het ongemak.',
       'edit': 'Wijzigen',
       'loggedin_success': 'Je bent succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
