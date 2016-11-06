@@ -12,6 +12,40 @@
      readers do not read off random characters that represent icons */
   /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
   /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */ }
+  .waid #waid {
+    position: absolute;
+    width: 100px;
+    height: 100px; }
+  .waid .emoticon_select {
+    cursor: pointer;
+    padding: 10px;
+    line-height: normal; }
+  .waid .loading {
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    width: 30px;
+    height: 30px;
+    z-index: 9999999999;
+    pointer-events: none; }
+  .waid .loader {
+    left: 50%;
+    -ms-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    font-size: 10px; }
+  .waid .loader, .waid .loader:after {
+    border-radius: 50%;
+    width: 8em;
+    height: 8em;
+    display: block;
+    position: absolute;
+    top: 50%;
+    margin-top: -4.05em; }
+  .waid .comment {
+    width: 100%;
+    display: table; }
   .waid html, .waid body, .waid div, .waid span, .waid applet, .waid object, .waid iframe,
   .waid h1, .waid h2, .waid h3, .waid h4, .waid h5, .waid h6, .waid p, .waid blockquote, .waid pre,
   .waid a, .waid abbr, .waid acronym, .waid address, .waid big, .waid cite, .waid code,
@@ -49,37 +83,6 @@
   .waid table {
     border-collapse: collapse;
     border-spacing: 0; }
-  .waid #waid {
-    position: absolute;
-    width: 100px;
-    height: 100px; }
-  .waid .emoticon_select {
-    cursor: pointer;
-    padding: 10px;
-    line-height: normal; }
-  .waid .loading {
-    position: fixed;
-    right: 0px;
-    bottom: 0px;
-    width: 30px;
-    height: 30px;
-    z-index: 9999999999;
-    pointer-events: none; }
-  .waid .loader {
-    left: 50%;
-    -ms-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -webkit-transform: translateX(-50%);
-    transform: translateX(-50%);
-    font-size: 10px; }
-  .waid .loader, .waid .loader:after {
-    border-radius: 50%;
-    width: 8em;
-    height: 8em;
-    display: block;
-    position: absolute;
-    top: 50%;
-    margin-top: -4.05em; }
   .waid img {
     border: 0;
     width: inherit !important;
@@ -87,9 +90,6 @@
   .waid .modal-content {
     background-color: white;
     color: black; }
-  .waid .comment {
-    width: 100%;
-    display: table; }
   .waid .uib-position-measure {
     display: block !important;
     visibility: hidden !important;
@@ -6735,9 +6735,5 @@
     transform: scale(1.25); }
   70% {
     transform: scale(1); } }
-  .waid img {
-    border: 0;
-    width: inherit !important;
-    max-width: inherit !important; }
 
 /*# sourceMappingURL=simplex-noconflict.css.map */
