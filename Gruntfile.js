@@ -83,7 +83,7 @@ module.exports = function (grunt) {
               },
               url:    function(url) { 
                 url = url.replace('waid-bootstrap3/', ''); 
-                url = url.replace('.html', '.html?v=0.0.21'); 
+                url = url.replace('.html', '.html?v=0.0.22'); 
                 return url
               }
             },

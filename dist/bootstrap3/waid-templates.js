@@ -1,7 +1,7 @@
 angular.module('waid.templates',[]).run(['$templateCache', function($templateCache) { 
   'use strict';
 
-  $templateCache.put('/templates/comments/comments-home.html?v=0.0.21',
+  $templateCache.put('/templates/comments/comments-home.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <div class=\"comment\"> \n" +
     "    <div class=\"media\">\n" +
@@ -87,7 +87,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/comments/comments-order-button.html?v=0.0.21',
+  $templateCache.put('/templates/comments/comments-order-button.html?v=0.0.22',
     "\n" +
     "  <div class=\"btn-group waid\">\n" +
     "    <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n" +
@@ -107,7 +107,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/core.html?v=0.0.21',
+  $templateCache.put('/templates/core/core.html?v=0.0.22',
     "<div class=\"waid\" id=\"waid\"> \n" +
     "  <div growl></div>\n" +
     "\n" +
@@ -120,7 +120,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepicker/datepicker.html?v=0.0.21',
+  $templateCache.put('/templates/core/datepicker/datepicker.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <div ng-switch=\"datepickerMode\" class=\"waid\">\n" +
     "    <div uib-daypicker ng-switch-when=\"day\" tabindex=\"0\" class=\"uib-daypicker\"></div>\n" +
@@ -131,7 +131,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepicker/day.html?v=0.0.21',
+  $templateCache.put('/templates/core/datepicker/day.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "<table role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
@@ -167,7 +167,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepicker/month.html?v=0.0.21',
+  $templateCache.put('/templates/core/datepicker/month.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "<table role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
@@ -198,7 +198,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepicker/year.html?v=0.0.21',
+  $templateCache.put('/templates/core/datepicker/year.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "<table role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
@@ -229,7 +229,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepickerPopup/popup.html?v=0.0.21',
+  $templateCache.put('/templates/core/datepickerPopup/popup.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <ul class=\"uib-datepicker-popup dropdown-menu uib-position-measure\" dropdown-nested ng-if=\"isOpen\" ng-keydown=\"keydown($event)\" ng-click=\"$event.stopPropagation()\">\n" +
     "    <li ng-transclude></li>\n" +
@@ -245,7 +245,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/emoticons-modal.html?v=0.0.21',
+  $templateCache.put('/templates/core/emoticons-modal.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">Emoticons<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeEmoticonsModal()\"></i></h3>\n" +
@@ -265,14 +265,14 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/modal/window.html?v=0.0.21',
+  $templateCache.put('/templates/core/modal/window.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <div class=\"modal-dialog {{size ? 'modal-' + size : ''}}\"><div class=\"waid modal-content\" uib-modal-transclude></div></div>\n" +
     "</div>"
   );
 
 
-  $templateCache.put('/templates/idm/complete-profile-modal.html?v=0.0.21',
+  $templateCache.put('/templates/idm/complete-profile-modal.html?v=0.0.22',
     "<span class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_title') }}</h3>\n" +
@@ -287,12 +287,12 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/home.html?v=0.0.21',
+  $templateCache.put('/templates/idm/home.html?v=0.0.22',
     ""
   );
 
 
-  $templateCache.put('/templates/idm/login-and-register-home.html?v=0.0.21',
+  $templateCache.put('/templates/idm/login-and-register-home.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <div class=\"row\">\n" +
     "    <div class=\"col-md-4\">\n" +
@@ -313,7 +313,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/login-and-register-modal.html?v=0.0.21',
+  $templateCache.put('/templates/idm/login-and-register-modal.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'login_and_register_modal_title') }} <i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeLoginAndRegisterModal()\"></i></h3>\n" +
@@ -328,7 +328,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/login.html?v=0.0.21',
+  $templateCache.put('/templates/idm/login.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <div id=\"login_view\" ng-controller=\"WAIDIDMLoginCtrl\">\n" +
     "    <form role=\"form\"  name=\"loginForm\" novalidate>\n" +
@@ -353,7 +353,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/lost-login-modal.html?v=0.0.21',
+  $templateCache.put('/templates/idm/lost-login-modal.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'lost_login_modal_title') }}<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeLostLoginModal()\"></i></h3>\n" +
@@ -368,7 +368,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/lost-login.html?v=0.0.21',
+  $templateCache.put('/templates/idm/lost-login.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "	<div id=\"lost_login_view\" ng-controller=\"WAIDIDMLostLoginCtrl\">\n" +
     "	<form role=\"form\" name=\"loginForm\" novalidate>\n" +
@@ -386,7 +386,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/overview.html?v=0.0.21',
+  $templateCache.put('/templates/idm/overview.html?v=0.0.22',
     "\n" +
     "      <div ng-repeat=\"fieldSet in profileDefinition.fieldSet\">\n" +
     "        <div ng-if=\"fieldSet.key != currentFieldSet\">\n" +
@@ -461,7 +461,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/profile.html?v=0.0.21',
+  $templateCache.put('/templates/idm/profile.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <div class=\"row\">\n" +
     "    <div class=\"col-lg-4 col-md-4 col-sm-4 hidden-xs\">\n" +
@@ -589,7 +589,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/register.html?v=0.0.21',
+  $templateCache.put('/templates/idm/register.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     " <div ng-controller=\"WAIDIDMRegisterCtrl\">\n" +
     "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_intro') }}</div>\n" +
@@ -624,7 +624,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/social-login.html?v=0.0.21',
+  $templateCache.put('/templates/idm/social-login.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <div id=\"login_view\" ng-controller=\"WAIDIDMSocialCtrl\">\n" +
     "    <a class=\"btn btn-default btn-block\" role=\"button\" ng-repeat=\"provider in providers\" ng-click=\"goToSocialLogin(provider)\">\n" +
@@ -640,7 +640,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/terms-and-conditions-modal.html?v=0.0.21',
+  $templateCache.put('/templates/idm/terms-and-conditions-modal.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	    <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'terms_and_condition_modal_title') }} <i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeTermsAndConditionsModal()\"></i></h3>\n" +
@@ -655,7 +655,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/user-profile-modal.html?v=0.0.21',
+  $templateCache.put('/templates/idm/user-profile-modal.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <div class=\"modal-header\">\n" +
     "    <h3 class=\"modal-title\">Mijn Profiel<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeUserProfileModal()\"></i></h3>\n" +
@@ -693,7 +693,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/user-profile-navbar.html?v=0.0.21',
+  $templateCache.put('/templates/idm/user-profile-navbar.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <ul class=\"nav navbar-nav navbar-right\">\n" +
     "    <li class=\"dropdown\" ng-show=\"waid.user\">\n" +
@@ -711,7 +711,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/user-profile-status-button.html?v=0.0.21',
+  $templateCache.put('/templates/idm/user-profile-status-button.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "	<div class=\"btn-group\">\n" +
     "	  <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\" ng-show=\"waid.user\">\n" +
@@ -730,7 +730,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/rating/widget.html?v=0.0.21',
+  $templateCache.put('/templates/rating/widget.html?v=0.0.22',
     "<div class=\"waid\">\n" +
     "  <span>Rate</span>\n" +
     "  <a href=\"#\" ng-repeat=\"star in stars\" ng-click=\"rate(star.value)\" ng-mouseover=\"rateOver(star.value)\" ng-mouseout=\"rateOut()\"><i class=\"glyphicon\" ng-class=\"star.active ? 'glyphicon-star' : 'glyphicon-star-empty'\"></i></a>\n" +

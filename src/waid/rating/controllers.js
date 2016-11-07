@@ -80,10 +80,4 @@ angular.module('waid.rating.controllers', [
   $scope.$on('waid.core.lastAction.ratingPost', function(data) {
     $scope.loadRating();
   });
-
-  $scope.$watch('objectId', function (objectId) {
-    if (objectId != '') {
-      $scope.loadRating();
-    }
-  });
 });

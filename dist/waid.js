@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.21';
+  waidCore.config.version = '0.0.22';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -2329,12 +2329,6 @@ angular.module('waid.rating.controllers', [
   $scope.$on('waid.core.lastAction.ratingPost', function(data) {
     $scope.loadRating();
   });
-
-  $scope.$watch('objectId', function (objectId) {
-    if (objectId != '') {
-      $scope.loadRating();
-    }
-  });
 });
 'use strict';
 angular.module('waid.rating.directives', [
@@ -2347,6 +2341,43 @@ angular.module('waid.rating.directives', [
     controller: 'WAIDRatingCtrl',
     templateUrl: function (elem, attrs) {
       return attrs.templateUrl || waidCore.config.getTemplateUrl('rating', 'ratingWidget');
+    },
+    link: function ($scope, $element, attr){
+      var isLoaded = false;
+
+      // Main function to check if element is visible in viewport
+      function elementInViewport(el) {
+        var top = el.offsetTop;
+        var left = el.offsetLeft;
+        var width = el.offsetWidth;
+        var height = el.offsetHeight;
+
+        while(el.offsetParent) {
+          el = el.offsetParent;
+          top += el.offsetTop;
+          left += el.offsetLeft;
+        }
+        var load = (
+          top >= window.pageYOffset &&
+          left >= window.pageXOffset &&
+          (top + height) <= (window.pageYOffset + window.innerHeight) &&
+          (left + width) <= (window.pageXOffset + window.innerWidth)
+        );
+        if (load) {
+          $scope.loadRating();
+          isLoaded = true;
+        }
+      };
+
+      // on scroll check
+      $(window).scroll(function(){
+        if (!isLoaded) {
+          elementInViewport($element[0]);
+        }
+      });
+
+      // Intitial check
+      elementInViewport($element[0]);
     }
   };
 });
