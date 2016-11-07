@@ -39,6 +39,10 @@
   width: 100%;
   display: table; }
 
+.comment .load-more {
+  width: 100%;
+  display: table; }
+
 .uib-position-measure {
   display: block !important;
   visibility: hidden !important;

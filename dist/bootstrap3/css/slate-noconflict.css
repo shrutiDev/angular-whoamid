@@ -46,6 +46,9 @@
   .waid .comment {
     width: 100%;
     display: table; }
+  .waid .comment .load-more {
+    width: 100%;
+    display: table; }
   .waid html, .waid body, .waid div, .waid span, .waid applet, .waid object, .waid iframe,
   .waid h1, .waid h2, .waid h3, .waid h4, .waid h5, .waid h6, .waid p, .waid blockquote, .waid pre,
   .waid a, .waid abbr, .waid acronym, .waid address, .waid big, .waid cite, .waid code,
