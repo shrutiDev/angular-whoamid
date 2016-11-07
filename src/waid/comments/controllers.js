@@ -9,6 +9,10 @@ angular.module('waid.comments.controllers', [
   $scope.objectId = angular.isDefined($scope.objectId) ? $scope.objectId : 'currenturl';
   $scope.waid = $rootScope.waid;
   $scope.comment = { 'comment': '' };
+  $scope.limit = 10;
+  $scope.offset = 0;
+  $scope.showMore = false;
+
   $scope.orderCommentList = function (ordering) {
     $scope.ordering = ordering;
     $scope.loadComments();
@@ -49,18 +53,49 @@ angular.module('waid.comments.controllers', [
       $scope.comments.splice(index, 1);
     });
   };
-  $scope.loadComments = function () {
-    waidService.commentsListGet({
+  $scope.loadComments = function (append) {
+    var params = {
       'object_id': $scope.objectId,
       'ordering': $scope.ordering
-    }).then(function (data) {
-      for (var i = 0; i < data.results.length; i++) {
-        data.results[i].is_edit = false;
-        if (data.results[i].user.id == $rootScope.waid.user.id) {
-          data.results[i].is_owner = true;
+    }
+    if (typeof append == 'undefined') {
+      var append = false;
+      $scope.offset = 0;
+    } else {
+      var append = true;
+    }
+    params['limit'] = $scope.limit;
+
+    if (append) {
+      $scope.offset = $scope.offset + $scope.limit;
+      params['offset'] = $scope.offset;
+    }
+
+    waidService.commentsListGet(params).then(function (data) {
+      if (data.results.length == 0 || data.results.length < $scope.limit) {
+        $scope.showMore = false;
+      } else {
+        $scope.showMore = true;
+      }
+
+      if (data.results.length > 0) {
+        // Format comment data
+        for (var i = 0; i < data.results.length; i++) {
+          data.results[i].is_edit = false;
+          if (data.results[i].user.id == $rootScope.waid.user.id) {
+            data.results[i].is_owner = true;
+          }
+        }
+
+        // Check if we need to append comments
+        if (append) {
+          for (var i = 0; data.results.length > i; i++) {
+            $scope.comments.push(data.results[i]);
+          }
+        } else {
+          $scope.comments = data.results;
         }
       }
-      $scope.comments = data.results;
     });
   };
   $scope.post = function () {
@@ -98,11 +133,5 @@ angular.module('waid.comments.controllers', [
 
   $scope.$on('waid.core.lastAction.commentPost', function(data) {
     $scope.loadComments();
-  });
-
-  $scope.$watch('objectId', function (objectId) {
-    if (objectId != '') {
-      $scope.loadComments();
-    }
   });
 });

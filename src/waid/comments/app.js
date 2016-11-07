@@ -23,7 +23,8 @@ angular.module('waid.comments', [
       'voteOrderOldestFirst': 'Oudste eerst',
       'voteOrderTopFirst': 'Top comments',
       'addEmoticonButtonText': 'Emoji toevoegen',
-      'isLockedTitle': 'Comment is gelocked'
+      'isLockedTitle': 'Comment is gelocked',
+      'loadMoreComments':'Laad meer'
     }
   });
 });

@@ -71,5 +71,12 @@
         </div>
       </div>
     </div>
+
+    <div class="text-center">
+    <button type="button" class="btn btn-default btn-xs" ng-click="loadComments(true)" ng-show="showMore">
+      <i class="fa fa-arrow-down" aria-hidden="true"></i> {{ ::waid.config.getTranslation('comments', 'loadMoreComments') }}
+    </button>
+    </div>
+    
   </div>
 </div>
