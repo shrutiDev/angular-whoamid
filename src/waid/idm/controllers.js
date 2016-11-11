@@ -5,6 +5,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     $scope.document = text;
   });
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
+  $scope.waid = waidCore;
   // Set profile definition
   $scope.profileDefinition = waidCore.config.idm.profileDefinition;
   // Default fieldset
@@ -244,7 +245,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   }
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
-}).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService) {
+}).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService, waidCore) {
+  $scope.waid = waidCore;
   $scope.model = {
     'username': '',
     'password': ''
@@ -256,7 +258,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       $scope.errors = data;
     });
   };
-}).controller('WAIDIDMLostLoginCtrl', function ($scope, $location, waidService) {
+}).controller('WAIDIDMLostLoginCtrl', function ($scope, $location, waidService, waidCore) {
+  $scope.waid = waidCore;
   $scope.model = { 'email': '' };
   $scope.errors = [];
   $scope.submit = function () {
@@ -267,6 +270,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     });
   };
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
+  $scope.waid = waidCore;
   $scope.providers = [];
   $scope.getProviders = function () {
     waidService.socialProviderListGet().then(function (data) {
@@ -280,7 +284,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     $window.location.assign(provider.url);
   };
   $scope.getProviders();
-}).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
+}).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal, waidCore) {
+  $scope.waid = waidCore;
   $scope.show = {};
   $scope.missingEmailVerification = false;
   if ($scope.modus == 'complete') {

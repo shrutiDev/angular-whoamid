@@ -26,7 +26,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       }
       params = args.params || {};
       args = args || {};
-      var deferred = $q.defer(), url = this.API_URL + args.url, method = args.method || 'GET', params = params, data = args.data || {};
+      var deferred = $q.defer(), url = args.url, method = args.method || 'GET', params = params, data = args.data || {};
       that.running.push(url);
       waidCore.isLoading = true;
       // Fire the request, as configured.
@@ -119,11 +119,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     '_buildUrl': function (type, path) {
       switch (type) {
       case 'admin':
-        return '/admin/' + this.apiVersion + '/' + waidCore.account.id + path;
+        return this.API_URL + '/admin/' + this.apiVersion + '/' + waidCore.account.id + path;
       case 'app':
-        return '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + path;
+        return this.API_URL + '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + path;
       case 'public':
-        return '/public/' + this.apiVersion + path;
+        return this.API_URL + '/public/' + this.apiVersion + path;
       default:
         return '';
       }
@@ -167,6 +167,21 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         });
         return deferred.promise;
       }
+    },
+    'makeExternalRequest': function(method, url, data) {
+      var that = this;
+      var deferred = $q.defer();
+      this.request({
+        'method': method,
+        'url': url,
+        'data': data,
+        'headers': { 'Content-Type': undefined }
+      }).then(function (data) {
+        deferred.resolve(data);
+      }, function (data) {
+        deferred.reject(data);
+      });
+      return deferred.promise;
     },
     'userRegisterPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {

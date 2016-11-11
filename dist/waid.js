@@ -382,7 +382,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       }
       params = args.params || {};
       args = args || {};
-      var deferred = $q.defer(), url = this.API_URL + args.url, method = args.method || 'GET', params = params, data = args.data || {};
+      var deferred = $q.defer(), url = args.url, method = args.method || 'GET', params = params, data = args.data || {};
       that.running.push(url);
       waidCore.isLoading = true;
       // Fire the request, as configured.
@@ -475,11 +475,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     '_buildUrl': function (type, path) {
       switch (type) {
       case 'admin':
-        return '/admin/' + this.apiVersion + '/' + waidCore.account.id + path;
+        return this.API_URL + '/admin/' + this.apiVersion + '/' + waidCore.account.id + path;
       case 'app':
-        return '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + path;
+        return this.API_URL + '/application/' + this.apiVersion + '/' + waidCore.account.id + '/' + $rootScope.waid.application.id + path;
       case 'public':
-        return '/public/' + this.apiVersion + path;
+        return this.API_URL + '/public/' + this.apiVersion + path;
       default:
         return '';
       }
@@ -523,6 +523,21 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         });
         return deferred.promise;
       }
+    },
+    'makeExternalRequest': function(method, url, data) {
+      var that = this;
+      var deferred = $q.defer();
+      this.request({
+        'method': method,
+        'url': url,
+        'data': data,
+        'headers': { 'Content-Type': undefined }
+      }).then(function (data) {
+        deferred.resolve(data);
+      }, function (data) {
+        deferred.reject(data);
+      });
+      return deferred.promise;
     },
     'userRegisterPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
@@ -1655,6 +1670,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     $scope.document = text;
   });
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
+  $scope.waid = waidCore;
   // Set profile definition
   $scope.profileDefinition = waidCore.config.idm.profileDefinition;
   // Default fieldset
@@ -1894,7 +1910,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   }
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
-}).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService) {
+}).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService, waidCore) {
+  $scope.waid = waidCore;
   $scope.model = {
     'username': '',
     'password': ''
@@ -1906,7 +1923,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       $scope.errors = data;
     });
   };
-}).controller('WAIDIDMLostLoginCtrl', function ($scope, $location, waidService) {
+}).controller('WAIDIDMLostLoginCtrl', function ($scope, $location, waidService, waidCore) {
+  $scope.waid = waidCore;
   $scope.model = { 'email': '' };
   $scope.errors = [];
   $scope.submit = function () {
@@ -1917,6 +1935,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     });
   };
 }).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
+  $scope.waid = waidCore;
   $scope.providers = [];
   $scope.getProviders = function () {
     waidService.socialProviderListGet().then(function (data) {
@@ -1930,7 +1949,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     $window.location.assign(provider.url);
   };
   $scope.getProviders();
-}).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal) {
+}).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal, waidCore) {
+  $scope.waid = waidCore;
   $scope.show = {};
   $scope.missingEmailVerification = false;
   if ($scope.modus == 'complete') {
@@ -1988,6 +2008,7 @@ angular.module('waid.idm.directives', [
   return {
     restrict: 'E',
     controller: 'WAIDIDMProfileCtrl',
+    scope:{},
     templateUrl: function (elem, attrs) {
       return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'profile');
     }
@@ -2006,7 +2027,55 @@ angular.module('waid.idm.directives', [
       return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'userProfileStatusButton');
     }
   };
+}).directive('waidLoginAndRegisterHome', function (waidCore) {
+  return {
+    restrict: 'E',
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'loginAndRegisterHome');
+    }
+  };
+}).directive('waidLogin', function (waidCore) {
+  return {
+    restrict: 'E',
+    controller:'WAIDIDMLoginCtrl',
+    scope:{},
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'login');
+    }
+  };
+}).directive('waidRegister', function ($rootScope, waidCore) {
+  return {
+    restrict: 'E',
+    controller: 'WAIDIDMRegisterCtrl',
+    scope:{
+      modus:'@'
+    },
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'register');
+    }
+  };
+}).directive('waidSocialLogin', function (waidCore) {
+  return {
+    restrict: 'E',
+    controller: 'WAIDIDMSocialCtrl',
+    scope:{},
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'socialLogin');
+    }
+  };
+}).directive('waidLostLogin', function (waidCore) {
+  return {
+    restrict: 'E',
+    controller: 'WAIDIDMLostLoginCtrl',
+    scope:{},
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'lostLogin');
+    }
+  };
 });
+
+
+
 angular.module('waid.comments', [
   'waid.core',
   'waid.idm',

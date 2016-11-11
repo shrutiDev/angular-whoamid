@@ -278,7 +278,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_title') }}</h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
-    "	  <ng-include src=\"waid.config.getTemplateUrl('idm', 'register')\" ng-init=\"modus = 'complete'\"></ng-include>\n" +
+    "	  <waid-register modus=\"complete\"></waid-register>\n" +
     "	</div>\n" +
     "	<div class=\"modal-footer\">\n" +
     "	  <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.logout()\">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_close_button') }}</button>\n" +
@@ -298,15 +298,15 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    <div class=\"col-md-4\">\n" +
     "      <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_social_login_title') }}</h3>\n" +
     "      <div ng-bind-html=\"::waid.config.getTranslation('idm', 'login_and_register_home_social_login_intro')\"></div>\n" +
-    "      <ng-include src=\"waid.config.getTemplateUrl('idm', 'socialLogin')\"></ng-include>\n" +
+    "      <waid-social-login></waid-social-login>\n" +
     "    </div>\n" +
     "    <div class=\"col-md-4\">\n" +
     "      <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_login_title') }}</h3>\n" +
-    "      <ng-include src=\"waid.config.getTemplateUrl('idm', 'login')\"></ng-include>\n" +
+    "      <waid-login></waid-login>\n" +
     "    </div>\n" +
     "    <div class=\"col-md-4\">\n" +
     "      <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_register_title') }}</h3>\n" +
-    "      <ng-include src=\"waid.config.getTemplateUrl('idm', 'register')\"></ng-include>\n" +
+    "      <waid-register></waid-register>\n" +
     "    </div>\n" +
     "  </div>\n" +
     "</div>"
@@ -319,7 +319,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'login_and_register_modal_title') }} <i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeLoginAndRegisterModal()\"></i></h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
-    "	   <ng-include src=\"waid.config.getTemplateUrl('idm', 'loginAndRegisterHome')\"></ng-include>\n" +
+    "	   <waid-login-and-register-home></waid-login-and-register-home>\n" +
     "	</div>\n" +
     "	<div class=\"modal-footer\">\n" +
     "	    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeLoginAndRegisterModal()\">{{ ::waid.config.getTranslation('idm', 'login_and_register_modal_close_button') }}</button>\n" +
@@ -330,7 +330,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/templates/idm/login.html?v=0.0.22',
     "<div class=\"waid\">\n" +
-    "  <div id=\"login_view\" ng-controller=\"WAIDIDMLoginCtrl\">\n" +
+    "  <div id=\"login_view\">\n" +
     "    <form role=\"form\"  name=\"loginForm\" novalidate>\n" +
     "      <div class=\"form-group\">\n" +
     "        <label for=\"id_username\">{{ ::waid.config.getTranslation('idm', 'login_form_username_label') }}</label>\n" +
@@ -359,7 +359,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'lost_login_modal_title') }}<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeLostLoginModal()\"></i></h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
-    "	  <ng-include src=\"waid.config.getTemplateUrl('idm', 'lostLogin')\"></ng-include>\n" +
+    "	  <waid-lost-login></waid-lost-login>\n" +
     "	</div>\n" +
     "	<div class=\"modal-footer\">\n" +
     "	    <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeLostLoginModal()\">{{ ::waid.config.getTranslation('idm', 'lost_login_modal_close_button') }}</button>\n" +
@@ -370,7 +370,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/templates/idm/lost-login.html?v=0.0.22',
     "<div class=\"waid\">\n" +
-    "	<div id=\"lost_login_view\" ng-controller=\"WAIDIDMLostLoginCtrl\">\n" +
+    "	<div id=\"lost_login_view\">\n" +
     "	<form role=\"form\" name=\"loginForm\" novalidate>\n" +
     "	  <div class=\"form-group\">\n" +
     "	    <label for=\"id_email\">{{ ::waid.config.getTranslation('idm', 'lost_lostin_form_email') }}</label>\n" +
@@ -591,7 +591,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/templates/idm/register.html?v=0.0.22',
     "<div class=\"waid\">\n" +
-    " <div ng-controller=\"WAIDIDMRegisterCtrl\">\n" +
+    " <div>\n" +
     "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_intro') }}</div>\n" +
     "      <div class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_email_allready_sent') }}</div>\n" +
     "    <form role=\"form\" name=\"registerForm\" novalidate>\n" +
@@ -626,7 +626,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/templates/idm/social-login.html?v=0.0.22',
     "<div class=\"waid\">\n" +
-    "  <div id=\"login_view\" ng-controller=\"WAIDIDMSocialCtrl\">\n" +
+    "  <div id=\"login_view\">\n" +
     "    <a class=\"btn btn-default btn-block\" role=\"button\" ng-repeat=\"provider in providers\" ng-click=\"goToSocialLogin(provider)\">\n" +
     "    <ANY ng-switch=\"provider.backend\">\n" +
     "	  <ANY ng-switch-when=\"facebook\"><i class=\"fa fa-facebook-square\" aria-hidden=\"true\"></i> Facebook</ANY>\n" +

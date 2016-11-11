@@ -1,5 +1,5 @@
 <div class="waid">
- <div ng-controller="WAIDIDMRegisterCtrl">
+ <div>
       <div ng-show="modus=='complete'" class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_intro') }}</div>
       <div class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_email_allready_sent') }}</div>
     <form role="form" name="registerForm" novalidate>

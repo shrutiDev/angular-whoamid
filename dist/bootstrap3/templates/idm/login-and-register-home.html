@@ -3,15 +3,15 @@
     <div class="col-md-4">
       <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_social_login_title') }}</h3>
       <div ng-bind-html="::waid.config.getTranslation('idm', 'login_and_register_home_social_login_intro')"></div>
-      <ng-include src="waid.config.getTemplateUrl('idm', 'socialLogin')"></ng-include>
+      <waid-social-login></waid-social-login>
     </div>
     <div class="col-md-4">
       <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_login_title') }}</h3>
-      <ng-include src="waid.config.getTemplateUrl('idm', 'login')"></ng-include>
+      <waid-login></waid-login>
     </div>
     <div class="col-md-4">
       <h3>{{ ::waid.config.getTranslation('idm', 'login_and_register_home_register_title') }}</h3>
-      <ng-include src="waid.config.getTemplateUrl('idm', 'register')"></ng-include>
+      <waid-register></waid-register>
     </div>
   </div>
 </div>
