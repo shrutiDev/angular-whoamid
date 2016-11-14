@@ -186,7 +186,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
         $scope.updateProfileInfo();
       }
     }, function (errors) {
-      console.log('Naa');
+      alert('Fatal error saving data');
     });
   };
   $scope.initEmails = function (data) {

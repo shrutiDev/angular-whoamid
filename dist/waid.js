@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.22';
+  waidCore.config.version = '0.0.23';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -1851,7 +1851,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
         $scope.updateProfileInfo();
       }
     }, function (errors) {
-      console.log('Naa');
+      alert('Fatal error saving data');
     });
   };
   $scope.initEmails = function (data) {
