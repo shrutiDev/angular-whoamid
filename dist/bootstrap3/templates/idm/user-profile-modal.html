@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h3 class="modal-title">Mijn Profiel<i class="glyphicon glyphicon-remove pull-right" ng-click="waid.closeUserProfileModal()"></i></h3>
   </div>
-  <nav class="navbar navbar-default hidden-lg hidden-md hidden-sm">
+  <nav class="navbar navbar-default hidden-lg hidden-md hidden-sm" ng-controller="WAIDIDMProfileNavbarCtrl">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header" data-toggle="collapse" data-target="#waid-profile-navbar">
@@ -25,7 +25,6 @@
     </div><!-- /.container-fluid -->
   </nav>
   <div class="modal-body">
-
      <waid-profile></waid-profile>
   </div>
   <div class="modal-footer">

@@ -24,9 +24,72 @@
 
               </ANY>
 
+              <ANY ng-switch-when="multipleTelephone">
+                <div class="panel panel-default" ng-repeat="(key, telephone) in telephoneNumbers">
+                  <div class="panel-heading">{{ ::waid.config.getTranslation('idm', 'telephone_number') }} {{ key+1 }}
+                     <i class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="deleteTelephone(key)"></i>
+                  </div>
+                  <div class="panel-body">
+                    <div class="form-group has-feedback" ng-class="telephone.errors.number ? 'has-error' : ''">
+                      <input type="input" class="form-control" id="telephone_{{ fieldDefinition.name }}_{{ key }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}" ng-model="telephone.number" ng-change="changeTelephoneValue(fieldDefinition.name, key)" />
+                      <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="telephone.errors.number"></span>
+                      <div class="alert alert-danger" ng-repeat="error in telephone.errors.number"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+                    </div>
+                    
+                  </div>
+                </div>
+              </ANY>
+
+              <ANY ng-switch-when="multipleAddresses">
+                <div class="panel panel-default" ng-repeat="(key, address) in addresses">
+                  <div class="panel-heading">Adres {{ key+1 }}
+                     <i class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="deleteAddress(key)"></i>
+                  </div>
+                  <div class="panel-body">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group has-feedback" ng-class="address.errors.address ? 'has-error' : ''">
+                          <label for="address_{{ fieldDefinition.name }}_address_{{ key }}">{{ ::waid.config.getTranslation('idm',  'address' ) }}</label>
+                          <input type="input" class="form-control" id="address_{{ fieldDefinition.name }}_address_{{ key }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}" ng-model="address.address" ng-change="changeAddressValue(fieldDefinition.name, 'address', key)" />
+                          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="address.errors.address"></span>
+                          <div class="alert alert-danger" ng-repeat="error in address.errors.address"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group has-feedback" ng-class="address.errors.zipcode ? 'has-error' : ''">
+                          <label for="address_{{ fieldDefinition.name }}_zipcode_{{ key }}">{{ ::waid.config.getTranslation('idm',  'zipcode' ) }}</label>
+                          <input type="input" class="form-control" id="address_{{ fieldDefinition.name }}_zipcode_{{ key }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}" ng-model="address.zipcode" ng-change="changeAddressValue(fieldDefinition.name, 'zipcode', key)" />
+                          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="address.errors.zipcode"></span>
+                          <div class="alert alert-danger" ng-repeat="error in address.errors.zipcode"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group has-feedback" ng-class="address.errors.city ? 'has-error' : ''">
+                          <label for="address_{{ fieldDefinition.name }}_city_{{ key }}">{{ ::waid.config.getTranslation('idm',  'city' ) }}</label>
+                          <input type="input" class="form-control" id="address_{{ fieldDefinition.name }}_city_{{ key }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}" ng-model="address.city" ng-change="changeAddressValue(fieldDefinition.name, 'city', key)" />
+                          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="address.errors.city"></span>
+                          <div class="alert alert-danger" ng-repeat="error in address.errors.city"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group has-feedback" ng-class="address.errors.country ? 'has-error' : ''">
+                          <label for="address_{{ fieldDefinition.name }}_country_{{ key }}">{{ ::waid.config.getTranslation('idm',  'country' ) }}</label>
+                          <input type="input" class="form-control" id="address_{{ fieldDefinition.name }}_country_{{ key }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}" ng-model="address.country" ng-change="changeAddressValue(fieldDefinition.name, 'country', key)" />
+                          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="address.errors.country"></span>
+                          <div class="alert alert-danger" ng-repeat="error in address.errors.country"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </ANY>
+
               <ANY ng-switch-when="date">
                 <div class="input-group">
-                  <input type="text" class="form-control" id="{{ fieldDefinition.name }}" uib-datepicker-popup ng-model="model[fieldDefinition.name]" is-open="popup.opened" datepicker-options="dateOptions" close-text="Close" ng-change="fieldChange(fieldDefinition.name)"/>
+                  <input type="text" class="form-control" id="{{ fieldDefinition.name }}" uib-datepicker-popup ng-model="model[fieldDefinition.name]" is-open="popup.opened" alt-input-formats="['dd-MM-yyyy', 'dd MM yyyy', 'dd-MMMM-yyyy', 'dd MMMM yyyy']" datepicker-options="dateOptions" close-text="Close" ng-change="fieldChange(fieldDefinition.name)"/>
                   <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
                   </span>

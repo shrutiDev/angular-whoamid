@@ -247,6 +247,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userUsernamePut': function (data) {
       return this._makeRequest('PUT', 'app', '/user/username/', 'application.userUsername', data);
     },
+    // Email
     'userEmailListGet': function () {
       return this._makeRequest('GET', 'app', '/user/email/', 'application.userEmailList');
     },
@@ -259,6 +260,33 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userEmailDelete': function (id) {
       return this._makeRequest('DELETE', 'app', '/user/email/' + id + '/', 'application.userEmail');
     },
+    // Telephone
+    'userTelephoneListGet': function() {
+      return this._makeRequest('GET', 'app', '/user/telephone/', 'application.userTelephoneList');
+    },
+    'userTelephonePost': function (data) {
+      return this._makeRequest('POST', 'app', '/user/telephone/', 'application.userTelephone', data);
+    },
+    'userTelephonePut': function (id, data) {
+      return this._makeRequest('PUT', 'app', '/user/telephone/' + id + '/', 'application.userTelephone', data);
+    },
+    'userTelephoneDelete': function (id) {
+      return this._makeRequest('DELETE', 'app', '/user/telephone/' + id + '/', 'application.userTelephone');
+    },
+    // Addresses
+    'userAddressListGet': function() {
+      return this._makeRequest('GET', 'app', '/user/address/', 'application.userAddressList');
+    },
+    'userAddressPost': function (data) {
+      return this._makeRequest('POST', 'app', '/user/address/', 'application.userAddress', data);
+    },
+    'userAddressPut': function (id, data) {
+      return this._makeRequest('PUT', 'app', '/user/address/' + id + '/', 'application.userAddress', data);
+    },
+    'userAddressDelete': function (id) {
+      return this._makeRequest('DELETE', 'app', '/user/address/' + id + '/', 'application.userAddress');
+    },
+    // Avatar
     'userAvatarPut': function (fd) {
       return this._makeFileRequest('PUT', 'app', '/user/avatar/', 'application.userAvatar', fd);
     },

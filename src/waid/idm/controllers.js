@@ -4,12 +4,28 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     var text = $interpolate(data.text)($rootScope);
     $scope.document = text;
   });
+}).controller('WAIDIDMProfileNavbarCtrl', function ($scope, $rootScope) {
+  $scope.goToFieldSet = function (fieldSet) {
+    $rootScope.$broadcast('waid.idm.goToFieldSet', fieldSet);
+  };
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
+  // Goto fieldset event
+  $rootScope.$on('waid.idm.goToFieldSet', function (event, fieldSet) {
+    $scope.goToFieldSet(fieldSet);
+  });
+
   $scope.waid = waidCore;
   // Set profile definition
   $scope.profileDefinition = waidCore.config.idm.profileDefinition;
   // Default fieldset
   $scope.currentFieldSet = 'overview';
+
+  // Telephone numbers objects
+  $scope.telephoneNumbers = [];
+  
+  // Addres objects
+  $scope.addresses = [];
+
   // Emails fields
   $scope.inactiveEmails = [];
   $scope.activeEmails = [];
@@ -42,6 +58,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     }
     return fieldDefinitions;
   };
+
   $scope.dateOptions = {
     dateDisabled: false,
     maxDate: new Date(),
@@ -80,12 +97,13 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       waidService.userAvatarPut(fd).then(function (data) {
         $timeout(function () {
           // Still buggy, save will redirect to overview...
-          $scope.save(true);
+          //$scope.save(true);
           $scope.isUploading = false;
         }, 1000);
       });
     }
   };
+
   $scope.formatDataFromApi = function (data) {
     var fieldDefinitions = $scope.getAllFieldDefinitions();
     for (var i = 0; fieldDefinitions.length > i; i++) {
@@ -110,6 +128,10 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       if (fieldDefinition.type == 'date') {
         if (typeof data[fieldDefinition.name] != 'undefined' && data[fieldDefinition.name] instanceof Date) {
           fieldValues[fieldDefinition.name] = $filter('date')(data[fieldDefinition.name], 'yyyy-MM-dd');
+          continue;
+        }
+        if (typeof data[fieldDefinition.name] != 'undefined' && !(data[fieldDefinition.name] instanceof Date)) {
+          fieldValues[fieldDefinition.name] = $filter('date')(new Date(data[fieldDefinition.name]), 'yyyy-MM-dd');
           continue;
         }
       }
@@ -150,24 +172,42 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   $scope.save = function (forceProfileUpdate) {
     $scope.errors = [];
     var dataPrepared = $scope.formatDataToApi($scope.model);
+    var fieldDefinitions = $scope.getAllFieldDefinitions();
     //var profilePostData = angular.copy($scope.model);
     //console.log(profilePostData);
     var defaultProfilePostData = {};
     var passwordProfilePostData = {};
     var usernameProfilePostData = {};
-    for (var key in dataPrepared) {
-      if ($scope.changedFields.indexOf(key) != -1) {
-        if (key == 'username') {
-          usernameProfilePostData[key] = dataPrepared[key];
+    var metadataProfilePostData = {};
+    for (var i in fieldDefinitions) {
+      var fieldDefinition = fieldDefinitions[i];
+
+      if ($scope.changedFields.indexOf(fieldDefinition.name) != -1) {
+        var storageType = (typeof fieldDefinition.storageType != 'undefined') ? fieldDefinition.storageType : 'default';
+        if (storageType == 'username') {
+          usernameProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
           continue;
         }
-        if (key == 'password' || key == 'password_confirm') {
-          passwordProfilePostData[key] = dataPrepared[key];
+        if (storageType == 'password') {
+          passwordProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
           continue;
         }
-        defaultProfilePostData[key] = dataPrepared[key];
+        // Skip storage
+        if (storageType == 'none') {
+          continue;
+        }
+
+        if (storageType == 'none') {
+          defaultProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
+        }
+
+        if (storageType == 'metadata') {
+          metadataProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
+        }
       }
     }
+    console.log('PRofile metadata');
+    console.log(metadataProfilePostData);
     var promises = [];
     if (Object.keys(passwordProfilePostData).length) {
       promises.push($scope.savePassword(passwordProfilePostData));
@@ -178,6 +218,16 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     if (Object.keys(defaultProfilePostData).length) {
       promises.push($scope.saveDefault(defaultProfilePostData));
     }
+    // Fixed field value
+    if ($scope.changedFields.indexOf('telephone_numbers') != -1) {
+      promises.push($scope.saveTelephoneList());
+    }
+
+    // Fixed field value
+    if ($scope.changedFields.indexOf('addresses') != -1) {
+      promises.push($scope.saveAddressList());
+    }
+
     $q.all(promises).then(function () {
       $scope.errors = [];
       $rootScope.$broadcast('waid.idm.userProfile.save.ok');
@@ -186,7 +236,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
         $scope.updateProfileInfo();
       }
     }, function (errors) {
-      alert('Fatal error saving data');
+      // pass
     });
   };
   $scope.initEmails = function (data) {
@@ -232,15 +282,333 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       $scope.initEmails(data.results);
     });
   };
-  if (waidCore.user) {
-    waidCore.user = $scope.formatDataFromApi(waidCore.user);
+
+  $scope.deleteTelephone = function(key) {
+    $scope.telephoneNumbers.splice(key, 1)
+  };
+  $scope.changeTelephoneValue = function(fieldName, key) {
+    $scope.fieldChange(fieldName);
+    $scope.checkNewTelephoneNumer();
+  };
+  $scope.checkTelephoneChanged = function(originalObject, newObject) {
+    if(originalObject.number != newObject.number) {
+      return true;
+    }
+    return false;
+  }
+
+  $scope.checkNewTelephoneNumer = function()
+  {
+    var lastItem = $scope.telephoneNumbers.slice(-1).pop();
+    if (typeof lastItem == 'undefined' || $scope.checkTelephoneAnyFieldFilled(lastItem)) {
+      $scope.addNewTelephoneItem();
+    }
+  };
+  $scope.addNewTelephoneItem = function() {
+    $scope.telephoneNumbers.push({
+      'id':'new',
+      'number':'',
+      'action': '',
+      'errors':[]
+    })
+  };
+  
+  // Checks if any field is filled in..
+  $scope.checkTelephoneAnyFieldFilled = function(telephone) {
+    if (telephone.number != '') {
+      return true;
+    }
+    return false;
+  }
+
+  $scope.saveTelephoneList = function() {
+    for (var i=0; i < $scope.telephoneNumbers.length; i++) {
+      $scope.telephoneNumbers[i].action = '';
+      $scope.telephoneNumbers[i].errors = [];
+      if (!$scope.checkTelephoneAnyFieldFilled($scope.telephoneNumbers[i])) {
+        continue;
+      }
+      // Add new
+      if ($scope.telephoneNumbers[i].id == 'new') {
+        $scope.telephoneNumbers[i].action = 'new';
+        continue;
+      };
+
+      // Changed values
+      for (var a=0; a < $scope.originalTelephoneNumbers.length; a++) {
+        // If original id match new id
+        if ($scope.originalTelephoneNumbers[a].id == $scope.telephoneNumbers[i].id) {
+          // If changed
+          if ($scope.checkTelephoneChanged($scope.originalTelephoneNumbers[a], $scope.telephoneNumbers[i])) {
+            $scope.telephoneNumbers[i].action = 'change';
+          }
+        }
+      }
+    }
+
+    // Deleted telephones
+    var deleteTelephones = angular.copy($scope.originalTelephoneNumbers);
+
+    for (var a=0; a < deleteTelephones.length; a++) {
+      for (var i=0; i < $scope.telephoneNumbers.length; i++) {
+        if (typeof deleteTelephones[a] == 'undefined' || typeof deleteTelephones[a].id == 'undefined') {
+          deleteTelephones.splice(a, 1);
+          continue;
+        }
+        if (deleteTelephones[a].id == $scope.telephoneNumbers[i].id) {
+          deleteTelephones.splice(a, 1);
+        }
+      }
+    }
+
+    var changeTelephone = function(i){
+      var defer = $q.defer();
+      waidService.userTelephonePut($scope.telephoneNumbers[i].id, $scope.telephoneNumbers[i]).then(function(data){
+        defer.resolve(data);
+      }, function(data){
+        $scope.telephoneNumbers[i].errors = data;
+        defer.reject(data);
+      });
+      return defer.promise;
+    }
+
+    var newTelephone = function(i){
+      var defer = $q.defer();
+      waidService.userTelephonePost($scope.telephoneNumbers[i]).then(function(data){
+        defer.resolve(data);
+      }, function(data){
+        $scope.telephoneNumbers[i].errors = data;
+        defer.reject(data);
+      });
+      return defer.promise;
+    }
+
+    var deleteTelephone = function(i){
+      var defer = $q.defer();
+      waidService.userTelephoneDelete(deleteTelephones[i].id).then(function(data){
+        defer.resolve(data);
+      }, function(data) {
+        $scope.telephoneNumbers[i].errors = data;
+        defer.reject(data);
+      });
+      return defer.promise;
+    };
+    var promises = new Array();
+    for (var i=0; i < $scope.telephoneNumbers.length; i++) {
+      if ($scope.telephoneNumbers[i].action == 'change') {
+        promises.push(changeTelephone(i));
+      }
+      if ($scope.telephoneNumbers[i].action == 'new') {
+        promises.push(newTelephone(i));
+      }
+    }
+    
+    for (var i=0; i < deleteTelephones.length; i++) {
+      // Might have an empty telephone
+      promises.push(deleteTelephone(i));
+
+    }
+
+    var defer = $q.defer();
+    $q.all(promises).then(function () {
+      $scope.loadTelephoneList();
+      defer.resolve();
+    }, function (errors) {
+      defer.reject(errors);
+    });
+    return defer.promise;
+  }
+
+  $scope.saveAddressList = function() {
+    for (var i=0; i < $scope.addresses.length; i++) {
+      $scope.addresses[i].action = '';
+      $scope.addresses[i].errors = [];
+      if (!$scope.checkAddressAnyFieldFilled($scope.addresses[i])) {
+        continue;
+      }
+      // Add new
+      if ($scope.addresses[i].id == 'new') {
+        $scope.addresses[i].action = 'new';
+        continue;
+      };
+
+      // Changed values
+      for (var a=0; a < $scope.originalAddresses.length; a++) {
+        // If original id match new id
+        if ($scope.originalAddresses[a].id == $scope.addresses[i].id) {
+          // If changed
+          if ($scope.checkAddressChanged($scope.originalAddresses[a], $scope.addresses[i])) {
+            $scope.addresses[i].action = 'change';
+          }
+        }
+      }
+    }
+
+    // Deleted addresses
+    var deleteAddresss = angular.copy($scope.originalAddresses);
+
+    for (var a=0; a < deleteAddresss.length; a++) {
+      for (var i=0; i < $scope.addresses.length; i++) {
+        if (typeof deleteAddresss[a] == 'undefined' || typeof deleteAddresss[a].id == 'undefined') {
+          deleteAddresss.splice(a, 1);
+          continue;
+        }
+        if (deleteAddresss[a].id == $scope.addresses[i].id) {
+          deleteAddresss.splice(a, 1);
+        }
+      }
+    }
+
+    var changeAddress = function(i){
+      var defer = $q.defer();
+      waidService.userAddressPut($scope.addresses[i].id, $scope.addresses[i]).then(function(data){
+        defer.resolve(data);
+      }, function(data){
+        $scope.addresses[i].errors = data;
+        defer.reject(data);
+      });
+      return defer.promise;
+    }
+
+    var newAddress = function(i){
+      var defer = $q.defer();
+      waidService.userAddressPost($scope.addresses[i]).then(function(data){
+        defer.resolve(data);
+      }, function(data){
+        $scope.addresses[i].errors = data;
+        defer.reject(data);
+      });
+      return defer.promise;
+    }
+
+    var deleteAddress = function(i){
+      var defer = $q.defer();
+      waidService.userAddressDelete(deleteAddresss[i].id).then(function(data){
+        defer.resolve(data);
+      }, function(data) {
+        $scope.addresses[i].errors = data;
+        defer.reject(data);
+      });
+      return defer.promise;
+    };
+    var promises = new Array();
+    for (var i=0; i < $scope.addresses.length; i++) {
+      if ($scope.addresses[i].action == 'change') {
+        promises.push(changeAddress(i));
+      }
+      if ($scope.addresses[i].action == 'new') {
+        promises.push(newAddress(i));
+      }
+    }
+    
+    for (var i=0; i < deleteAddresss.length; i++) {
+      // Might have an empty telephone
+      promises.push(deleteAddress(i));
+
+    }
+
+    var defer = $q.defer();
+    $q.all(promises).then(function () {
+      $scope.loadAddressList();
+      defer.resolve();
+    }, function (errors) {
+      defer.reject(errors);
+    });
+    return defer.promise;
+  }
+
+
+
+  $scope.loadTelephoneList = function() {
+    waidService.userTelephoneListGet().then(function(data){
+      $scope.telephoneNumbers = data.results;
+      $scope.originalTelephoneNumbers = angular.copy($scope.telephoneNumbers);
+      $scope.checkNewTelephoneNumer();
+    })
+  };
+
+
+  $scope.changeAddressValue = function(fieldName, addressField, key) {
+    $scope.fieldChange(fieldName);
+    $scope.checkNewAddress();
+  };
+
+  $scope.addNewAddress = function() {
+    $scope.addresses.push({
+      'id':'new',
+      'address':'',
+      'city':'',
+      'zipcode':'',
+      'country':'',
+      'action': '',
+      'errors':[]
+    });
+  }
+
+  $scope.checkAddressChanged = function(originalObject, newObject) {
+    if (originalObject.address != newObject.address) {
+      return true;
+    }
+    if (originalObject.zipcode != newObject.zipcode) {
+      return true;
+    }
+    if (originalObject.city != newObject.city) {
+      return true;
+    }
+    if (originalObject.country != newObject.country) {
+      return true;
+    }
+    return false;
+  };
+
+  $scope.deleteAddress = function(key) {
+    $scope.addresses.splice(key, 1)
+  }
+  // Checks if any field is filled in..
+  $scope.checkAddressAnyFieldFilled = function(address) {
+    if (address.address != "") {
+      return true;
+    }
+    if (address.zipcode != "") {
+      return true;
+    }
+    if (address.city != "") {
+      return true;
+    }
+    if (address.country != "") {
+      return true;
+    }
+    return false;
+  }
+
+  $scope.checkNewAddress = function(){
+    var lastItem = $scope.addresses.slice(-1).pop();
+    if (typeof lastItem == 'undefined' || $scope.checkAddressAnyFieldFilled(lastItem)) {
+      $scope.addNewAddress();
+    }
+  }
+
+  $scope.loadAddressList = function() {
+    waidService.userAddressListGet().then(function(data){
+      $scope.addresses = data.results;
+      $scope.originalAddresses = angular.copy($scope.addresses);
+      $scope.checkNewAddress();
+    })
+  };
+
+
+  $scope.init = function(user) {
+    waidCore.user = $scope.formatDataFromApi(user);
     $scope.model = waidCore.user;
     $scope.loadEmailList();
+    $scope.loadTelephoneList();
+    $scope.loadAddressList();
+  }
+  if (waidCore.user) {
+    $scope.init(waidCore.user);
   } else {
     $rootScope.$on('waid.core.isInit', function (user) {
-      waidCore.user = $scope.formatDataFromApi(waidCore.user);
-      $scope.model = waidCore.user;
-      $scope.loadEmailList();
+      $scope.init(user);
     });
   }
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {

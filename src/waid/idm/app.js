@@ -37,15 +37,18 @@ angular.module('waid.idm', [
       'loggedin_success': 'Je bent succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
       'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mailadres in en dan word er een nieuwe activatie link toegestuurd.',
+      'delete':'Verwijderen',
       'male': 'Man',
       'female': 'Vrouw',
       'emails': 'E-mail adressen',
       'avatar': 'Profielfoto',
-      'display_name': 'Nickname',
+      'display_name': 'Profielnaam',
       'date_of_birth': 'Geboortedatum',
       'gender': 'Geslacht',
       'overview': 'Overzicht',
       'main': 'Algemeen',
+      'telephone_numbers': 'Telefoon nummers',
+      'telephone_number': 'Telefoon nummer',
       'edit_overview': 'Algemene gegevens aanpassen',
       'interests': 'Interesses',
       'like_tags': 'Wat vind je leuk?',
@@ -72,6 +75,7 @@ angular.module('waid.idm', [
       'profile_username_title': 'Gebruikersnaam',
       'profile_password_title': 'Wachtwoord',
       'profile_logout_title': 'Uitloggen',
+      'profile_telephone_numbers_title': 'Telefoon nummers',
       'complete_profile_modal_title': 'Bevestig uw gegevens',
       'complete_profile_modal_close_button': 'Niet verdergaan en uitloggen',
       'login_lost_login_link': 'Login gegevens kwijt?',
@@ -89,7 +93,13 @@ angular.module('waid.idm', [
       'register_submit_register_complete': 'Registratie afronden',
       'terms_and_conditions_check': 'Ik ga akkoord met de <a ng-click="waid.openTermsAndConditionsModal()">algemene voorwaarden</a>.',
       'terms_and_condition_modal_title': 'Algemene voorwaarden',
-      'terms_and_condition_modal_close': 'Sluiten'
+      'terms_and_condition_modal_close': 'Sluiten',
+      'telephone_number_help': 'Voer hier een geldig nummer in het formaat : (landnummer) (netnummer/06) (telefoon)',
+      'profile_addresses_title': 'Adressen',
+      'address': 'Adres',
+      'city': 'Stad',
+      'zipcode': 'Postcode',
+      'country': 'Land'
     },
     'profileDefinition': {
       'fieldSet': [
@@ -151,40 +161,82 @@ angular.module('waid.idm', [
           'key': 'emails',
           'order': 40,
           'noSaveButton': true,
-          'fieldDefinitions': [{
+          'fieldDefinitions': [
+            {
               'order': 10,
               'noLabel': true,
               'name': 'emails',
               'labelKey': 'emails',
-              'type': 'multipleEmail'
-            }]
+              'type': 'multipleEmail',
+              'storageType':'none'
+            }
+          ]
+        },
+        {
+          'key': 'telephone_numbers',
+          'hideFromOverview':true,
+          'order': 50,
+          'fieldDefinitions': [
+            {
+              'order': 10,
+              'noLabel': true,
+              'name': 'telephone_numbers',
+              'labelKey': 'telephone_numbers',
+              'numberKey': 'telepone_number',
+              'helpKey': 'telephone_number_help',
+              'type': 'multipleTelephone',
+              'hideFromOverview':true,
+              'storageType':'none'
+            }
+          ]
+        },
+        {
+          'key': 'addresses',
+          'hideFromOverview':true,
+          'order': 60,
+          'fieldDefinitions': [
+            {
+              'order': 10,
+              'noLabel': true,
+              'name': 'addresses',
+              'labelKey': 'addresses',
+              'type': 'multipleAddresses',
+              'hideFromOverview':true,
+              'storageType':'none'
+            }
+          ]
         },
         {
           'key': 'username',
-          'order': 50,
-          'fieldDefinitions': [{
+          'order': 70,
+          'fieldDefinitions': [
+            {
               'order': 10,
               'name': 'username',
               'labelKey': 'username',
-              'type': 'input'
-            }]
+              'type': 'input',
+              'storageType':'username',
+            }
+          ]
         },
         {
           'key': 'password',
-          'order': 60,
+          'order': 80,
           'fieldDefinitions': [
             {
               'order': 10,
               'name': 'password',
               'labelKey': 'password',
-              'type': 'password'
+              'type': 'password',
+              'storageType':'password'
             },
             {
               'order': 20,
               'name': 'password_confirm',
               'labelKey': 'password_confirm',
               'type': 'password',
-              'hideFromOverview': true
+              'hideFromOverview': true,
+              'storageType':'password'
             }
           ]
         }

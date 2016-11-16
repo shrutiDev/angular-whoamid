@@ -31,6 +31,7 @@ angular.module('waid.core.app.strategy', [
     this.closeLoginAndRegisterModal();
     this.closeUserProfileModal();
   };
+
   waidCore.openEmoticonsModal = function (targetId, comment) {
     var input = document.getElementById(targetId);
     emoticonsModalInstance = $uibModal.open({
@@ -59,6 +60,7 @@ angular.module('waid.core.app.strategy', [
       }
     }
   };
+
   waidCore.openTermsAndConditionsModal = function (template) {
     termsAndConditionsModalInstance = $uibModal.open({
       animation: true,
@@ -126,6 +128,30 @@ angular.module('waid.core.app.strategy', [
       userProfileHomeModalInstance.dismiss('close');
     }
   };
+
+  // New functions
+  waidCore.openEmoticons = function(targetId, comment) {
+    waidCore.openEmoticonsModal(targetId, comment);
+  };
+  waidCore.openTermsAndConditions = function() {
+    waidCore.openTermsAndConditionsModal();
+  };
+  waidCore.openCompleteProfile = function() {
+    waidCore.openCompleteProfileModal();
+  };
+  waidCore.openLostLogin = function() {
+    waidCore.openLostLoginModal();
+  };
+  waidCore.openLoginAndRegisterHome = function() {
+    waidCore.openLoginAndRegisterHomeModal();
+  };
+  waidCore.openLoginAndRegisterHome = function() {
+    waidCore.openLoginAndRegisterHomeModal();
+  };
+  waidCore.openUserProfileHome = function() {
+    waidCore.openUserProfileHomeModal();
+  };
+
   $rootScope.$on('waid.services.request.noPermission', function (event, data) {
     if (waidService.token && waidCore.checkIfModalIsOpen('completeProfile') == false) {
       waidService.userCompleteProfileGet().then(function (data) {

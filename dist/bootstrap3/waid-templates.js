@@ -389,7 +389,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   $templateCache.put('/templates/idm/overview.html?v=0.0.23',
     "\n" +
     "      <div ng-repeat=\"fieldSet in profileDefinition.fieldSet\">\n" +
-    "        <div ng-if=\"fieldSet.key != currentFieldSet\">\n" +
+    "        <div ng-if=\"fieldSet.key != currentFieldSet && !fieldSet.hideFromOverview\">\n" +
     "          <h5>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h5>\n" +
     "          <div ng-if=\"fieldSet.fieldDefinitions\">\n" +
     "            <div ng-repeat=\"fieldDefinition in fieldSet.fieldDefinitions\">\n" +
@@ -437,15 +437,16 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "                </ANY>\n" +
     "\n" +
     "                <ANY ng-switch-when=\"multipleEmail\">\n" +
-    "                  <dl class=\"dl-horizontal\" ng-repeat=\"email in emails\">\n" +
-    "                    <dt>\n" +
-    "                      <span class=\"glyphicon glyphicon-eye-close text-danger\" ng-show=\"!email.is_verified\"></span>\n" +
-    "                      <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"email.is_verified\"></span>\n" +
-    "                    </dt>\n" +
-    "                    <dd>{{ email.email }}</dd>\n" +
-    "                  </dl>\n" +
+    "                  <div ng-show=\"emails.length > 0\" ng-cloak>\n" +
+    "                    <dl class=\"dl-horizontal\" ng-repeat=\"email in emails\">\n" +
+    "                      <dt>\n" +
+    "                        <span class=\"glyphicon glyphicon-eye-close text-danger\" ng-show=\"!email.is_verified\"></span>\n" +
+    "                        <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"email.is_verified\"></span>\n" +
+    "                      </dt>\n" +
+    "                      <dd>{{ email.email }}</dd>\n" +
+    "                    </dl>\n" +
+    "                  </div>\n" +
     "                </ANY>\n" +
-    "\n" +
     "\n" +
     "                <ANY ng-switch-default>Invalid fieldDefinition</ANY>\n" +
     "              </ANY>\n" +
@@ -488,9 +489,72 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "\n" +
     "              </ANY>\n" +
     "\n" +
+    "              <ANY ng-switch-when=\"multipleTelephone\">\n" +
+    "                <div class=\"panel panel-default\" ng-repeat=\"(key, telephone) in telephoneNumbers\">\n" +
+    "                  <div class=\"panel-heading\">{{ ::waid.config.getTranslation('idm', 'telephone_number') }} {{ key+1 }}\n" +
+    "                     <i class=\"glyphicon glyphicon-remove pull-right\" aria-hidden=\"true\" ng-click=\"deleteTelephone(key)\"></i>\n" +
+    "                  </div>\n" +
+    "                  <div class=\"panel-body\">\n" +
+    "                    <div class=\"form-group has-feedback\" ng-class=\"telephone.errors.number ? 'has-error' : ''\">\n" +
+    "                      <input type=\"input\" class=\"form-control\" id=\"telephone_{{ fieldDefinition.name }}_{{ key }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}\" ng-model=\"telephone.number\" ng-change=\"changeTelephoneValue(fieldDefinition.name, key)\" />\n" +
+    "                      <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"telephone.errors.number\"></span>\n" +
+    "                      <div class=\"alert alert-danger\" ng-repeat=\"error in telephone.errors.number\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                    </div>\n" +
+    "                    \n" +
+    "                  </div>\n" +
+    "                </div>\n" +
+    "              </ANY>\n" +
+    "\n" +
+    "              <ANY ng-switch-when=\"multipleAddresses\">\n" +
+    "                <div class=\"panel panel-default\" ng-repeat=\"(key, address) in addresses\">\n" +
+    "                  <div class=\"panel-heading\">Adres {{ key+1 }}\n" +
+    "                     <i class=\"glyphicon glyphicon-remove pull-right\" aria-hidden=\"true\" ng-click=\"deleteAddress(key)\"></i>\n" +
+    "                  </div>\n" +
+    "                  <div class=\"panel-body\">\n" +
+    "                    <div class=\"row\">\n" +
+    "                      <div class=\"col-md-12\">\n" +
+    "                        <div class=\"form-group has-feedback\" ng-class=\"address.errors.address ? 'has-error' : ''\">\n" +
+    "                          <label for=\"address_{{ fieldDefinition.name }}_address_{{ key }}\">{{ ::waid.config.getTranslation('idm',  'address' ) }}</label>\n" +
+    "                          <input type=\"input\" class=\"form-control\" id=\"address_{{ fieldDefinition.name }}_address_{{ key }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}\" ng-model=\"address.address\" ng-change=\"changeAddressValue(fieldDefinition.name, 'address', key)\" />\n" +
+    "                          <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"address.errors.address\"></span>\n" +
+    "                          <div class=\"alert alert-danger\" ng-repeat=\"error in address.errors.address\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
+    "                        </div>\n" +
+    "                      </div>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"row\">\n" +
+    "                      <div class=\"col-md-4\">\n" +
+    "                        <div class=\"form-group has-feedback\" ng-class=\"address.errors.zipcode ? 'has-error' : ''\">\n" +
+    "                          <label for=\"address_{{ fieldDefinition.name }}_zipcode_{{ key }}\">{{ ::waid.config.getTranslation('idm',  'zipcode' ) }}</label>\n" +
+    "                          <input type=\"input\" class=\"form-control\" id=\"address_{{ fieldDefinition.name }}_zipcode_{{ key }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}\" ng-model=\"address.zipcode\" ng-change=\"changeAddressValue(fieldDefinition.name, 'zipcode', key)\" />\n" +
+    "                          <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"address.errors.zipcode\"></span>\n" +
+    "                          <div class=\"alert alert-danger\" ng-repeat=\"error in address.errors.zipcode\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
+    "                        </div>\n" +
+    "                      </div>\n" +
+    "                      <div class=\"col-md-4\">\n" +
+    "                        <div class=\"form-group has-feedback\" ng-class=\"address.errors.city ? 'has-error' : ''\">\n" +
+    "                          <label for=\"address_{{ fieldDefinition.name }}_city_{{ key }}\">{{ ::waid.config.getTranslation('idm',  'city' ) }}</label>\n" +
+    "                          <input type=\"input\" class=\"form-control\" id=\"address_{{ fieldDefinition.name }}_city_{{ key }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}\" ng-model=\"address.city\" ng-change=\"changeAddressValue(fieldDefinition.name, 'city', key)\" />\n" +
+    "                          <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"address.errors.city\"></span>\n" +
+    "                          <div class=\"alert alert-danger\" ng-repeat=\"error in address.errors.city\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
+    "                        </div>\n" +
+    "                      </div>\n" +
+    "                      <div class=\"col-md-4\">\n" +
+    "                        <div class=\"form-group has-feedback\" ng-class=\"address.errors.country ? 'has-error' : ''\">\n" +
+    "                          <label for=\"address_{{ fieldDefinition.name }}_country_{{ key }}\">{{ ::waid.config.getTranslation('idm',  'country' ) }}</label>\n" +
+    "                          <input type=\"input\" class=\"form-control\" id=\"address_{{ fieldDefinition.name }}_country_{{ key }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.numberKey ) }}\" ng-model=\"address.country\" ng-change=\"changeAddressValue(fieldDefinition.name, 'country', key)\" />\n" +
+    "                          <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"address.errors.country\"></span>\n" +
+    "                          <div class=\"alert alert-danger\" ng-repeat=\"error in address.errors.country\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
+    "                        </div>\n" +
+    "                      </div>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                  </div>\n" +
+    "                </div>\n" +
+    "              </ANY>\n" +
+    "\n" +
     "              <ANY ng-switch-when=\"date\">\n" +
     "                <div class=\"input-group\">\n" +
-    "                  <input type=\"text\" class=\"form-control\" id=\"{{ fieldDefinition.name }}\" uib-datepicker-popup ng-model=\"model[fieldDefinition.name]\" is-open=\"popup.opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" ng-change=\"fieldChange(fieldDefinition.name)\"/>\n" +
+    "                  <input type=\"text\" class=\"form-control\" id=\"{{ fieldDefinition.name }}\" uib-datepicker-popup ng-model=\"model[fieldDefinition.name]\" is-open=\"popup.opened\" alt-input-formats=\"['dd-MM-yyyy', 'dd MM yyyy', 'dd-MMMM-yyyy', 'dd MMMM yyyy']\" datepicker-options=\"dateOptions\" close-text=\"Close\" ng-change=\"fieldChange(fieldDefinition.name)\"/>\n" +
     "                  <span class=\"input-group-btn\">\n" +
     "                    <button type=\"button\" class=\"btn btn-default\" ng-click=\"open()\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
     "                  </span>\n" +
@@ -660,7 +724,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "  <div class=\"modal-header\">\n" +
     "    <h3 class=\"modal-title\">Mijn Profiel<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeUserProfileModal()\"></i></h3>\n" +
     "  </div>\n" +
-    "  <nav class=\"navbar navbar-default hidden-lg hidden-md hidden-sm\">\n" +
+    "  <nav class=\"navbar navbar-default hidden-lg hidden-md hidden-sm\" ng-controller=\"WAIDIDMProfileNavbarCtrl\">\n" +
     "    <div class=\"container-fluid\">\n" +
     "      <!-- Brand and toggle get grouped for better mobile display -->\n" +
     "      <div class=\"navbar-header\" data-toggle=\"collapse\" data-target=\"#waid-profile-navbar\">\n" +
@@ -683,7 +747,6 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    </div><!-- /.container-fluid -->\n" +
     "  </nav>\n" +
     "  <div class=\"modal-body\">\n" +
-    "\n" +
     "     <waid-profile></waid-profile>\n" +
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +

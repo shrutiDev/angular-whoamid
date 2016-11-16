@@ -1,6 +1,6 @@
 
       <div ng-repeat="fieldSet in profileDefinition.fieldSet">
-        <div ng-if="fieldSet.key != currentFieldSet">
+        <div ng-if="fieldSet.key != currentFieldSet && !fieldSet.hideFromOverview">
           <h5>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h5>
           <div ng-if="fieldSet.fieldDefinitions">
             <div ng-repeat="fieldDefinition in fieldSet.fieldDefinitions">
@@ -48,15 +48,16 @@
                 </ANY>
 
                 <ANY ng-switch-when="multipleEmail">
-                  <dl class="dl-horizontal" ng-repeat="email in emails">
-                    <dt>
-                      <span class="glyphicon glyphicon-eye-close text-danger" ng-show="!email.is_verified"></span>
-                      <span class="glyphicon glyphicon-ok text-success" ng-show="email.is_verified"></span>
-                    </dt>
-                    <dd>{{ email.email }}</dd>
-                  </dl>
+                  <div ng-show="emails.length > 0" ng-cloak>
+                    <dl class="dl-horizontal" ng-repeat="email in emails">
+                      <dt>
+                        <span class="glyphicon glyphicon-eye-close text-danger" ng-show="!email.is_verified"></span>
+                        <span class="glyphicon glyphicon-ok text-success" ng-show="email.is_verified"></span>
+                      </dt>
+                      <dd>{{ email.email }}</dd>
+                    </dl>
+                  </div>
                 </ANY>
-
 
                 <ANY ng-switch-default>Invalid fieldDefinition</ANY>
               </ANY>
