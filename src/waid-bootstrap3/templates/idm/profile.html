@@ -179,7 +179,7 @@
             
           </div>
           <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-          <button type="submit" class="btn btn-default btn-block" ng-click="save()" ng-hide="fieldSet.noSaveButton" ng-cloak><i class="fa fa-floppy-o" aria-hidden="true"></i> Opslaan</button>
+          <button type="submit" ng-disabled="waid.isLoading" class="btn btn-default btn-block" ng-click="save()" ng-hide="fieldSet.noSaveButton" ng-cloak><i class="fa fa-floppy-o" aria-hidden="true"></i> Opslaan</button>
         </form>
       </div>
     </div>

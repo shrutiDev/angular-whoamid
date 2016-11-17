@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.25';
+  waidCore.config.version = '0.0.26';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -1604,7 +1604,9 @@ angular.module('waid.idm', [
       'address': 'Adres',
       'city': 'Stad',
       'zipcode': 'Postcode',
-      'country': 'Land'
+      'country': 'Land',
+      'about_public': 'Over mij',
+      'about_public_help' : 'Publiekelijke informatie'
     },
     'profileDefinition': {
       'fieldSet': [
@@ -1640,6 +1642,13 @@ angular.module('waid.idm', [
               'name': 'avatar_thumb_50_50',
               'labelKey': 'avatar',
               'type': 'avatar'
+            },
+            {
+              'order': 50,
+              'name': 'about_public',
+              'labelKey': 'about_public',
+              'helpKey': 'about_public_help',
+              'type': 'textarea'
             }
           ]
         },

@@ -99,7 +99,9 @@ angular.module('waid.idm', [
       'address': 'Adres',
       'city': 'Stad',
       'zipcode': 'Postcode',
-      'country': 'Land'
+      'country': 'Land',
+      'about_public': 'Over mij',
+      'about_public_help' : 'Publiekelijke informatie'
     },
     'profileDefinition': {
       'fieldSet': [
@@ -135,6 +137,13 @@ angular.module('waid.idm', [
               'name': 'avatar_thumb_50_50',
               'labelKey': 'avatar',
               'type': 'avatar'
+            },
+            {
+              'order': 50,
+              'name': 'about_public',
+              'labelKey': 'about_public',
+              'helpKey': 'about_public_help',
+              'type': 'textarea'
             }
           ]
         },
