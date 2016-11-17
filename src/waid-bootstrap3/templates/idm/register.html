@@ -25,7 +25,7 @@
       </div>
       <div class="alert alert-danger" ng-repeat="error in errors.terms_and_conditions_check"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
       <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-      <button ng-disabled="!model.terms_and_conditions_check" type="submit" class="btn btn-primary" ng-click="register()"><span ng-show="modus!='complete'">{{ ::waid.config.getTranslation('idm', 'register_submit_register') }}</span><span ng-show="modus=='complete'">{{ ::waid.config.getTranslation('idm', 'register_submit_register_complete') }}</span></button>
+      <button ng-disabled="!model.terms_and_conditions_check || waid.isLoading" type="submit" class="btn btn-primary" ng-click="register()"><span ng-show="modus!='complete'">{{ ::waid.config.getTranslation('idm', 'register_submit_register') }}</span><span ng-show="modus=='complete'">{{ ::waid.config.getTranslation('idm', 'register_submit_register_complete') }}</span></button>
     </form>
   </div>
 </div>

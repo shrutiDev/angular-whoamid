@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.26';
+  waidCore.config.version = '0.0.27';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -1606,7 +1606,10 @@ angular.module('waid.idm', [
       'zipcode': 'Postcode',
       'country': 'Land',
       'about_public': 'Over mij',
-      'about_public_help' : 'Publiekelijke informatie'
+      'about_public_help' : 'Publiekelijke informatie',
+      'first_name':'Voornaam',
+      'surname_prefix':'Tussenvoegsel',
+      'surname':'Achternaam'
     },
     'profileDefinition': {
       'fieldSet': [
@@ -1627,24 +1630,42 @@ angular.module('waid.idm', [
             },
             {
               'order': 20,
+              'name': 'first_name',
+              'labelKey': 'first_name',
+              'type': 'input'
+            },
+            {
+              'order': 30,
+              'name': 'surname_prefix',
+              'labelKey': 'surname_prefix',
+              'type': 'input'
+            },
+            {
+              'order': 40,
+              'name': 'surname',
+              'labelKey': 'surname',
+              'type': 'input'
+            },
+            {
+              'order': 50,
               'name': 'date_of_birth',
               'labelKey': 'date_of_birth',
               'type': 'date'
             },
             {
-              'order': 30,
+              'order': 60,
               'name': 'gender',
               'labelKey': 'gender',
               'type': 'gender'
             },
             {
-              'order': 40,
+              'order': 70,
               'name': 'avatar_thumb_50_50',
               'labelKey': 'avatar',
               'type': 'avatar'
             },
             {
-              'order': 50,
+              'order': 80,
               'name': 'about_public',
               'labelKey': 'about_public',
               'helpKey': 'about_public_help',
@@ -2373,20 +2394,18 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
 
 
-  $scope.init = function(user) {
-    waidCore.user = $scope.formatDataFromApi(user);
-    $scope.model = waidCore.user;
+  $scope.init = function() {
+    $scope.updateProfileInfo();
     $scope.loadEmailList();
     $scope.loadTelephoneList();
     $scope.loadAddressList();
   }
-  if (waidCore.user) {
-    $scope.init(waidCore.user);
-  } else {
-    $rootScope.$on('waid.core.isInit', function (user) {
-      $scope.init(user);
-    });
-  }
+
+  $scope.init();
+  $rootScope.$on('waid.core.isInit', function (user) {
+    $scope.init();
+  });
+  
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
 }).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService, waidCore) {

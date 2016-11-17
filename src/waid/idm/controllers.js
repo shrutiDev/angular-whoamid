@@ -613,20 +613,18 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
 
 
-  $scope.init = function(user) {
-    waidCore.user = $scope.formatDataFromApi(user);
-    $scope.model = waidCore.user;
+  $scope.init = function() {
+    $scope.updateProfileInfo();
     $scope.loadEmailList();
     $scope.loadTelephoneList();
     $scope.loadAddressList();
   }
-  if (waidCore.user) {
-    $scope.init(waidCore.user);
-  } else {
-    $rootScope.$on('waid.core.isInit', function (user) {
-      $scope.init(user);
-    });
-  }
+
+  $scope.init();
+  $rootScope.$on('waid.core.isInit', function (user) {
+    $scope.init();
+  });
+  
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
 }).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService, waidCore) {

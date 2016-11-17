@@ -12,7 +12,7 @@
       </div>
       <div class="alert alert-danger" ng-repeat="error in errors.password"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
       <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
-      <button type="submit" class="btn btn-primary" ng-click="login()">{{ ::waid.config.getTranslation('idm', 'login_submit') }}</button>
+      <button type="submit" class="btn btn-primary" ng-click="login()" ng-disabled="waid.isLoading">{{ ::waid.config.getTranslation('idm', 'login_submit') }}</button>
     </form>
     <br />
     <a ng-click="waid.openLostLoginModal()">{{ ::waid.config.getTranslation('idm', 'login_lost_login_link') }}</a>
