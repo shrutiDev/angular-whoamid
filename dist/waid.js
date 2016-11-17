@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.23';
+  waidCore.config.version = '0.0.24';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -599,6 +599,12 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userProfilePatch': function (data) {
       return this._makeRequest('PATCH', 'app', '/user/profile/', 'application.userProfile', data);
+    },
+    'userMetadataPost': function(data){
+      return this._makeRequest('POST', 'app', '/user/metadata/', 'application.userMetadata', data);
+    },
+    'userMetadataGet': function(){
+      return this._makeRequest('GET', 'app', '/user/metadata/', 'application.userMetadata');
     },
     'userUsernamePut': function (data) {
       return this._makeRequest('PUT', 'app', '/user/username/', 'application.userUsername', data);
@@ -1884,6 +1890,16 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     }
     return fieldValues;
   };
+  $scope.saveMetadata = function (defaultMetadataPostData) {
+    var defer = $q.defer();
+    waidService.userMetadataPost(defaultMetadataPostData).then(function (data) {
+      defer.resolve(data);
+    }, function (data) {
+      angular.extend($scope.errors, data);
+      defer.reject(data);
+    });
+    return defer.promise;
+  };
   $scope.saveDefault = function (defaultProfilePostData) {
     var defer = $q.defer();
     waidService.userProfilePatch(defaultProfilePostData).then(function (data) {
@@ -1951,24 +1967,30 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
         }
       }
     }
-    console.log('PRofile metadata');
-    console.log(metadataProfilePostData);
     var promises = [];
+    // Password store call
     if (Object.keys(passwordProfilePostData).length) {
       promises.push($scope.savePassword(passwordProfilePostData));
     }
+    // Username store call
     if (Object.keys(usernameProfilePostData).length) {
       promises.push($scope.saveUsername(usernameProfilePostData));
     }
+    // Default store  call
     if (Object.keys(defaultProfilePostData).length) {
       promises.push($scope.saveDefault(defaultProfilePostData));
     }
-    // Fixed field value
+    // Metadata store call
+    if (Object.keys(metadataProfilePostData).length) {
+      promises.push($scope.saveMetadata(metadataProfilePostData));
+    }
+
+    // Telephone store call
     if ($scope.changedFields.indexOf('telephone_numbers') != -1) {
       promises.push($scope.saveTelephoneList());
     }
 
-    // Fixed field value
+    // Addresses store call
     if ($scope.changedFields.indexOf('addresses') != -1) {
       promises.push($scope.saveAddressList());
     }
