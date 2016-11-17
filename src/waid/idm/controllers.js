@@ -207,7 +207,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
           continue;
         }
 
-        if (storageType == 'none') {
+        if (storageType == 'default') {
           defaultProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
         }
 

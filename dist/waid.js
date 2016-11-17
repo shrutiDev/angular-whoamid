@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.24';
+  waidCore.config.version = '0.0.25';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -1958,7 +1958,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
           continue;
         }
 
-        if (storageType == 'none') {
+        if (storageType == 'default') {
           defaultProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
         }
 
