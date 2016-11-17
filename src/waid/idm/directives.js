@@ -6,7 +6,9 @@ angular.module('waid.idm.directives', [
   return {
     restrict: 'E',
     controller: 'WAIDIDMProfileCtrl',
-    scope:{},
+    scope:{
+      currentFieldSet:'@'
+    },
     templateUrl: function (elem, attrs) {
       return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'profile');
     }

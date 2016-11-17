@@ -747,7 +747,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    </div><!-- /.container-fluid -->\n" +
     "  </nav>\n" +
     "  <div class=\"modal-body\">\n" +
-    "     <waid-profile></waid-profile>\n" +
+    "     <waid-profile current-field-set=\"{{ currentFieldSet }}\"></waid-profile>\n" +
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +
     "      <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.closeUserProfileModal()\">Sluiten</button>\n" +
@@ -781,13 +781,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "	    <span class=\"glyphicon glyphicon-user\"></span> Ingelogd als {{ waid.user.default_name }}  <span class=\"caret\"></span>\n" +
     "	  </button>\n" +
     "	  <ul class=\"dropdown-menu\" ng-show=\"waid.user\">\n" +
-    "	    <li><a ng-click=\"waid.openUserProfileHomeModal()\"><span class=\"glyphicon glyphicon-cog\"></span> Mijn Profiel</a></li>\n" +
+    "	    <li><a ng-click=\"waid.openUserProfileHome()\"><span class=\"glyphicon glyphicon-cog\"></span> Mijn Profiel</a></li>\n" +
     "	    <li role=\"separator\" class=\"divider\"></li>\n" +
     "	    <li><a href=\"#\" ng-click=\"waid.logout()\"><span class=\"glyphicon glyphicon-log-out\"></span> Uitloggen</a></li>\n" +
     "	    <li><a href=\"#\" ng-click=\"waid.logoutAll()\"><span class=\"glyphicon glyphicon-new-window\"></span> Op alle systemen uitloggen</a></li>\n" +
     "	  </ul>\n" +
     "	</div>\n" +
-    "	<button ng-hide=\"waid.user\" ng-click=\"waid.openLoginAndRegisterHomeModal()\" class=\"btn btn-default btn-xs\">Login of Registreer</button>\n" +
+    "	<button ng-hide=\"waid.user\" ng-click=\"waid.openLoginAndRegisterHome()\" class=\"btn btn-default btn-xs\">Login of Registreer</button>\n" +
     "	</div>\n" +
     "</div>"
   );

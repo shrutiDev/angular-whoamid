@@ -17,8 +17,6 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   $scope.waid = waidCore;
   // Set profile definition
   $scope.profileDefinition = waidCore.config.idm.profileDefinition;
-  // Default fieldset
-  $scope.currentFieldSet = 'overview';
 
   // Telephone numbers objects
   $scope.telephoneNumbers = [];

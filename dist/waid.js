@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.27';
+  waidCore.config.version = '0.0.28';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -1798,8 +1798,6 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   $scope.waid = waidCore;
   // Set profile definition
   $scope.profileDefinition = waidCore.config.idm.profileDefinition;
-  // Default fieldset
-  $scope.currentFieldSet = 'overview';
 
   // Telephone numbers objects
   $scope.telephoneNumbers = [];
@@ -2506,7 +2504,9 @@ angular.module('waid.idm.directives', [
   return {
     restrict: 'E',
     controller: 'WAIDIDMProfileCtrl',
-    scope:{},
+    scope:{
+      currentFieldSet:'@'
+    },
     templateUrl: function (elem, attrs) {
       return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'profile');
     }

@@ -58,6 +58,7 @@ angular.module('waid.core.app.strategy', [
       } else {
         emoticonsModalInstance.dismiss('close');
       }
+      $rootScope.$broadcast('waid.bootstrap3.strategy.closeEmoticonsModal');
     }
   };
 
@@ -73,6 +74,7 @@ angular.module('waid.core.app.strategy', [
   waidCore.closeTermsAndConditionsModal = function () {
     if (termsAndConditionsModalInstance) {
       termsAndConditionsModalInstance.dismiss('close');
+      $rootScope.$broadcast('waid.bootstrap3.strategy.closeTermsAndConditionsModal');
     }
   };
   waidCore.openCompleteProfileModal = function () {
@@ -87,6 +89,7 @@ angular.module('waid.core.app.strategy', [
   waidCore.closeCompleteProfileModal = function () {
     if (completeProfileModalInstance) {
       completeProfileModalInstance.dismiss('close');
+      $rootScope.$broadcast('waid.bootstrap3.strategy.closeCompleteProfileModal');
     }
   };
   waidCore.openLostLoginModal = function () {
@@ -100,6 +103,7 @@ angular.module('waid.core.app.strategy', [
   waidCore.closeLostLoginModal = function () {
     if (lostLoginModalInstance) {
       lostLoginModalInstance.dismiss('close');
+      $rootScope.$broadcast('waid.bootstrap3.strategy.closeLostLoginModal');
     }
   };
   waidCore.openLoginAndRegisterHomeModal = function () {
@@ -113,19 +117,29 @@ angular.module('waid.core.app.strategy', [
   waidCore.closeLoginAndRegisterModal = function () {
     if (loginAndRegisterHomeModalInstance) {
       loginAndRegisterHomeModalInstance.dismiss('close');
+      $rootScope.$broadcast('waid.bootstrap3.strategy.closeLoginAndRegisterModal');
     }
   };
-  waidCore.openUserProfileHomeModal = function () {
+  waidCore.openUserProfileHomeModal = function (fieldSet) {
     userProfileHomeModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('idm', 'userProfileModal'),
       size: 'lg',
-      backdrop: 'static'
+      backdrop: 'static',
+      controller : ["$scope", "currentFieldSet", function($scope, currentFieldSet) {
+        $scope.currentFieldSet = currentFieldSet;
+      }],
+      resolve: {
+        currentFieldSet: function () {
+          return (typeof fieldSet == 'undefined') ? 'overview' : fieldSet;
+        }
+      }
     });
   };
   waidCore.closeUserProfileModal = function () {
     if (userProfileHomeModalInstance) {
       userProfileHomeModalInstance.dismiss('close');
+      $rootScope.$broadcast('waid.bootstrap3.strategy.closeUserProfileModal');
     }
   };
 
@@ -148,8 +162,8 @@ angular.module('waid.core.app.strategy', [
   waidCore.openLoginAndRegisterHome = function() {
     waidCore.openLoginAndRegisterHomeModal();
   };
-  waidCore.openUserProfileHome = function() {
-    waidCore.openUserProfileHomeModal();
+  waidCore.openUserProfileHome = function(fieldSet) {
+    waidCore.openUserProfileHomeModal(fieldSet);
   };
 
   $rootScope.$on('waid.services.request.noPermission', function (event, data) {
