@@ -167,7 +167,7 @@ angular.module('waid.core.strategy', [
   $rootScope.$on('waid.services.authenticate.ok', function (event, data) {
     var action = waidCore.getLastAction();
     if (action.type == 'comment_post') {
-      waidService.userCommentsPost(action.data).then(function(data){
+      waidService.userCommentPost(action.data).then(function(data){
         $rootScope.$broadcast('waid.core.lastAction.commentPost', data);
       })
     }

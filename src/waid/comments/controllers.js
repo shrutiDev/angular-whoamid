@@ -21,7 +21,7 @@ angular.module('waid.comments.controllers', [
     if (!$rootScope.waid.user) {
       $rootScope.waid.openLoginAndRegisterHomeModal();
     } else {
-      waidService.commentsVotePost(comment.id, vote).then(function (data) {
+      waidService.commentVotePost(comment.id, vote).then(function (data) {
         comment.vote_up_count = data.vote_up_count;
         comment.vote_down_count = data.vote_down_count;
         comment.vote_count = data.vote_count;
@@ -29,7 +29,7 @@ angular.module('waid.comments.controllers', [
     }
   };
   $scope.markComment = function (comment, mark) {
-    waidService.commentsMarkPost(comment.id, mark).then(function (data) {
+    waidService.commentMarkPost(comment.id, mark).then(function (data) {
       comment.marked_as_spam = data.marked_as_spam;
     });
   };
@@ -41,14 +41,14 @@ angular.module('waid.comments.controllers', [
   };
   $scope.updateComment = function (comment) {
     var patch_comment = { 'comment': comment.comment_formatted };
-    waidService.userCommentsPatch(comment.id, patch_comment).then(function (data) {
+    waidService.userCommentPatch(comment.id, patch_comment).then(function (data) {
       comment.is_edit = false;
       comment.comment_formatted = data.comment_formatted;
       comment.comment = data.comment;
     });
   };
   $scope.deleteComment = function (comment) {
-    waidService.userCommentsDelete(comment.id).then(function (data) {
+    waidService.userCommentDelete(comment.id).then(function (data) {
       var index = $scope.comments.indexOf(comment);
       $scope.comments.splice(index, 1);
     });
@@ -71,7 +71,7 @@ angular.module('waid.comments.controllers', [
       params['offset'] = $scope.offset;
     }
 
-    waidService.commentsListGet(params).then(function (data) {
+    waidService.commentListGet(params).then(function (data) {
       if (data.results.length == 0 || data.results.length < $scope.limit) {
         $scope.showMore = false;
       } else {
@@ -105,7 +105,7 @@ angular.module('waid.comments.controllers', [
       $rootScope.waid.openLoginAndRegisterHomeModal();
       $scope.comment.comment = '';
     } else {
-      waidService.userCommentsPost($scope.comment).then(function (data) {
+      waidService.userCommentPost($scope.comment).then(function (data) {
         $scope.comment.comment = '';
         $scope.loadComments();
       });

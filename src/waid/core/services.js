@@ -11,6 +11,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       var that = this;
       // Set CSRFToken
       $http.defaults.headers.common['X-CSRFToken'] = $cookies.get('csrftoken');
+
+      $http.defaults.headers.common['Content-Type'] = 'application/json';
       // Set authorization token
       if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
         $http.defaults.headers.common.Authorization = 'Token ' + waidCore.token;
@@ -299,20 +301,20 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'socialProviderListGet': function () {
       return this._makeRequest('GET', 'app', '/social/providers/', 'application.socialProviderList');
     },
-    'userCommentsPatch': function (id, data) {
-      return this._makeRequest('PATCH', 'app', '/user/comments/' + id + '/', 'application.userComments', data);
+    'userCommentPatch': function (id, data) {
+      return this._makeRequest('PATCH', 'app', '/user/comment/' + id + '/', 'application.userComment', data);
     },
-    'userCommentsPost': function (data) {
+    'userCommentPost': function (data) {
       if (typeof data.object_id != 'undefined' && data.object_id == 'currenturl') {
         data.object_id = waidCore.slugify($location.absUrl());
       }
       data.url = $location.absUrl();
-      return this._makeRequest('POST', 'app', '/user/comments/', 'application.userComments', data);
+      return this._makeRequest('POST', 'app', '/user/comment/', 'application.userComment', data);
     },
-    'userCommentsDelete': function (id) {
-      return this._makeRequest('DELETE', 'app', '/user/comments/' + id + '/', 'application.userComments');
+    'userCommentDelete': function (id) {
+      return this._makeRequest('DELETE', 'app', '/user/comment/' + id + '/', 'application.userComment');
     },
-    'userCommentsListGet': function (params) {
+    'userCommentListGet': function (params) {
       if (typeof params != 'undefined') {
         if (typeof params.object_id != 'undefined' && params.object_id == 'currenturl') {
           params.object_id = waidCore.slugify($location.absUrl());
@@ -321,9 +323,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', 'app', '/user/comments/' + query, 'application.userCommentsList');
+      return this._makeRequest('GET', 'app', '/user/comment/' + query, 'application.userCommentList');
     },
-    'commentsListGet': function (params) {
+    'commentListGet': function (params) {
       if (typeof params != 'undefined') {
         if (typeof params.object_id != 'undefined' && params.object_id == 'currenturl') {
           params.object_id = waidCore.slugify($location.absUrl());
@@ -332,15 +334,15 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', 'app', '/comments/' + query, 'application.commentsList');
+      return this._makeRequest('GET', 'app', '/comment/' + query, 'application.commentList');
     },
-    'commentsVotePost': function (id, vote) {
+    'commentVotePost': function (id, vote) {
       var data = { 'vote': vote };
-      return this._makeRequest('POST', 'app', '/comments/' + id + '/vote/', 'application.commentsVote', data);
+      return this._makeRequest('POST', 'app', '/comment/' + id + '/vote/', 'application.commentVote', data);
     },
-    'commentsMarkPost': function (id, mark) {
+    'commentMarkPost': function (id, mark) {
       var data = { 'mark': mark };
-      return this._makeRequest('POST', 'app', '/comments/' + id + '/mark/', 'application.commentsMark', data);
+      return this._makeRequest('POST', 'app', '/comment/' + id + '/mark/', 'application.commentMark', data);
     },
     'ratingPost': function (data) {
       if (typeof data.object_id != 'undefined' && data.object_id == 'currenturl') {
@@ -362,27 +364,44 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return this._makeRequest('GET', 'app', '/', 'application');
     },
     'documentGet': function (doc) {
-      return this._makeRequest('GET', 'app', '/docs/' + doc + '/', 'applicationDocumentGet');
+      return this._makeRequest('GET', 'app', '/docs/' + doc + '/', 'applicationDocument');
     },
-    'adminCommentsListGet': function (params) {
+    'adminUserAvatarDelete': function (id) {
+      return this._makeRequest('DELETE', 'admin', '/user/' + id + '/avatar/', 'admin.userAvatar');
+    },
+    'adminUserListGet': function (params) {
       if (typeof params != 'undefined') {
         var query = '?' + $.param(params);
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', 'admin', '/comments/' + query, 'admin.commentsListGet');
+      return this._makeRequest('GET', 'admin', '/user/' + query, 'admin.userList');
+    },
+    'adminUserPatch': function (id, data) {
+      return this._makeRequest('PATCH', 'admin', '/user/' + id + '/', 'admin.user', data);
+    },
+    'adminUserGet': function (id) {
+      return this._makeRequest('GET', 'admin', '/user/' + id + '/', 'admin.user');
+    },
+    'adminCommentListGet': function (params) {
+      if (typeof params != 'undefined') {
+        var query = '?' + $.param(params);
+      } else {
+        var query = '';
+      }
+      return this._makeRequest('GET', 'admin', '/comment/' + query, 'admin.commentList');
+    },
+    'adminCommentPatch': function (id, data) {
+      return this._makeRequest('PATCH', 'admin', '/comment/' + id + '/', 'admin.comment', data);
+    },
+    'adminCommentDelete': function (id) {
+      return this._makeRequest('DELETE', 'admin', '/comment/' + id + '/', 'admin.comment');
     },
     'adminDefaultEmailTemplatesGet': function () {
       if (!this.adminDefaultEmailTemplatesGetRunning) {
         this.adminDefaultEmailTemplatesGetRunning = this._makeRequest('GET', 'admin', '/default-email-templates/', 'application.adminDefaultEmailTemplates');
       }
       return this.adminDefaultEmailTemplatesGetRunning;
-    },
-    'adminCommentsPatch': function (id, data) {
-      return this._makeRequest('PATCH', 'admin', '/comments/' + id + '/', 'admin.commentsPatch', data);
-    },
-    'adminCommentsDelete': function (id) {
-      return this._makeRequest('DELETE', 'admin', '/comments/' + id + '/', 'admin.CommentsDelete');
     },
     'adminAccountGet': function () {
       return this._makeRequest('GET', 'admin', '/account/', 'admin.account');

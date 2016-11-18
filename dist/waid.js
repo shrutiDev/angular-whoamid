@@ -341,7 +341,7 @@ angular.module('waid.core.strategy', [
   $rootScope.$on('waid.services.authenticate.ok', function (event, data) {
     var action = waidCore.getLastAction();
     if (action.type == 'comment_post') {
-      waidService.userCommentsPost(action.data).then(function(data){
+      waidService.userCommentPost(action.data).then(function(data){
         $rootScope.$broadcast('waid.core.lastAction.commentPost', data);
       })
     }
@@ -367,6 +367,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       var that = this;
       // Set CSRFToken
       $http.defaults.headers.common['X-CSRFToken'] = $cookies.get('csrftoken');
+
+      $http.defaults.headers.common['Content-Type'] = 'application/json';
       // Set authorization token
       if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
         $http.defaults.headers.common.Authorization = 'Token ' + waidCore.token;
@@ -655,20 +657,20 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'socialProviderListGet': function () {
       return this._makeRequest('GET', 'app', '/social/providers/', 'application.socialProviderList');
     },
-    'userCommentsPatch': function (id, data) {
-      return this._makeRequest('PATCH', 'app', '/user/comments/' + id + '/', 'application.userComments', data);
+    'userCommentPatch': function (id, data) {
+      return this._makeRequest('PATCH', 'app', '/user/comment/' + id + '/', 'application.userComment', data);
     },
-    'userCommentsPost': function (data) {
+    'userCommentPost': function (data) {
       if (typeof data.object_id != 'undefined' && data.object_id == 'currenturl') {
         data.object_id = waidCore.slugify($location.absUrl());
       }
       data.url = $location.absUrl();
-      return this._makeRequest('POST', 'app', '/user/comments/', 'application.userComments', data);
+      return this._makeRequest('POST', 'app', '/user/comment/', 'application.userComment', data);
     },
-    'userCommentsDelete': function (id) {
-      return this._makeRequest('DELETE', 'app', '/user/comments/' + id + '/', 'application.userComments');
+    'userCommentDelete': function (id) {
+      return this._makeRequest('DELETE', 'app', '/user/comment/' + id + '/', 'application.userComment');
     },
-    'userCommentsListGet': function (params) {
+    'userCommentListGet': function (params) {
       if (typeof params != 'undefined') {
         if (typeof params.object_id != 'undefined' && params.object_id == 'currenturl') {
           params.object_id = waidCore.slugify($location.absUrl());
@@ -677,9 +679,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', 'app', '/user/comments/' + query, 'application.userCommentsList');
+      return this._makeRequest('GET', 'app', '/user/comment/' + query, 'application.userCommentList');
     },
-    'commentsListGet': function (params) {
+    'commentListGet': function (params) {
       if (typeof params != 'undefined') {
         if (typeof params.object_id != 'undefined' && params.object_id == 'currenturl') {
           params.object_id = waidCore.slugify($location.absUrl());
@@ -688,15 +690,15 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', 'app', '/comments/' + query, 'application.commentsList');
+      return this._makeRequest('GET', 'app', '/comment/' + query, 'application.commentList');
     },
-    'commentsVotePost': function (id, vote) {
+    'commentVotePost': function (id, vote) {
       var data = { 'vote': vote };
-      return this._makeRequest('POST', 'app', '/comments/' + id + '/vote/', 'application.commentsVote', data);
+      return this._makeRequest('POST', 'app', '/comment/' + id + '/vote/', 'application.commentVote', data);
     },
-    'commentsMarkPost': function (id, mark) {
+    'commentMarkPost': function (id, mark) {
       var data = { 'mark': mark };
-      return this._makeRequest('POST', 'app', '/comments/' + id + '/mark/', 'application.commentsMark', data);
+      return this._makeRequest('POST', 'app', '/comment/' + id + '/mark/', 'application.commentMark', data);
     },
     'ratingPost': function (data) {
       if (typeof data.object_id != 'undefined' && data.object_id == 'currenturl') {
@@ -718,27 +720,44 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return this._makeRequest('GET', 'app', '/', 'application');
     },
     'documentGet': function (doc) {
-      return this._makeRequest('GET', 'app', '/docs/' + doc + '/', 'applicationDocumentGet');
+      return this._makeRequest('GET', 'app', '/docs/' + doc + '/', 'applicationDocument');
     },
-    'adminCommentsListGet': function (params) {
+    'adminUserAvatarDelete': function (id) {
+      return this._makeRequest('DELETE', 'admin', '/user/' + id + '/avatar/', 'admin.userAvatar');
+    },
+    'adminUserListGet': function (params) {
       if (typeof params != 'undefined') {
         var query = '?' + $.param(params);
       } else {
         var query = '';
       }
-      return this._makeRequest('GET', 'admin', '/comments/' + query, 'admin.commentsListGet');
+      return this._makeRequest('GET', 'admin', '/user/' + query, 'admin.userList');
+    },
+    'adminUserPatch': function (id, data) {
+      return this._makeRequest('PATCH', 'admin', '/user/' + id + '/', 'admin.user', data);
+    },
+    'adminUserGet': function (id) {
+      return this._makeRequest('GET', 'admin', '/user/' + id + '/', 'admin.user');
+    },
+    'adminCommentListGet': function (params) {
+      if (typeof params != 'undefined') {
+        var query = '?' + $.param(params);
+      } else {
+        var query = '';
+      }
+      return this._makeRequest('GET', 'admin', '/comment/' + query, 'admin.commentList');
+    },
+    'adminCommentPatch': function (id, data) {
+      return this._makeRequest('PATCH', 'admin', '/comment/' + id + '/', 'admin.comment', data);
+    },
+    'adminCommentDelete': function (id) {
+      return this._makeRequest('DELETE', 'admin', '/comment/' + id + '/', 'admin.comment');
     },
     'adminDefaultEmailTemplatesGet': function () {
       if (!this.adminDefaultEmailTemplatesGetRunning) {
         this.adminDefaultEmailTemplatesGetRunning = this._makeRequest('GET', 'admin', '/default-email-templates/', 'application.adminDefaultEmailTemplates');
       }
       return this.adminDefaultEmailTemplatesGetRunning;
-    },
-    'adminCommentsPatch': function (id, data) {
-      return this._makeRequest('PATCH', 'admin', '/comments/' + id + '/', 'admin.commentsPatch', data);
-    },
-    'adminCommentsDelete': function (id) {
-      return this._makeRequest('DELETE', 'admin', '/comments/' + id + '/', 'admin.CommentsDelete');
     },
     'adminAccountGet': function () {
       return this._makeRequest('GET', 'admin', '/account/', 'admin.account');
@@ -1874,6 +1893,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       var fd = new FormData();
       fd.append('file', files[0]);
       waidService.userAvatarPut(fd).then(function (data) {
+        console.log(data);
+        angular.extend(waidCore.user, data);
         $timeout(function () {
           // Still buggy, save will redirect to overview...
           //$scope.save(true);
@@ -2627,7 +2648,7 @@ angular.module('waid.comments.controllers', [
     if (!$rootScope.waid.user) {
       $rootScope.waid.openLoginAndRegisterHomeModal();
     } else {
-      waidService.commentsVotePost(comment.id, vote).then(function (data) {
+      waidService.commentVotePost(comment.id, vote).then(function (data) {
         comment.vote_up_count = data.vote_up_count;
         comment.vote_down_count = data.vote_down_count;
         comment.vote_count = data.vote_count;
@@ -2635,7 +2656,7 @@ angular.module('waid.comments.controllers', [
     }
   };
   $scope.markComment = function (comment, mark) {
-    waidService.commentsMarkPost(comment.id, mark).then(function (data) {
+    waidService.commentMarkPost(comment.id, mark).then(function (data) {
       comment.marked_as_spam = data.marked_as_spam;
     });
   };
@@ -2647,14 +2668,14 @@ angular.module('waid.comments.controllers', [
   };
   $scope.updateComment = function (comment) {
     var patch_comment = { 'comment': comment.comment_formatted };
-    waidService.userCommentsPatch(comment.id, patch_comment).then(function (data) {
+    waidService.userCommentPatch(comment.id, patch_comment).then(function (data) {
       comment.is_edit = false;
       comment.comment_formatted = data.comment_formatted;
       comment.comment = data.comment;
     });
   };
   $scope.deleteComment = function (comment) {
-    waidService.userCommentsDelete(comment.id).then(function (data) {
+    waidService.userCommentDelete(comment.id).then(function (data) {
       var index = $scope.comments.indexOf(comment);
       $scope.comments.splice(index, 1);
     });
@@ -2677,7 +2698,7 @@ angular.module('waid.comments.controllers', [
       params['offset'] = $scope.offset;
     }
 
-    waidService.commentsListGet(params).then(function (data) {
+    waidService.commentListGet(params).then(function (data) {
       if (data.results.length == 0 || data.results.length < $scope.limit) {
         $scope.showMore = false;
       } else {
@@ -2711,7 +2732,7 @@ angular.module('waid.comments.controllers', [
       $rootScope.waid.openLoginAndRegisterHomeModal();
       $scope.comment.comment = '';
     } else {
-      waidService.userCommentsPost($scope.comment).then(function (data) {
+      waidService.userCommentPost($scope.comment).then(function (data) {
         $scope.comment.comment = '';
         $scope.loadComments();
       });

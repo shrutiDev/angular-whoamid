@@ -93,6 +93,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       var fd = new FormData();
       fd.append('file', files[0]);
       waidService.userAvatarPut(fd).then(function (data) {
+        console.log(data);
+        angular.extend(waidCore.user, data);
         $timeout(function () {
           // Still buggy, save will redirect to overview...
           //$scope.save(true);
