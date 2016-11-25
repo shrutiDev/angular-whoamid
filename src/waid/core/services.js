@@ -69,7 +69,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         }
         // Forbidden, send out event..
         if (status == 403) {
-          $rootScope.$broadcast('waid.services.request.noPermission', data);
+          $rootScope.$broadcast('waid.core.services.noPermission', data);
         }
         if (status == 0) {
           if (data == '') {
@@ -184,6 +184,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         deferred.reject(data);
       });
       return deferred.promise;
+    },
+    'userLinkSocialProfilePost': function (data) {
+      return this._makeRequest('POST', 'app', '/user/link-social-profile/', 'application.userLinkSocialProfile', data);
     },
     'userRegisterPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {

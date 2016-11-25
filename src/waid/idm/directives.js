@@ -13,6 +13,14 @@ angular.module('waid.idm.directives', [
       return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'profile');
     }
   };
+}).directive('waidLinkSocialProfile', function (waidCore) {
+  return {
+    restrict: 'E',
+    controller: 'WAIDIDMLinkSocialProfileCtrl',
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'linkSocialProfile');
+    }
+  };
 }).directive('waidUserProfileNavbar', function (waidCore) {
   return {
     restrict: 'E',

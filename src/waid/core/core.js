@@ -78,12 +78,6 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
   waid.clearLastAction = function (){
     $cookies.remove('waid_last_action', { 'path': '/' });
   };
-  waid.closeAllModals = function () {
-    waid.closeUserProfileModal();
-    waid.closeLoginAndRegisterModal();
-    waid.closeLostLoginModal();
-    waid.closeTermsAndConditionsModal();
-  };
   waid.clearWaidData = function () {
     $rootScope.waid.account = false;
     $rootScope.waid.application = false;

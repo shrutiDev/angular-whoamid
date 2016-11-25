@@ -12,6 +12,7 @@ angular.module('waid.idm', [
       'userProfileStatusButton': '/templates/idm/user-profile-status-button.html',
       'termsAndConditionsModal': '/templates/idm/terms-and-conditions-modal.html',
       'completeProfileModal': '/templates/idm/complete-profile-modal.html',
+      'linkSocialProfileModal': '/templates/idm/link-social-profile-modal.html',
       'lostLoginModal': '/templates/idm/lost-login-modal.html',
       'loginAndRegisterModal': '/templates/idm/login-and-register-modal.html',
       'userProfileModal': '/templates/idm/user-profile-modal.html',
@@ -21,9 +22,14 @@ angular.module('waid.idm', [
       'register': '/templates/idm/register.html',
       'lostLogin': '/templates/idm/lost-login.html',
       'userProfileMenu': '/templates/idm/user-profile-menu.html',
-      'userProfileHome': '/templates/idm/user-profile-home.html'
+      'userProfileHome': '/templates/idm/user-profile-home.html',
+      'linkSocialProfile': '/templates/idm/link-social-profile.html'
     },
     'translations': {
+      'link_social_profile_intro': 'We hebben een bestaande account gevonden waarmee we de nieuwe social login willen koppelen. Ter beveiliging vragen we nogmaals je wachtwoord om deze koppeling af te ronden.',
+      'link_social_profile_modal_title': 'Bestaande account koppelen aan nieuwe social account.',
+      'link_social_profile_modal_close_button': 'Sluiten en niet koppelen',
+      'link_social_profile_link_button': 'Doorgaan en social account koppelen',
       'auth-cancelled': 'Authenticatie is geannuleerd.',
       'auth-failed': 'Authenticatie is gefaald. Ons excuus voor het ongemak.',
       'auth-unknown-error': 'Een onbekende fout heeft zich voortgedaan. Ons excuus voor het ongemak.',

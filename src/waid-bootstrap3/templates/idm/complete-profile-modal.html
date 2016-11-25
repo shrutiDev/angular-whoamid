@@ -1,11 +1,11 @@
 <span class="waid">
 	<div class="modal-header">
-	  <h3 class="modal-title">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_title') }}</h3>
+	  <h3 class="modal-title">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_title') }}<i class="glyphicon glyphicon-remove pull-right" ng-click="waid.doNotCompleteProfile()"></i></h3>
 	</div>
 	<div class="modal-body">
 	  <waid-register modus="complete"></waid-register>
 	</div>
 	<div class="modal-footer">
-	  <button class="btn btn-warning" type="button" ng-click="waid.logout()">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_close_button') }}</button>
+	  <button class="btn btn-warning" type="button" ng-click="waid.doNotCompleteProfile()">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_close_button') }}</button>
 	</div>
 </span>

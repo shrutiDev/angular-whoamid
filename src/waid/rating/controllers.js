@@ -40,7 +40,7 @@ angular.module('waid.rating.controllers', [
     };
     if (!$rootScope.waid.user) {
       waidCore.setLastAction('rating_post', data);
-      $rootScope.waid.openLoginAndRegisterHomeModal();
+      waidCore.openLoginAndRegisterHome();
     } else {
       waidService.ratingPost(data).then(function (data) {
         $scope.rating = data;

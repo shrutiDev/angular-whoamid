@@ -93,11 +93,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       var fd = new FormData();
       fd.append('file', files[0]);
       waidService.userAvatarPut(fd).then(function (data) {
-        console.log(data);
         angular.extend(waidCore.user, data);
         $timeout(function () {
-          // Still buggy, save will redirect to overview...
-          //$scope.save(true);
           $scope.isUploading = false;
         }, 1000);
       });
@@ -627,7 +624,19 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
-}).controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService, waidCore) {
+}).controller('WAIDIDMLinkSocialProfileCtrl', function ($scope, $location, $window, waidService) {
+  $scope.model = {'password':''}
+  $scope.errors = [];
+  $scope.linkSocialProfile = function(){
+    $scope.errors = [];
+    waidService.userLinkSocialProfilePost($scope.model).then(function(data){
+      $scope.errors = [];
+    }, function(data){
+      $scope.errors = data;
+    })
+  }
+})
+.controller('WAIDIDMLoginCtrl', function ($scope, $location, waidService, waidCore) {
   $scope.waid = waidCore;
   $scope.model = {
     'username': '',

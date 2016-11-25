@@ -13,26 +13,32 @@ angular.module('waid.core.app.strategy', [
   var lostLoginModalInstance = null;
   var loginAndRegisterHomeModalInstance = null;
   var userProfileHomeModalInstance = null;
+  var linkSocialProfileModalInstance = null;
   var loginCount = 0;
-  waidCore.slugify = function (slug) {
-    return Slug.slugify($location.absUrl());
-  };
-  waidCore.checkIfModalIsOpen = function (modal) {
-    if (modal == 'completeProfile' && completeProfileModalInstance) {
-      return true;
+
+
+
+  var openLinkSocialProfileModal = function() {
+    if (!linkSocialProfileModalInstance) {
+      linkSocialProfileModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waidCore.config.getTemplateUrl('idm', 'linkSocialProfileModal'),
+        controller: 'WAIDIDMLinkSocialProfileCtrl',
+        size: 'lg',
+        backdrop: 'static'
+      });
     }
-    return false;
-  };
-  waidCore.closeAllModals = function () {
-    this.closeEmoticonsModal();
-    this.closeTermsAndConditionsModal();
-    this.closeCompleteProfileModal();
-    this.closeLostLoginModal();
-    this.closeLoginAndRegisterModal();
-    this.closeUserProfileModal();
+  }
+
+  var closeLinkSocialProfileModal = function (comment) {
+    if (linkSocialProfileModalInstance) {
+      linkSocialProfileModalInstance.dismiss('close');
+      linkSocialProfileModalInstance = null
+      $rootScope.$broadcast('waid.bootstrap3.strategy.closeLinkSocialProfileModal');
+    }
   };
 
-  waidCore.openEmoticonsModal = function (targetId, comment) {
+  var openEmoticonsModal = function (targetId, comment) {
     var input = document.getElementById(targetId);
     emoticonsModalInstance = $uibModal.open({
       animation: true,
@@ -51,18 +57,19 @@ angular.module('waid.core.app.strategy', [
     });
     return emoticonsModalInstance.result;
   };
-  waidCore.closeEmoticonsModal = function (comment) {
+  var closeEmoticonsModal = function (comment) {
     if (emoticonsModalInstance) {
       if (typeof comment != 'undefined') {
         emoticonsModalInstance.close(comment);
       } else {
         emoticonsModalInstance.dismiss('close');
       }
+      emoticonsModalInstance = null;
       $rootScope.$broadcast('waid.bootstrap3.strategy.closeEmoticonsModal');
     }
   };
 
-  waidCore.openTermsAndConditionsModal = function (template) {
+  var openTermsAndConditionsModal = function (template) {
     termsAndConditionsModalInstance = $uibModal.open({
       animation: true,
       controller: 'WAIDIDMTermsAndConditionsCtrl',
@@ -71,28 +78,32 @@ angular.module('waid.core.app.strategy', [
       backdrop: 'static'
     });
   };
-  waidCore.closeTermsAndConditionsModal = function () {
+  var closeTermsAndConditionsModal = function () {
     if (termsAndConditionsModalInstance) {
       termsAndConditionsModalInstance.dismiss('close');
+      termsAndConditionsModalInstance = null;
       $rootScope.$broadcast('waid.bootstrap3.strategy.closeTermsAndConditionsModal');
     }
   };
-  waidCore.openCompleteProfileModal = function () {
-    completeProfileModalInstance = $uibModal.open({
-      animation: true,
-      templateUrl: waidCore.config.getTemplateUrl('idm', 'completeProfileModal'),
-      controller: 'WAIDIDMCompleteProfileCtrl',
-      size: 'lg',
-      backdrop: 'static'
-    });
+  var openCompleteProfileModal = function () {
+    if (!completeProfileModalInstance) {
+      completeProfileModalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: waidCore.config.getTemplateUrl('idm', 'completeProfileModal'),
+        controller: 'WAIDIDMCompleteProfileCtrl',
+        size: 'lg',
+        backdrop: 'static'
+      });
+    }
   };
-  waidCore.closeCompleteProfileModal = function () {
+  var closeCompleteProfileModal = function () {
     if (completeProfileModalInstance) {
       completeProfileModalInstance.dismiss('close');
+      completeProfileModalInstance = null;
       $rootScope.$broadcast('waid.bootstrap3.strategy.closeCompleteProfileModal');
     }
   };
-  waidCore.openLostLoginModal = function () {
+  var openLostLoginModal = function () {
     lostLoginModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('idm', 'lostLoginModal'),
@@ -100,13 +111,14 @@ angular.module('waid.core.app.strategy', [
       backdrop: 'static'
     });
   };
-  waidCore.closeLostLoginModal = function () {
+  var closeLostLoginModal = function () {
     if (lostLoginModalInstance) {
       lostLoginModalInstance.dismiss('close');
+      lostLoginModalInstance = null;
       $rootScope.$broadcast('waid.bootstrap3.strategy.closeLostLoginModal');
     }
   };
-  waidCore.openLoginAndRegisterHomeModal = function () {
+  var openLoginAndRegisterHomeModal = function () {
     loginAndRegisterHomeModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('idm', 'loginAndRegisterModal'),
@@ -114,13 +126,14 @@ angular.module('waid.core.app.strategy', [
       backdrop: 'static'
     });
   };
-  waidCore.closeLoginAndRegisterModal = function () {
+  var closeLoginAndRegisterModal = function () {
     if (loginAndRegisterHomeModalInstance) {
       loginAndRegisterHomeModalInstance.dismiss('close');
+      loginAndRegisterHomeModalInstance = null
       $rootScope.$broadcast('waid.bootstrap3.strategy.closeLoginAndRegisterModal');
     }
   };
-  waidCore.openUserProfileHomeModal = function (fieldSet) {
+  var openUserProfileHomeModal = function (fieldSet) {
     userProfileHomeModalInstance = $uibModal.open({
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('idm', 'userProfileModal'),
@@ -136,43 +149,54 @@ angular.module('waid.core.app.strategy', [
       }
     });
   };
-  waidCore.closeUserProfileModal = function () {
+  var closeUserProfileModal = function () {
     if (userProfileHomeModalInstance) {
       userProfileHomeModalInstance.dismiss('close');
+      userProfileHomeModalInstance = null;
       $rootScope.$broadcast('waid.bootstrap3.strategy.closeUserProfileModal');
     }
   };
 
-  // New functions
-  waidCore.openEmoticons = function(targetId, comment) {
-    waidCore.openEmoticonsModal(targetId, comment);
-  };
-  waidCore.openTermsAndConditions = function() {
-    waidCore.openTermsAndConditionsModal();
-  };
-  waidCore.openCompleteProfile = function() {
-    waidCore.openCompleteProfileModal();
-  };
-  waidCore.openLostLogin = function() {
-    waidCore.openLostLoginModal();
-  };
-  waidCore.openLoginAndRegisterHome = function() {
-    waidCore.openLoginAndRegisterHomeModal();
-  };
-  waidCore.openLoginAndRegisterHome = function() {
-    waidCore.openLoginAndRegisterHomeModal();
-  };
-  waidCore.openUserProfileHome = function(fieldSet) {
-    waidCore.openUserProfileHomeModal(fieldSet);
+
+  var closeAllModals = function () {
+    closeEmoticonsModal();
+    closeTermsAndConditionsModal();
+    closeCompleteProfileModal();
+    closeLostLoginModal();
+    closeLoginAndRegisterModal();
+    closeUserProfileModal();
+    closeLinkSocialProfileModal();
   };
 
-  $rootScope.$on('waid.services.request.noPermission', function (event, data) {
-    if (waidService.token && waidCore.checkIfModalIsOpen('completeProfile') == false) {
-      waidService.userCompleteProfileGet().then(function (data) {
-        waidCore.loginCheck(data);
-      });
-    }
+  $rootScope.$on('waid.idm.strategy.openEmoticons', function (event, data) {
+    openEmoticonsModal(data['targetId'], data['comment']);
   });
+
+  $rootScope.$on('waid.core.strategy.openTermsAndConditions', function (event) {
+    openTermsAndConditionsModal();
+  });
+
+  $rootScope.$on('waid.idm.strategy.openCompleteProfile', function (event) {
+    openCompleteProfileModal();
+  });
+
+  $rootScope.$on('waid.idm.strategy.openLostLogin', function (event) {
+    openLostLoginModal();
+  });
+
+  $rootScope.$on('waid.idm.strategy.openLoginAndRegisterHome', function (event) {
+    openLoginAndRegisterHomeModal();
+  });
+
+  $rootScope.$on('waid.idm.strategy.openUserProfileHome', function (event, data) {
+    openUserProfileHomeModal(data['fieldSet']);
+  });
+
+  $rootScope.$on('waid.idm.strategy.openLinkSocialProfile', function (event) {
+    openLinkSocialProfileModal();
+  });
+
+
   $rootScope.$on('waid.services.application.userCompleteProfile.post.ok', function (event, data) {
     // Reload profile info
     if (data.profile_status.indexOf('profile_ok') !== -1) {
@@ -181,28 +205,32 @@ angular.module('waid.core.app.strategy', [
         waidService.authenticate();
       }, 1000);
     }
-    waidCore.closeCompleteProfileModal();
+    closeCompleteProfileModal();
     if (data.profile_status.indexOf('email_is_not_verified') !== -1) {
       growl.addErrorMessage('Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.', { ttl: -1 });
     }
   });
-  $rootScope.$on('waid.core.strategy.loginCheck.completeProfile', function (event, data) {
-    waidCore.closeAllModals();
-    waidCore.openCompleteProfileModal();
+
+  $rootScope.$on('waid.core.strategy.profileCheck.completeProfile', function (event, data) {
+    //console.log('waid.core.strategy.profileCheck.completeProfile');
+    waidCore.openCompleteProfile();
   });
-  $rootScope.$on('waid.core.strategy.loginCheck.success', function (event, data) {
+
+  $rootScope.$on('waid.core.strategy.profileCheck.linkProfile', function(event, data){
+    //console.log('waid.core.strategy.profileCheck.linkProfile');
+    waidCore.openLinkSocialProfile();
+  });
+  $rootScope.$on('waid.core.strategy.profileCheck.success', function (event, data) {
+    //console.log('waid.core.strategy.profileCheck.success');
     growl.addSuccessMessage(waidCore.config.getConfig('idm.translations.loggedin_success'));
-    waidCore.closeAllModals();
+    closeAllModals();
   });
   $rootScope.$on('waid.services.application.userEmail.post.ok', function (event, data) {
+    //console.log('waid.services.application.userEmail.post.ok');
     growl.addSuccessMessage('Nieuw e-mail adres toegevoegd, controleer je mail om deze te verifieren.', { ttl: -1 });
   });
   $rootScope.$on('waid.services.application.userProfile.patch.ok', function (event, data) {
-    waidCore.user = data;
     growl.addSuccessMessage('Profiel informatie opgeslagen');
-  });
-  $rootScope.$on('waid.services.application.userProfile.get.ok', function (event, data) {
-    waidCore.user = data;
   });
   $rootScope.$on('waid.services.application.userPassword.put.ok', function (event, data) {
     growl.addSuccessMessage('Wachtwoord is gewijzigd.');
@@ -212,25 +240,35 @@ angular.module('waid.core.app.strategy', [
   });
   $rootScope.$on('waid.services.application.userLostLogin.post.ok', function (event, data) {
     growl.addSuccessMessage('Instructies om in te loggen zijn naar jouw e-mail gestuurd.');
-    waidCore.closeAllModals();
+    //console.log('waid.services.application.userLostLogin.post.ok');
+    closeAllModals();
   });
   $rootScope.$on('waid.services.application.userRegister.post.ok', function (event, data) {
     growl.addSuccessMessage('Je account is aangemaakt. Ga naar je mailbox om je account te verifiëren.', { ttl: -1 });
   });
   $rootScope.$on('waid.services.application.userRegister.post.ok', function (event, data) {
-    waidCore.closeAllModals();
+    //console.log('waid.services.application.userRegister.post.ok');
+    closeAllModals();
   });
   $rootScope.$on('waid.services.application.userLogout.post.ok', function (event, data) {
-    waidCore.closeAllModals();
+    //console.log('waid.services.application.userLogout.post.ok');
+    closeAllModals();
   });
   $rootScope.$on('waid.services.application.userLogoutAll.post.ok', function (event, data) {
-    waidCore.closeAllModals();
+    //console.log('waid.services.application.userLogoutAll.post.ok');
+    closeAllModals();
   });
-  $rootScope.$on('waid.services.application.userAutoLogin.get.ok', function (event, data) {
-    waidCore.loginCheck(data);
+  $rootScope.$on('waid.idm.strategy.action.doNotLinkSocialProfile', function (event) {
+    //console.log('waid.idm.strategy.action.doNotLinkSocialProfile');
+    closeAllModals();
   });
+  $rootScope.$on('waid.services.application.userLinkSocialProfile.post.ok', function (event, data) {
+    closeAllModals();
+  });
+
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {
-    waidCore.loginCheck(data);
+    closeAllModals();
+    //console.log('waid.services.application.userLogin.post.ok');
   });
   $rootScope.$on('waid.core.strategy.errorCode', function(event, data){
     growl.addErrorMessage(waidCore.config.getTranslation('idm', data.errorCode));

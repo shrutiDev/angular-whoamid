@@ -19,7 +19,7 @@ angular.module('waid.comments.controllers', [
   };
   $scope.voteComment = function (comment, vote) {
     if (!$rootScope.waid.user) {
-      $rootScope.waid.openLoginAndRegisterHomeModal();
+      waidCore.openLoginAndRegisterHome();
     } else {
       waidService.commentVotePost(comment.id, vote).then(function (data) {
         comment.vote_up_count = data.vote_up_count;
@@ -102,7 +102,7 @@ angular.module('waid.comments.controllers', [
     $scope.comment.object_id = $scope.objectId;
     if (!$rootScope.waid.user) {
       waidCore.setLastAction('comment_post', $scope.comment);
-      $rootScope.waid.openLoginAndRegisterHomeModal();
+      waidCore.openLoginAndRegisterHome();
       $scope.comment.comment = '';
     } else {
       waidService.userCommentPost($scope.comment).then(function (data) {

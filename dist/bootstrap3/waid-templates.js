@@ -275,13 +275,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   $templateCache.put('/templates/idm/complete-profile-modal.html?v=0.0.30',
     "<span class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
-    "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_title') }}</h3>\n" +
+    "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_title') }}<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.doNotCompleteProfile()\"></i></h3>\n" +
     "	</div>\n" +
     "	<div class=\"modal-body\">\n" +
     "	  <waid-register modus=\"complete\"></waid-register>\n" +
     "	</div>\n" +
     "	<div class=\"modal-footer\">\n" +
-    "	  <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.logout()\">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_close_button') }}</button>\n" +
+    "	  <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.doNotCompleteProfile()\">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_close_button') }}</button>\n" +
     "	</div>\n" +
     "</span>"
   );
@@ -289,6 +289,40 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
   $templateCache.put('/templates/idm/home.html?v=0.0.30',
     ""
+  );
+
+
+  $templateCache.put('/templates/idm/link-social-profile-modal.html?v=0.0.30',
+    "<span class=\"waid\">\n" +
+    "	<div class=\"modal-header\">\n" +
+    "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'link_social_profile_modal_title') }}<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.doNotLinkSocialProfile()\"></i></h3>\n" +
+    "	</div>\n" +
+    "	<div class=\"modal-body\">\n" +
+    "	  <waid-link-social-profile></waid-link-social-profile>\n" +
+    "	</div>\n" +
+    "	<div class=\"modal-footer\">\n" +
+    "	  <button class=\"btn btn-warning\" type=\"button\" ng-click=\"waid.doNotLinkSocialProfile()\">{{ ::waid.config.getTranslation('idm', 'link_social_profile_modal_close_button') }}</button>\n" +
+    "	</div>\n" +
+    "</span>"
+  );
+
+
+  $templateCache.put('/templates/idm/link-social-profile.html?v=0.0.30',
+    "<div class=\"waid\">\n" +
+    " <div>\n" +
+    "      <div class=\"alert alert-warning\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'link_social_profile_intro') }}</div>\n" +
+    "      \n" +
+    "    <form role=\"form\" name=\"linkSocialProfileForm\" novalidate>\n" +
+    "      <div class=\"form-group has-feedback\" ng-class=\"errors.password ? 'has-error' : ''\">\n" +
+    "          <label for=\"id_password\">{{ ::waid.config.getTranslation('idm', 'password') }}</label>\n" +
+    "          <input name=\"password\" id=\"id_password\" class=\"form-control\" type=\"password\" ng-model=\"model.password\" placeholder=\"{{ ::waid.config.getTranslation('idm', 'password') }}\" required />\n" +
+    "          <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"errors.password\"></span>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.password\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "      </div>\n" +
+    "      <button class=\"btn btn-primary\" ng-click=\"linkSocialProfile()\" ng-disabled=\"waid.isLoading\">{{ ::waid.config.getTranslation('idm', 'link_social_profile_link_button') }}</span></button>\n" +
+    "    </form>\n" +
+    "  </div>\n" +
+    "</div>"
   );
 
 
@@ -762,13 +796,13 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    <li class=\"dropdown\" ng-show=\"waid.user\">\n" +
     "      <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"true\" ng-cloak><span class=\"glyphicon glyphicon-user\"></span> Ingelogd als {{ waid.user.default_name }} <span class=\"caret\"></span></a>\n" +
     "      <ul class=\"dropdown-menu\">\n" +
-    "        <li><a ng-click=\"waid.openUserProfileHomeModal()\"><span class=\"glyphicon glyphicon-cog\"></span> Mijn Profiel</a></li>\n" +
+    "        <li><a ng-click=\"waid.openUserProfileHome\"><span class=\"glyphicon glyphicon-cog\"></span> Mijn Profiel</a></li>\n" +
     "        <li role=\"separator\" class=\"divider\"></li>\n" +
     "        <li><a href=\"#\" ng-click=\"waid.logout()\"><span class=\"glyphicon glyphicon-log-out\"></span> Uitloggen</a></li>\n" +
     "        <li><a href=\"#\" ng-click=\"waid.logoutAll()\"><span class=\"glyphicon glyphicon-new-window\"></span> Op alle systemen uitloggen</a></li>\n" +
     "      </ul>\n" +
     "    </li>\n" +
-    "    <li ng-hide=\"waid.user\"><a ng-click=\"waid.openLoginAndRegisterHomeModal()\"><span class=\"glyphicon glyphicon-log-in\"></span> Login of Registreer</a></li>\n" +
+    "    <li ng-hide=\"waid.user\"><a ng-click=\"waid.openLoginAndRegisterHome()\"><span class=\"glyphicon glyphicon-log-in\"></span> Login of Registreer</a></li>\n" +
     "  </ul>\n" +
     "</div>"
   );

@@ -1,0 +1,15 @@
+<div class="waid">
+ <div>
+      <div class="alert alert-warning"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'link_social_profile_intro') }}</div>
+      
+    <form role="form" name="linkSocialProfileForm" novalidate>
+      <div class="form-group has-feedback" ng-class="errors.password ? 'has-error' : ''">
+          <label for="id_password">{{ ::waid.config.getTranslation('idm', 'password') }}</label>
+          <input name="password" id="id_password" class="form-control" type="password" ng-model="model.password" placeholder="{{ ::waid.config.getTranslation('idm', 'password') }}" required />
+          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="errors.password"></span>
+          <div class="alert alert-danger" ng-repeat="error in errors.password"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+      </div>
+      <button class="btn btn-primary" ng-click="linkSocialProfile()" ng-disabled="waid.isLoading">{{ ::waid.config.getTranslation('idm', 'link_social_profile_link_button') }}</span></button>
+    </form>
+  </div>
+</div>

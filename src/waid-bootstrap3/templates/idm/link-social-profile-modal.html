@@ -1,0 +1,11 @@
+<span class="waid">
+	<div class="modal-header">
+	  <h3 class="modal-title">{{ ::waid.config.getTranslation('idm', 'link_social_profile_modal_title') }}<i class="glyphicon glyphicon-remove pull-right" ng-click="waid.doNotLinkSocialProfile()"></i></h3>
+	</div>
+	<div class="modal-body">
+	  <waid-link-social-profile></waid-link-social-profile>
+	</div>
+	<div class="modal-footer">
+	  <button class="btn btn-warning" type="button" ng-click="waid.doNotLinkSocialProfile()">{{ ::waid.config.getTranslation('idm', 'link_social_profile_modal_close_button') }}</button>
+	</div>
+</span>
