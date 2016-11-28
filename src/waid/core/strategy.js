@@ -98,6 +98,10 @@ angular.module('waid.core.strategy', [
       }
     }
   }
+
+  waidCore.preInitialize = function() {
+    // can overwrite in application
+  };
   waidCore.initFP = function () {
     var deferred = $q.defer();
     new Fingerprint2().get(function (result, components) {
@@ -110,7 +114,7 @@ angular.module('waid.core.strategy', [
   waidCore.applicationInit = function() {
     var deferred = $q.defer();
     // Minimum required
-    if (waidCore.account.id && waidCore.application.id) {
+    if (typeof waidCore.account != 'undefined' && typeof waidCore.application != 'undefined' && waidCore.account.id && waidCore.application.id) {
       waidService.applicationInitGet(waidCore.account.id , waidCore.application.id).then(function(data){
         waidCore.account = data.account;
         waidCore.application = data.application;
@@ -148,6 +152,7 @@ angular.module('waid.core.strategy', [
   // Main initializer for waid
   waidCore.initialize = function () {
     waidCore.initFP().then(function(){
+      waidCore.preInitialize();
       var promises = [];
       promises.push(waidCore.applicationInit());
       promises.push(waidCore.initAlCode());
