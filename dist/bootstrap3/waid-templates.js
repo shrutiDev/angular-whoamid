@@ -272,6 +272,15 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
+  $templateCache.put('/templates/idm/associated-social-accounts.html?v=0.0.30',
+    "<div class=\"waid\">\n" +
+    "  <div class=\"list-group\">\n" +
+    "	  <a href=\"\" class=\"list-group-item\" ng-repeat=\"provider in providers\" ng-click=\"associateSocialAction(provider)\"><i class=\"fa fa-{{ provider.backend }}-square\" aria-hidden=\"true\"></i> {{ provider.name }} <span class=\"label label-success pull-right\" ng-show=\"provider.linked\">Gekoppeld</span> <span class=\"label label-warning pull-right\" ng-hide=\"provider.linked\">Nog niet gekoppeld</span></a>\n" +
+    "  </div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('/templates/idm/complete-profile-modal.html?v=0.0.30',
     "<span class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
@@ -512,6 +521,8 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "      <div ng-repeat=\"fieldSet in profileDefinition.fieldSet\" ng-show=\"showFieldSet(fieldSet.key)\" ng-cloak>\n" +
     "        <h4>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h4>\n" +
     "        <div ng-if=\"fieldSet.templateKey\"><ng-include src=\"waid.config.getTemplateUrl('idm', fieldSet.templateKey)\"></ng-include></div>\n" +
+    "\n" +
+    "        <p ng-if=\"fieldSet.introKey\">{{ ::waid.config.getTranslation('idm',   fieldSet.introKey) }}</p>\n" +
     "        <form ng-if=\"fieldSet.fieldDefinitions\">\n" +
     "          <div class=\"form-group\" ng-repeat=\"fieldDefinition in fieldSet.fieldDefinitions\">\n" +
     "          	<label for=\"{{ fieldDefinition.name }}\" ng-hide=\"fieldDefinition.noLabel\">{{ ::waid.config.getTranslation('idm', 	fieldDefinition.labelKey ) }}</label>\n" +
@@ -668,6 +679,11 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "                  <div class=\"alert alert-danger\" ng-if=\"errors.detail\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{errors.detail}}\n" +
     "                </div>\n" +
     "              </ANY>\n" +
+    "\n" +
+    "              <ANY ng-switch-when=\"associatedSocialAccounts\">\n" +
+    "                <waid-associated-social-accounts></waid-associated-social-accounts>\n" +
+    "              </ANY>\n" +
+    "\n" +
     "\n" +
     "              <p class=\"help-block\" ng-if=\"fieldDefinition.helpKey\">{{ ::waid.config.getTranslation('idm', fieldDefinition.helpKey) }}</p>\n" +
     "              \n" +

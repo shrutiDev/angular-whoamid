@@ -91,11 +91,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       return deferred.promise;
     },
     '_login': function (token) {
-      waidCore.token = token;
-      waidCore.isLoggedIn = true;
-      waidCore.authenticateCheck = false;
-      waidCore.saveWaidData();
-      this.authenticate();
+      // waidCore.token = token;
+      // waidCore.isLoggedIn = true;
+      // waidCore.authenticateCheck = false;
+      // waidCore.saveWaidData();
+      // this.authenticate();
     },
     '_clearAuthorizationData': function () {
       this.authenticated = false;
@@ -150,8 +150,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         // If dependent on initialisation, return promise of isInit
         var deferred = $q.defer();
-        var unregister = $rootScope.$watch('waid.isInit', function (isInit) {
-          if (isInit) {
+        var unregister = $rootScope.$on('waid.core.strategy.isInit', function (event) {
             that.request({
               'method': method,
               'url': that._buildUrl(type, path),
@@ -165,7 +164,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
               deferred.reject(data);
               unregister();
             });
-          }
         });
         return deferred.promise;
       }
@@ -187,6 +185,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'userLinkSocialProfilePost': function (data) {
       return this._makeRequest('POST', 'app', '/user/link-social-profile/', 'application.userLinkSocialProfile', data);
+    },
+    'userAssociateSocialDelete': function (provider) {
+      return this._makeRequest('DELETE', 'app', '/user/associate-social/' + provider + '/', 'application.userAssociateSocial');
     },
     'userRegisterPost': function (data) {
       if (typeof data.return_url == 'undefined' || data.return_url == '') {
@@ -363,8 +364,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'articlesGet': function (id) {
       return this._makeRequest('GET', 'app', '/articles/' + id + '/', 'application.articles');
     },
-    'applicationGet': function (id) {
-      return this._makeRequest('GET', 'app', '/', 'application');
+    'applicationInitGet': function () {
+      return this._makeRequest('GET', 'app', '/application/init/', 'application.init',  {}, true);
     },
     'documentGet': function (doc) {
       return this._makeRequest('GET', 'app', '/docs/' + doc + '/', 'applicationDocument');
@@ -433,11 +434,13 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       var deferred = $q.defer();
       if (waidCore.token != null && waidCore.token != '' && waidCore.token != 'null') {
         this._makeRequest('GET', 'app', '/user/profile/', 'application.userProfile', null, true).then(function (data) {
+          // Still needed?
           that.authenticated = true;
           waidCore.user = data;
           $rootScope.$broadcast('waid.services.authenticate.ok', that);
           deferred.resolve(data);
         }, function (data) {
+          // Still needed?
           that.authenticated = false;
           $rootScope.$broadcast('waid.services.authenticate.error', that);
           deferred.reject(data);

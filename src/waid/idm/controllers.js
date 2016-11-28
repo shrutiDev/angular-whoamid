@@ -618,9 +618,6 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   }
 
   $scope.init();
-  $rootScope.$on('waid.core.isInit', function (user) {
-    $scope.init();
-  });
   
 }).controller('WAIDIDMCompleteProfileCtrl', function ($scope, $location, $window, waidService) {
   $scope.mode = 'complete';
@@ -673,6 +670,28 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
   $scope.goToSocialLogin = function (provider) {
     $window.location.assign(provider.url);
+  };
+  $scope.getProviders();
+}).controller('WAIDIDMAssociatedSocialAccountsCtrl', function ($scope, $location, waidService, $window, waidCore) {
+  $scope.waid = waidCore;
+  $scope.providers = [];
+  $scope.getProviders = function () {
+    waidService.socialProviderListGet().then(function (data) {
+      for (var i = 0; i < data.length; i++) {
+        data[i].url = data[i].url + '?waid=' + encodeURIComponent(data[i].waid_data) + '&return_url=' + encodeURIComponent(waidCore.getAlCodeUrl());
+      }
+      $scope.providers = data;
+    });
+  };
+  $scope.associateSocialAction = function (provider) {
+    // Toggle between linking and unlinking
+    if (provider.linked) {
+      waidService.userAssociateSocialDelete(provider.backend).then(function(){
+        $scope.getProviders();
+      })
+    } else {
+      $window.location.assign(provider.url);
+    }
   };
   $scope.getProviders();
 }).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal, waidCore) {

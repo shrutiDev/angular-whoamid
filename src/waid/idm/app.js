@@ -23,7 +23,8 @@ angular.module('waid.idm', [
       'lostLogin': '/templates/idm/lost-login.html',
       'userProfileMenu': '/templates/idm/user-profile-menu.html',
       'userProfileHome': '/templates/idm/user-profile-home.html',
-      'linkSocialProfile': '/templates/idm/link-social-profile.html'
+      'linkSocialProfile': '/templates/idm/link-social-profile.html',
+      'associatedSocialAccounts': '/templates/idm/associated-social-accounts.html'
     },
     'translations': {
       'link_social_profile_intro': 'We hebben een bestaande account gevonden waarmee we de nieuwe social login willen koppelen. Ter beveiliging vragen we nogmaals je wachtwoord om deze koppeling af te ronden.',
@@ -74,6 +75,7 @@ angular.module('waid.idm', [
       'login_and_register_home_social_login_intro': '<p>Maak gebruik van jouw social media account bij Facebook, Twitter of LinkedIn om snel en gemakkelijk in te loggen.</p>',
       'login_and_register_modal_close_button': 'Sluiten',
       'login_and_register_modal_title': 'Inloggen of registreren',
+      'profile_associated_social_accounts_title': 'Social koppelingen',
       'profile_overview_title': 'Overzicht',
       'profile_main_title': 'Algemeen',
       'profile_interests_title': 'Interesses',
@@ -110,7 +112,9 @@ angular.module('waid.idm', [
       'about_public_help' : 'Publiekelijke informatie',
       'first_name':'Voornaam',
       'surname_prefix':'Tussenvoegsel',
-      'surname':'Achternaam'
+      'surname':'Achternaam',
+      'associated_social_accounts': 'Social koppelingen',
+      'associated_social_accounts_intro': 'Met deze social koppelingen kan je snel inloggen op onze site. Klik op een van de social sites om te koppelen of te ontkoppelen.'
     },
     'profileDefinition': {
       'fieldSet': [
@@ -238,6 +242,22 @@ angular.module('waid.idm', [
               'labelKey': 'addresses',
               'type': 'multipleAddresses',
               'hideFromOverview':true,
+              'storageType':'none'
+            }
+          ]
+        },
+        {
+          'key': 'associated_social_accounts',
+          'introKey':'associated_social_accounts_intro',
+          'order': 70,
+          'noSaveButton': true,
+          'fieldDefinitions': [
+            {
+              'order': 10,
+              'noLabel': true,
+              'name': 'associated_social_accounts',
+              'labelKey': 'associated_social_accounts',
+              'type': 'associatedSocialAccounts',
               'storageType':'none'
             }
           ]

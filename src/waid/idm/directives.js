@@ -80,6 +80,15 @@ angular.module('waid.idm.directives', [
       return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'lostLogin');
     }
   };
+}).directive('waidAssociatedSocialAccounts', function (waidCore) {
+  return {
+    restrict: 'E',
+    controller: 'WAIDIDMAssociatedSocialAccountsCtrl',
+    scope:{},
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('idm', 'associatedSocialAccounts');
+    }
+  };
 });
 
 

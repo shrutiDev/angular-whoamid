@@ -1,0 +1,5 @@
+<div class="waid">
+  <div class="list-group">
+	  <a href="" class="list-group-item" ng-repeat="provider in providers" ng-click="associateSocialAction(provider)"><i class="fa fa-{{ provider.backend }}-square" aria-hidden="true"></i> {{ provider.name }} <span class="label label-success pull-right" ng-show="provider.linked">Gekoppeld</span> <span class="label label-warning pull-right" ng-hide="provider.linked">Nog niet gekoppeld</span></a>
+  </div>
+</div>

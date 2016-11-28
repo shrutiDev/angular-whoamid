@@ -86,12 +86,7 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     $rootScope.waid.token = false;
     $cookies.remove('waid', { 'path': '/' });
   };
-  waid.saveWaidData = function () {
-    var waid = {
-      'account': $rootScope.waid.account,
-      'application': $rootScope.waid.application,
-      'token': $rootScope.waid.token
-    };
+  waid.saveWaidData = function (waid) {
     $cookies.putObject('waid', waid, { 'path': '/' });
   };
   waid.getWaidData = function () {
