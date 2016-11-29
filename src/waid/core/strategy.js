@@ -164,7 +164,7 @@ angular.module('waid.core.strategy', [
         waidCore.isInit = true;
         $rootScope.$broadcast('waid.core.strategy.isInit');
       }, function(){
-        console.log('Fatal error');
+        // console.log('Fatal error');
       });
 
       // Handle error code
