@@ -7,7 +7,8 @@ angular.module('waid.comments', [
   waidCore.config.setConfig('comments', {
     'templates': {
       'commentsHome': '/templates/comments/comments-home.html',
-      'commentsOrderButton': '/templates/comments/comments-order-button.html'
+      'commentsOrderButton': '/templates/comments/comments-order-button.html',
+      'commentsItem':'/templates/comments/comment-item.html'
     },
     'translations': {
       'postCommentButton': 'Plaats comment',

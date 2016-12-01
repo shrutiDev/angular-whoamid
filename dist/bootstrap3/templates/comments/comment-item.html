@@ -1,0 +1,55 @@
+
+<div class="media-left">
+  <img class="media-object" ng-src="{{ comment.user.avatar_thumb_50_50 }}" alt="{{ comment.user.default_name }}">
+</div>
+<div class="media-body" style="overflow: visible;">
+  <h4 class="media-heading">{{ comment.user.default_name }}<br />
+    <small>{{ comment.created | date:'medium' }}</small>
+    <div class="btn-group pull-right" ng-show="waid.user" ng-hide="comment.is_locked">
+      <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{ ::waid.config.getConfig('comments.translations.actionDropdownTitle') }} <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a ng-click="editComment(comment)" ng-show="comment.is_owner">
+          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> {{ ::waid.config.getConfig('comments.translations.editCommentTitle') }}</a>
+        </li>
+        <li ng-show="!comment.marked_as_spam"><a ng-click="markComment(comment, 'SPAM')">
+          <span class="glyphicon glyphicon-exclamation-sign aria-hidden="true"></span> {{ ::waid.config.getConfig('comments.translations.markCommentSpamTitle') }}</a>
+        </li>
+        <li role="separator" class="divider" ng-show="comment.is_owner"></li>
+        <li><a ng-click="deleteComment(comment)" ng-show="comment.is_owner" confirm="{{ waid.config.getConfig('comments.translations.confirmDeleteContentBody') }}" confirm-title="{{ waid.config.getConfig('comments.translations.confirmDeleteContentTitle') }}">
+          <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span> {{ ::waid.config.getConfig('comments.translations.deleteCommentTitle') }}</a>
+        </li>
+      </ul>
+    </div>
+  </h4>
+  <div ng-hide="comment.is_edit">
+    <p style="white-space: pre-wrap;">{{ comment.comment_formatted }}</p>
+    <div class="btn-group" role="group" aria-label="...">
+      <button type="button" class="btn btn-default btn-xs" ng-click="voteComment(comment, 'UP')">
+        <span class="glyphicon glyphicon-chevron-up" aria-hidden="true" ></span> {{ comment.vote_up_count }}
+      </button>
+      <button type="button" class="btn btn-default btn-xs" ng-click="voteComment(comment, 'DOWN')">
+        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span> {{ comment.vote_down_count }}
+      </button>
+    </div>
+
+    <small class="pull-right" ng-show="comment.marked_as_spam">
+      <span class="glyphicon glyphicon-exclamation-sign aria-hidden="true"></span> {{ ::waid.config.getConfig('comments.translations.commentMarkedAsSpam') }}
+    </small>
+  </div>
+  <div ng-show="comment.is_edit">
+    <textarea class="form-control" rows="1" msd-elastic id="edit_comment_{{ comment.id }}"ng-model="comment.comment_formatted"></textarea>
+    <p style="margin-top:10px;">
+    <button type="button" class="btn btn-default btn-xs pull-right" ng-click="updateComment(comment)">
+      <span class="glyphicon glyphicon-check" aria-hidden="true"></span> {{ ::waid.config.getConfig('comments.translations.updateCommentButton') }}
+    </button>
+    <button type="button" class="btn btn-default btn-xs pull-left" ng-click="addEmoji('edit_comment_' + comment.id, comment)">
+        😄&nbsp;{{ ::waid.config.getConfig('comments.translations.addEmoticonButtonText') }}
+    </button>
+    </p>
+  </div>
+  <div class="media" ng-repeat="child in comment.children" style="overflow: visible;" ng-show="comment.children">
+    <waid-comments-item comment="child" mark-comment="markComment" edit-comment="editComment" delete-comment="deleteComment" vote-comment="voteComment" update-comment="updateComment" add-emoji="addEmoji" waid="waid"></waid-comments-item>
+  </div>
+</div>

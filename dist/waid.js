@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.32';
+  waidCore.config.version = '0.0.33';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -327,7 +327,7 @@ angular.module('waid.core.strategy', [
         waidCore.isInit = true;
         $rootScope.$broadcast('waid.core.strategy.isInit');
       }, function(){
-        console.log('Fatal error');
+        // console.log('Fatal error');
       });
 
       // Handle error code
@@ -2756,7 +2756,8 @@ angular.module('waid.comments', [
   waidCore.config.setConfig('comments', {
     'templates': {
       'commentsHome': '/templates/comments/comments-home.html',
-      'commentsOrderButton': '/templates/comments/comments-order-button.html'
+      'commentsOrderButton': '/templates/comments/comments-order-button.html',
+      'commentsItem':'/templates/comments/comment-item.html'
     },
     'translations': {
       'postCommentButton': 'Plaats comment',
@@ -2832,6 +2833,22 @@ angular.module('waid.comments.controllers', [
       $scope.comments.splice(index, 1);
     });
   };
+ 
+  /**
+   * Process comments recursively, add extra data
+   */
+  $scope.processComments = function (comments) {
+    for(var i = 0; i < comments.length; i++) {
+      comments[i].is_edit = false;
+      if (comments[i].user.id == $rootScope.waid.user.id) {
+        comments[i].is_owner = true;
+      }
+      if (typeof comments[i].children != 'undefined' && comments[i].children && comments[i].children.length > 0) {
+        comments[i].children = $scope.processComments(comments[i].children);
+      }
+    }
+    return comments;
+  }
   $scope.loadComments = function (append) {
     var params = {
       'object_id': $scope.objectId,
@@ -2858,13 +2875,7 @@ angular.module('waid.comments.controllers', [
       }
 
       if (data.results.length > 0) {
-        // Format comment data
-        for (var i = 0; i < data.results.length; i++) {
-          data.results[i].is_edit = false;
-          if (data.results[i].user.id == $rootScope.waid.user.id) {
-            data.results[i].is_owner = true;
-          }
-        }
+        data.results = $scope.processComments(data.results);
 
         // Check if we need to append comments
         if (append) {
@@ -2973,6 +2984,23 @@ angular.module('waid.comments.directives', [
     restrict: 'E',
     templateUrl: function (elem, attrs) {
       return attrs.templateUrl || waidCore.config.getTemplateUrl('comments', 'commentsOrderButton');
+    }
+  };
+}).directive('waidCommentsItem', function (waidCore) {
+  return {
+    scope:{
+      'comment':'=',
+      'markComment':'=',
+      'editComment':'=',
+      'deleteComment':'=',
+      'voteComment':'=',
+      'updateComment':'=',
+      'addEmoji':'=',
+      'waid':'='
+    },
+    restrict: 'E',
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('comments', 'commentsItem');
     }
   };
 });

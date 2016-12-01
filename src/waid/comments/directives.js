@@ -59,4 +59,21 @@ angular.module('waid.comments.directives', [
       return attrs.templateUrl || waidCore.config.getTemplateUrl('comments', 'commentsOrderButton');
     }
   };
+}).directive('waidCommentsItem', function (waidCore) {
+  return {
+    scope:{
+      'comment':'=',
+      'markComment':'=',
+      'editComment':'=',
+      'deleteComment':'=',
+      'voteComment':'=',
+      'updateComment':'=',
+      'addEmoji':'=',
+      'waid':'='
+    },
+    restrict: 'E',
+    templateUrl: function (elem, attrs) {
+      return attrs.templateUrl || waidCore.config.getTemplateUrl('comments', 'commentsItem');
+    }
+  };
 });

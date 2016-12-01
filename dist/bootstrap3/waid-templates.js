@@ -1,7 +1,66 @@
 angular.module('waid.templates',[]).run(['$templateCache', function($templateCache) { 
   'use strict';
 
-  $templateCache.put('/templates/comments/comments-home.html?v=0.0.32',
+  $templateCache.put('/templates/comments/comment-item.html?v=0.0.33',
+    "\n" +
+    "<div class=\"media-left\">\n" +
+    "  <img class=\"media-object\" ng-src=\"{{ comment.user.avatar_thumb_50_50 }}\" alt=\"{{ comment.user.default_name }}\">\n" +
+    "</div>\n" +
+    "<div class=\"media-body\" style=\"overflow: visible;\">\n" +
+    "  <h4 class=\"media-heading\">{{ comment.user.default_name }}<br />\n" +
+    "    <small>{{ comment.created | date:'medium' }}</small>\n" +
+    "    <div class=\"btn-group pull-right\" ng-show=\"waid.user\" ng-hide=\"comment.is_locked\">\n" +
+    "      <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n" +
+    "        {{ ::waid.config.getConfig('comments.translations.actionDropdownTitle') }} <span class=\"caret\"></span>\n" +
+    "      </button>\n" +
+    "      <ul class=\"dropdown-menu\">\n" +
+    "        <li><a ng-click=\"editComment(comment)\" ng-show=\"comment.is_owner\">\n" +
+    "          <span class=\"glyphicon glyphicon-edit\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.editCommentTitle') }}</a>\n" +
+    "        </li>\n" +
+    "        <li ng-show=\"!comment.marked_as_spam\"><a ng-click=\"markComment(comment, 'SPAM')\">\n" +
+    "          <span class=\"glyphicon glyphicon-exclamation-sign aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.markCommentSpamTitle') }}</a>\n" +
+    "        </li>\n" +
+    "        <li role=\"separator\" class=\"divider\" ng-show=\"comment.is_owner\"></li>\n" +
+    "        <li><a ng-click=\"deleteComment(comment)\" ng-show=\"comment.is_owner\" confirm=\"{{ waid.config.getConfig('comments.translations.confirmDeleteContentBody') }}\" confirm-title=\"{{ waid.config.getConfig('comments.translations.confirmDeleteContentTitle') }}\">\n" +
+    "          <span class=\"glyphicon glyphicon-remove-sign\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.deleteCommentTitle') }}</a>\n" +
+    "        </li>\n" +
+    "      </ul>\n" +
+    "    </div>\n" +
+    "  </h4>\n" +
+    "  <div ng-hide=\"comment.is_edit\">\n" +
+    "    <p style=\"white-space: pre-wrap;\">{{ comment.comment_formatted }}</p>\n" +
+    "    <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
+    "      <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"voteComment(comment, 'UP')\">\n" +
+    "        <span class=\"glyphicon glyphicon-chevron-up\" aria-hidden=\"true\" ></span> {{ comment.vote_up_count }}\n" +
+    "      </button>\n" +
+    "      <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"voteComment(comment, 'DOWN')\">\n" +
+    "        <span class=\"glyphicon glyphicon-chevron-down\" aria-hidden=\"true\"></span> {{ comment.vote_down_count }}\n" +
+    "      </button>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <small class=\"pull-right\" ng-show=\"comment.marked_as_spam\">\n" +
+    "      <span class=\"glyphicon glyphicon-exclamation-sign aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.commentMarkedAsSpam') }}\n" +
+    "    </small>\n" +
+    "  </div>\n" +
+    "  <div ng-show=\"comment.is_edit\">\n" +
+    "    <textarea class=\"form-control\" rows=\"1\" msd-elastic id=\"edit_comment_{{ comment.id }}\"ng-model=\"comment.comment_formatted\"></textarea>\n" +
+    "    <p style=\"margin-top:10px;\">\n" +
+    "    <button type=\"button\" class=\"btn btn-default btn-xs pull-right\" ng-click=\"updateComment(comment)\">\n" +
+    "      <span class=\"glyphicon glyphicon-check\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.updateCommentButton') }}\n" +
+    "    </button>\n" +
+    "    <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"addEmoji('edit_comment_' + comment.id, comment)\">\n" +
+    "        😄&nbsp;{{ ::waid.config.getConfig('comments.translations.addEmoticonButtonText') }}\n" +
+    "    </button>\n" +
+    "    </p>\n" +
+    "  </div>\n" +
+    "  <div class=\"media\" ng-repeat=\"child in comment.children\" style=\"overflow: visible;\" ng-show=\"comment.children\">\n" +
+    "    <waid-comments-item comment=\"child\" mark-comment=\"markComment\" edit-comment=\"editComment\" delete-comment=\"deleteComment\" vote-comment=\"voteComment\" update-comment=\"updateComment\" add-emoji=\"addEmoji\" waid=\"waid\"></waid-comments-item>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('/templates/comments/comments-home.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div class=\"comment\"> \n" +
     "    <div class=\"media\">\n" +
@@ -22,60 +81,12 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    \n" +
     "    <br />\n" +
     "    <waid-comments-order-button ng-show=\"comments.length > 1\" class=\"pull-right\"></waid-comments-order-button><br />\n" +
-    "    <div class=\"media\" ng-repeat=\"comment in comments\" style=\"overflow: visible;\" ng-show=\"comments\">\n" +
-    "      <div class=\"media-left\">\n" +
-    "        <img class=\"media-object\" ng-src=\"{{ comment.user.avatar_thumb_50_50 }}\" alt=\"{{ comment.user.default_name }}\">\n" +
-    "      </div>\n" +
-    "      <div class=\"media-body\" style=\"overflow: visible;\">\n" +
-    "        <h4 class=\"media-heading\">{{ comment.user.default_name }}<br />\n" +
-    "          <small>{{ comment.created | date:'medium' }}</small>\n" +
-    "          <div class=\"btn-group pull-right\" ng-show=\"waid.user\" ng-hide=\"comment.is_locked\">\n" +
-    "            <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n" +
-    "              {{ ::waid.config.getConfig('comments.translations.actionDropdownTitle') }} <span class=\"caret\"></span>\n" +
-    "            </button>\n" +
-    "            <ul class=\"dropdown-menu\">\n" +
-    "              <li><a ng-click=\"editComment(comment)\" ng-show=\"comment.is_owner\">\n" +
-    "                <span class=\"glyphicon glyphicon-edit\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.editCommentTitle') }}</a>\n" +
-    "              </li>\n" +
-    "              <li ng-show=\"!comment.marked_as_spam\"><a ng-click=\"markComment(comment, 'SPAM')\">\n" +
-    "                <span class=\"glyphicon glyphicon-exclamation-sign aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.markCommentSpamTitle') }}</a>\n" +
-    "              </li>\n" +
-    "              <li role=\"separator\" class=\"divider\" ng-show=\"comment.is_owner\"></li>\n" +
-    "              <li><a ng-click=\"deleteComment(comment)\" ng-show=\"comment.is_owner\" confirm=\"{{ waid.config.getConfig('comments.translations.confirmDeleteContentBody') }}\" confirm-title=\"{{ waid.config.getConfig('comments.translations.confirmDeleteContentTitle') }}\">\n" +
-    "                <span class=\"glyphicon glyphicon-remove-sign\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.deleteCommentTitle') }}</a>\n" +
-    "              </li>\n" +
-    "            </ul>\n" +
-    "          </div>\n" +
-    "        </h4>\n" +
-    "        <div ng-hide=\"comment.is_edit\">\n" +
-    "          <p style=\"white-space: pre-wrap;\">{{ comment.comment_formatted }}</p>\n" +
-    "          <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
-    "            <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"voteComment(comment, 'UP')\">\n" +
-    "              <span class=\"glyphicon glyphicon-chevron-up\" aria-hidden=\"true\" ></span> {{ comment.vote_up_count }}\n" +
-    "            </button>\n" +
-    "            <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"voteComment(comment, 'DOWN')\">\n" +
-    "              <span class=\"glyphicon glyphicon-chevron-down\" aria-hidden=\"true\"></span> {{ comment.vote_down_count }}\n" +
-    "            </button>\n" +
-    "          </div>\n" +
-    "\n" +
-    "          <small class=\"pull-right\" ng-show=\"comment.marked_as_spam\">\n" +
-    "            <span class=\"glyphicon glyphicon-exclamation-sign aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.commentMarkedAsSpam') }}\n" +
-    "          </small>\n" +
-    "        </div>\n" +
-    "        <div ng-show=\"comment.is_edit\">\n" +
-    "          <textarea class=\"form-control\" rows=\"1\" msd-elastic id=\"edit_comment_{{ comment.id }}\"ng-model=\"comment.comment_formatted\"></textarea>\n" +
-    "          <p style=\"margin-top:10px;\">\n" +
-    "          <button type=\"button\" class=\"btn btn-default btn-xs pull-right\" ng-click=\"updateComment(comment)\">\n" +
-    "            <span class=\"glyphicon glyphicon-check\" aria-hidden=\"true\"></span> {{ ::waid.config.getConfig('comments.translations.updateCommentButton') }}\n" +
-    "          </button>\n" +
-    "          <button type=\"button\" class=\"btn btn-default btn-xs pull-left\" ng-click=\"addEmoji('edit_comment_' + comment.id, comment)\">\n" +
-    "              😄&nbsp;{{ ::waid.config.getConfig('comments.translations.addEmoticonButtonText') }}\n" +
-    "          </button>\n" +
-    "          </p>\n" +
-    "        </div>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "\n" +
+    "    \n" +
+    "    <ul class=\"media-list\">\n" +
+    "      <li class=\"media\" ng-repeat=\"comment in comments\" style=\"overflow: visible;\" ng-show=\"comments\">\n" +
+    "        <waid-comments-item comment=\"comment\" mark-comment=\"markComment\" edit-comment=\"editComment\" delete-comment=\"deleteComment\" vote-comment=\"voteComment\" update-comment=\"updateComment\" add-emoji=\"addEmoji\" waid=\"waid\"></waid-comments-item>\n" +
+    "      </li>\n" +
+    "    </ul>\n" +
     "    <div class=\"load-more text-center\">\n" +
     "      <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"loadComments(true)\" ng-show=\"showMore\">\n" +
     "        <i class=\"fa fa-arrow-down\" aria-hidden=\"true\"></i> {{ ::waid.config.getTranslation('comments', 'loadMoreComments') }}\n" +
@@ -87,7 +98,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/comments/comments-order-button.html?v=0.0.32',
+  $templateCache.put('/templates/comments/comments-order-button.html?v=0.0.33',
     "\n" +
     "  <div class=\"btn-group waid\">\n" +
     "    <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n" +
@@ -107,7 +118,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/core.html?v=0.0.32',
+  $templateCache.put('/templates/core/core.html?v=0.0.33',
     "<div class=\"waid\" id=\"waid\"> \n" +
     "  <div growl></div>\n" +
     "\n" +
@@ -120,7 +131,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepicker/datepicker.html?v=0.0.32',
+  $templateCache.put('/templates/core/datepicker/datepicker.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div ng-switch=\"datepickerMode\" class=\"waid\">\n" +
     "    <div uib-daypicker ng-switch-when=\"day\" tabindex=\"0\" class=\"uib-daypicker\"></div>\n" +
@@ -131,7 +142,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepicker/day.html?v=0.0.32',
+  $templateCache.put('/templates/core/datepicker/day.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "<table role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
@@ -167,7 +178,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepicker/month.html?v=0.0.32',
+  $templateCache.put('/templates/core/datepicker/month.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "<table role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
@@ -198,7 +209,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepicker/year.html?v=0.0.32',
+  $templateCache.put('/templates/core/datepicker/year.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "<table role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
@@ -229,7 +240,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/datepickerPopup/popup.html?v=0.0.32',
+  $templateCache.put('/templates/core/datepickerPopup/popup.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <ul class=\"uib-datepicker-popup dropdown-menu uib-position-measure\" dropdown-nested ng-if=\"isOpen\" ng-keydown=\"keydown($event)\" ng-click=\"$event.stopPropagation()\">\n" +
     "    <li ng-transclude></li>\n" +
@@ -245,7 +256,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/emoticons-modal.html?v=0.0.32',
+  $templateCache.put('/templates/core/emoticons-modal.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">Emoticons<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeEmoticonsModal()\"></i></h3>\n" +
@@ -265,14 +276,14 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/core/modal/window.html?v=0.0.32',
+  $templateCache.put('/templates/core/modal/window.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div class=\"modal-dialog {{size ? 'modal-' + size : ''}}\"><div class=\"waid modal-content\" uib-modal-transclude></div></div>\n" +
     "</div>"
   );
 
 
-  $templateCache.put('/templates/idm/associated-social-accounts.html?v=0.0.32',
+  $templateCache.put('/templates/idm/associated-social-accounts.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div class=\"list-group\">\n" +
     "	  <a href=\"\" class=\"list-group-item\" ng-repeat=\"provider in providers\" ng-click=\"associateSocialAction(provider)\"><i class=\"fa fa-{{ provider.backend }}-square\" aria-hidden=\"true\"></i> {{ provider.name }} <span class=\"label label-success pull-right\" ng-show=\"provider.linked\">Gekoppeld</span> <span class=\"label label-warning pull-right\" ng-hide=\"provider.linked\">Nog niet gekoppeld</span></a>\n" +
@@ -281,7 +292,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/complete-profile-modal.html?v=0.0.32',
+  $templateCache.put('/templates/idm/complete-profile-modal.html?v=0.0.33',
     "<span class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'complete_profile_modal_title') }}<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.doNotCompleteProfile()\"></i></h3>\n" +
@@ -296,12 +307,12 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/home.html?v=0.0.32',
+  $templateCache.put('/templates/idm/home.html?v=0.0.33',
     ""
   );
 
 
-  $templateCache.put('/templates/idm/link-social-profile-modal.html?v=0.0.32',
+  $templateCache.put('/templates/idm/link-social-profile-modal.html?v=0.0.33',
     "<span class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'link_social_profile_modal_title') }}<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.doNotLinkSocialProfile()\"></i></h3>\n" +
@@ -316,7 +327,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/link-social-profile.html?v=0.0.32',
+  $templateCache.put('/templates/idm/link-social-profile.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     " <div>\n" +
     "      <div class=\"alert alert-warning\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'link_social_profile_intro') }}</div>\n" +
@@ -335,7 +346,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/login-and-register-home.html?v=0.0.32',
+  $templateCache.put('/templates/idm/login-and-register-home.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div class=\"row\">\n" +
     "    <div class=\"col-md-4\">\n" +
@@ -356,7 +367,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/login-and-register-modal.html?v=0.0.32',
+  $templateCache.put('/templates/idm/login-and-register-modal.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'login_and_register_modal_title') }} <i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeLoginAndRegisterModal()\"></i></h3>\n" +
@@ -371,7 +382,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/login.html?v=0.0.32',
+  $templateCache.put('/templates/idm/login.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div id=\"login_view\">\n" +
     "    <form role=\"form\"  name=\"loginForm\" novalidate>\n" +
@@ -396,7 +407,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/lost-login-modal.html?v=0.0.32',
+  $templateCache.put('/templates/idm/lost-login-modal.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	  <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'lost_login_modal_title') }}<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeLostLoginModal()\"></i></h3>\n" +
@@ -411,7 +422,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/lost-login.html?v=0.0.32',
+  $templateCache.put('/templates/idm/lost-login.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "	<div id=\"lost_login_view\">\n" +
     "	<form role=\"form\" name=\"loginForm\" novalidate>\n" +
@@ -429,7 +440,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/overview.html?v=0.0.32',
+  $templateCache.put('/templates/idm/overview.html?v=0.0.33',
     "\n" +
     "      <div ng-repeat=\"fieldSet in profileDefinition.fieldSet\">\n" +
     "        <div ng-if=\"fieldSet.key != currentFieldSet && !fieldSet.hideFromOverview\">\n" +
@@ -505,7 +516,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/profile.html?v=0.0.32',
+  $templateCache.put('/templates/idm/profile.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div class=\"row\">\n" +
     "    <div class=\"col-lg-4 col-md-4 col-sm-4 hidden-xs\">\n" +
@@ -703,7 +714,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/register.html?v=0.0.32',
+  $templateCache.put('/templates/idm/register.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     " <div>\n" +
     "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_intro') }}</div>\n" +
@@ -738,7 +749,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/social-login.html?v=0.0.32',
+  $templateCache.put('/templates/idm/social-login.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div id=\"login_view\">\n" +
     "    <a class=\"btn btn-default btn-block\" role=\"button\" ng-repeat=\"provider in providers\" ng-click=\"goToSocialLogin(provider)\">\n" +
@@ -754,7 +765,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/terms-and-conditions-modal.html?v=0.0.32',
+  $templateCache.put('/templates/idm/terms-and-conditions-modal.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "	<div class=\"modal-header\">\n" +
     "	    <h3 class=\"modal-title\">{{ ::waid.config.getTranslation('idm', 'terms_and_condition_modal_title') }} <i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeTermsAndConditionsModal()\"></i></h3>\n" +
@@ -769,7 +780,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/user-profile-modal.html?v=0.0.32',
+  $templateCache.put('/templates/idm/user-profile-modal.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <div class=\"modal-header\">\n" +
     "    <h3 class=\"modal-title\">Mijn Profiel<i class=\"glyphicon glyphicon-remove pull-right\" ng-click=\"waid.closeUserProfileModal()\"></i></h3>\n" +
@@ -806,7 +817,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/user-profile-navbar.html?v=0.0.32',
+  $templateCache.put('/templates/idm/user-profile-navbar.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <ul class=\"nav navbar-nav navbar-right\">\n" +
     "    <li class=\"dropdown\" ng-show=\"waid.user\">\n" +
@@ -824,7 +835,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/idm/user-profile-status-button.html?v=0.0.32',
+  $templateCache.put('/templates/idm/user-profile-status-button.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "	<div class=\"btn-group\">\n" +
     "	  <button type=\"button\" class=\"btn btn-default btn-xs dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\" ng-show=\"waid.user\">\n" +
@@ -843,7 +854,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   );
 
 
-  $templateCache.put('/templates/rating/widget.html?v=0.0.32',
+  $templateCache.put('/templates/rating/widget.html?v=0.0.33',
     "<div class=\"waid\">\n" +
     "  <span>Rate</span>\n" +
     "  <a href=\"#\" ng-repeat=\"star in stars\" ng-click=\"rate(star.value)\" ng-mouseover=\"rateOver(star.value)\" ng-mouseout=\"rateOut()\"><i class=\"glyphicon\" ng-class=\"star.active ? 'glyphicon-star' : 'glyphicon-star-empty'\"></i></a>\n" +

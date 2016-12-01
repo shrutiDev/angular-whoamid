@@ -53,6 +53,22 @@ angular.module('waid.comments.controllers', [
       $scope.comments.splice(index, 1);
     });
   };
+ 
+  /**
+   * Process comments recursively, add extra data
+   */
+  $scope.processComments = function (comments) {
+    for(var i = 0; i < comments.length; i++) {
+      comments[i].is_edit = false;
+      if (comments[i].user.id == $rootScope.waid.user.id) {
+        comments[i].is_owner = true;
+      }
+      if (typeof comments[i].children != 'undefined' && comments[i].children && comments[i].children.length > 0) {
+        comments[i].children = $scope.processComments(comments[i].children);
+      }
+    }
+    return comments;
+  }
   $scope.loadComments = function (append) {
     var params = {
       'object_id': $scope.objectId,
@@ -79,13 +95,7 @@ angular.module('waid.comments.controllers', [
       }
 
       if (data.results.length > 0) {
-        // Format comment data
-        for (var i = 0; i < data.results.length; i++) {
-          data.results[i].is_edit = false;
-          if (data.results[i].user.id == $rootScope.waid.user.id) {
-            data.results[i].is_owner = true;
-          }
-        }
+        data.results = $scope.processComments(data.results);
 
         // Check if we need to append comments
         if (append) {
