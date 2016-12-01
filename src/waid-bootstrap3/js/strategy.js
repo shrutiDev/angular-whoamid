@@ -262,16 +262,12 @@ angular.module('waid.core.app.strategy', [
     //console.log('waid.idm.strategy.action.doNotLinkSocialProfile');
     waidCore.closeLinkSocialProfileModal();
   });
-  $rootScope.$on('waid.idm.strategy.action.doNotCompleteProfile', function (event) {
-    //console.log('waid.idm.strategy.action.doNotLinkSocialProfile');
-    waidCore.closeLinkSocialProfileModal();
-  });
 
   $rootScope.$on('waid.services.application.userLinkSocialProfile.post.ok', function (event, data) {
-    waidCore.closeAllModals();
+    waidCore.closeLinkSocialProfileModal();
   });
   $rootScope.$on('waid.services.application.userCompleteProfile.post.ok', function (event, data) {
-    waidCore.closeAllModals();
+    waidCore.closeCompleteProfileModal();
   });
 
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {

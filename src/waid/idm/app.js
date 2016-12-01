@@ -249,6 +249,7 @@ angular.module('waid.idm', [
         {
           'key': 'associated_social_accounts',
           'introKey':'associated_social_accounts_intro',
+          'hideFromOverview':true,
           'order': 70,
           'noSaveButton': true,
           'fieldDefinitions': [

@@ -12,7 +12,7 @@ angular.module('waid', [
   'monospaced.elastic'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.33';
+  waidCore.config.version = '0.0.34';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -1854,6 +1854,7 @@ angular.module('waid.idm', [
         {
           'key': 'associated_social_accounts',
           'introKey':'associated_social_accounts_intro',
+          'hideFromOverview':true,
           'order': 70,
           'noSaveButton': true,
           'fieldDefinitions': [
