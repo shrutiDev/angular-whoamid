@@ -6,12 +6,17 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   });
 }).controller('WAIDIDMProfileNavbarCtrl', function ($scope, $rootScope) {
   $scope.goToFieldSet = function (fieldSet) {
-    $rootScope.$broadcast('waid.idm.goToFieldSet', fieldSet);
+    $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
   };
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
+  $scope.goToFieldSet = function (fieldSet) {
+    $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
+  };
+
   // Goto fieldset event
-  $rootScope.$on('waid.idm.goToFieldSet', function (event, fieldSet) {
-    $scope.goToFieldSet(fieldSet);
+  $rootScope.$on('waid.idm.action.goToFieldSet', function (event, fieldSet) {
+    $scope.currentFieldSet = fieldSet;
+    $scope.errors = [];
   });
 
   $scope.waid = waidCore;
@@ -40,10 +45,6 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
   $scope.getActiveFieldSetMenuClass = function (fieldSet) {
     return fieldSet == $scope.currentFieldSet ? 'active' : '';
-  };
-  $scope.goToFieldSet = function (fieldSet) {
-    $scope.currentFieldSet = fieldSet;
-    $scope.errors = [];
   };
   $scope.getAllFieldDefinitions = function () {
     var fieldDefinitions = [];
@@ -282,10 +283,12 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
   $scope.addEmail = function () {
     var data = { 'email': $scope.email.add };
+
     waidService.userEmailPost(data).then(function (data) {
       $scope.errors = [];
       $scope.loadEmailList();
       $scope.email.add = '';
+      $rootScope.$broadcast('waid.idm.action.addEmail.ok', data);
     }, function (data) {
       $scope.errors = data;
     });
@@ -646,18 +649,19 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       $scope.errors = data;
     });
   };
-}).controller('WAIDIDMLostLoginCtrl', function ($scope, $location, waidService, waidCore) {
+}).controller('WAIDIDMLostLoginCtrl', function ($scope, $rootScope, $location, waidService, waidCore) {
   $scope.waid = waidCore;
   $scope.model = { 'email': '' };
   $scope.errors = [];
   $scope.submit = function () {
     waidService.userLostLoginPost($scope.model).then(function (data) {
+      $rootScope.$broadcast('waid.idm.action.lostLogin.ok', data);
       $scope.errors = [];
     }, function (data) {
       $scope.errors = data;
     });
   };
-}).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
+}).controller('WAIDIDMSocialCtrl', function ($scope, $rootScope, $location, waidService, $window, waidCore) {
   $scope.waid = waidCore;
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -669,10 +673,11 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     });
   };
   $scope.goToSocialLogin = function (provider) {
+    $rootScope.$broadcast('waid.idm.action.associateSocial', {'action':'associate_unknown_user', 'provider':provider});
     $window.location.assign(provider.url);
   };
   $scope.getProviders();
-}).controller('WAIDIDMAssociatedSocialAccountsCtrl', function ($scope, $location, waidService, $window, waidCore) {
+}).controller('WAIDIDMAssociatedSocialAccountsCtrl', function ($scope, $rootScope, $location, waidService, $window, waidCore) {
   $scope.waid = waidCore;
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -684,12 +689,16 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     });
   };
   $scope.associateSocialAction = function (provider) {
+    
     // Toggle between linking and unlinking
     if (provider.linked) {
+      $rootScope.$broadcast('waid.idm.action.associateSocial', {'action':'delete', 'provider':provider});
       waidService.userAssociateSocialDelete(provider.backend).then(function(){
+        
         $scope.getProviders();
       })
     } else {
+      $rootScope.$broadcast('waid.idm.action.associateSocial', {'action':'associate_known_user', 'provider':provider});
       $window.location.assign(provider.url);
     }
   };

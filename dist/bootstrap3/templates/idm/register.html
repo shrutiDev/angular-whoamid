@@ -3,21 +3,27 @@
       <div ng-show="modus=='complete'" class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_intro') }}</div>
       <div class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_email_allready_sent') }}</div>
     <form role="form" name="registerForm" novalidate>
-      <div class="form-group" ng-show="show.username">
+      <div class="form-group has-feedback" ng-class="errors.username ? 'has-error' : ''" ng-show="show.username">
           <label for="id_username">{{ ::waid.config.getTranslation('idm', 'register_form_username') }}</label>
           <input name="username" id="id_username" class="form-control" type="text" ng-model="model.username" placeholder="{{ ::waid.config.getTranslation('idm', 'register_form_username') }}" required />
+          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="errors.username"></span>
+          <div class="alert alert-danger" ng-repeat="error in errors.username"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
       </div>
-      <div class="alert alert-danger" ng-repeat="error in errors.username"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-      <div class="form-group" ng-show="show.password">
+      
+      <div class="form-group has-feedback" ng-class="errors.password ? 'has-error' : ''" ng-show="show.password">
           <label for="id_password">{{ ::waid.config.getTranslation('idm', 'register_form_password') }}</label>
           <input name="password1" id="id_password" class="form-control" type="password" ng-model="model.password" placeholder="{{ ::waid.config.getTranslation('idm', 'register_form_password') }}" required />
+          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="errors.password"></span>
+          <div class="alert alert-danger" ng-repeat="error in errors.password"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
       </div>
-      <div class="alert alert-danger" ng-repeat="error in errors.password"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-      <div class="form-group" ng-show="show.email">
+      
+      <div class="form-group has-feedback" ng-class="errors.email ? 'has-error' : ''" ng-show="show.email">
           <label for="id_email">{{ ::waid.config.getTranslation('idm', 'register_form_email') }}</label>
           <input name="email" id="id_email" class="form-control" type="email" ng-model="model.email" placeholder="{{ ::waid.config.getTranslation('idm', 'register_form_email') }}" required />
+          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="errors.email"></span>
+          <div class="alert alert-danger" ng-repeat="error in errors.email"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
       </div>
-      <div class="alert alert-danger" ng-repeat="error in errors.email"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+
       <div class="checkbox" ng-show="show.terms_and_conditions_check">
         <label>
           <input type="checkbox" ng-model="model.terms_and_conditions_check" /> <waid-translation module="idm" key="terms_and_conditions_check"></waid-translation>

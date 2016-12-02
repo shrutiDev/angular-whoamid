@@ -386,16 +386,21 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "<div class=\"waid\">\n" +
     "  <div id=\"login_view\">\n" +
     "    <form role=\"form\"  name=\"loginForm\" novalidate>\n" +
-    "      <div class=\"form-group\">\n" +
+    "      <div class=\"form-group has-feedback\" ng-class=\"errors.username ? 'has-error' : ''\">\n" +
+    "\n" +
     "        <label for=\"id_username\">{{ ::waid.config.getTranslation('idm', 'login_form_username_label') }}</label>\n" +
     "        <input name=\"username\" id=\"id_username\" type=\"text\" ng-model=\"model.username\" placeholder=\"Username\" class=\"form-control\" required />\n" +
+    "        <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"errors.username\"></span>\n" +
+    "        <div class=\"alert alert-danger\" ng-repeat=\"error in errors.username\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
     "      </div>\n" +
-    "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.username\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
-    "      <div class=\"form-group\">\n" +
+    "      \n" +
+    "      <div class=\"form-group has-feedback\" ng-class=\"errors.password ? 'has-error' : ''\">\n" +
     "        <label for=\"id_password\">{{ ::waid.config.getTranslation('idm', 'login_form_password_label') }}</label>\n" +
     "        <input name=\"password\" id=\"id_password\" type=\"password\" ng-model=\"model.password\" placeholder=\"Password\" class=\"form-control\" required />\n" +
+    "        <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"errors.password\"></span>\n" +
+    "        <div class=\"alert alert-danger\" ng-repeat=\"error in errors.password\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
     "      </div>\n" +
-    "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.password\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
+    "      \n" +
     "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.non_field_errors\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ error }}</div>\n" +
     "      <button type=\"submit\" class=\"btn btn-primary\" ng-click=\"login()\" ng-disabled=\"waid.isLoading\">{{ ::waid.config.getTranslation('idm', 'login_submit') }}</button>\n" +
     "    </form>\n" +
@@ -541,8 +546,11 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "            <ANY ng-switch=\"fieldDefinition.type\">\n" +
     "              \n" +
     "              <ANY ng-switch-when=\"input\">\n" +
-    "                <input type=\"input\" class=\"form-control\" id=\"{{ fieldDefinition.name }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}\" ng-model=\"model[fieldDefinition.name]\" ng-change=\"fieldChange(fieldDefinition.name)\" />\n" +
-    "\n" +
+    "                <div class=\"form-group has-feedback\" ng-class=\"errors[fieldDefinition.name] ? 'has-error' : ''\">\n" +
+    "                  <input type=\"input\" class=\"form-control\" id=\"{{ fieldDefinition.name }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}\" ng-model=\"model[fieldDefinition.name]\" ng-change=\"fieldChange(fieldDefinition.name)\" />\n" +
+    "                  <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"errors[fieldDefinition.name]\"></span>\n" +
+    "                  <div class=\"alert alert-danger\" ng-repeat=\"error in errors[fieldDefinition.name]\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                </div>\n" +
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"multipleTelephone\">\n" +
@@ -609,22 +617,27 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"date\">\n" +
-    "                <div class=\"input-group\">\n" +
-    "                  <input type=\"text\" class=\"form-control\" id=\"{{ fieldDefinition.name }}\" uib-datepicker-popup ng-model=\"model[fieldDefinition.name]\" is-open=\"popup.opened\" alt-input-formats=\"['dd-MM-yyyy', 'dd MM yyyy', 'dd-MMMM-yyyy', 'dd MMMM yyyy']\" datepicker-options=\"dateOptions\" close-text=\"Close\" ng-change=\"fieldChange(fieldDefinition.name)\"/>\n" +
-    "                  <span class=\"input-group-btn\">\n" +
-    "                    <button type=\"button\" class=\"btn btn-default\" ng-click=\"open()\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
-    "                  </span>\n" +
+    "                <div class=\"form-group has-feedback\" ng-class=\"errors[fieldDefinition.name] ? 'has-error' : ''\">\n" +
+    "                  <div class=\"input-group\">\n" +
+    "                    <input type=\"text\" class=\"form-control\" id=\"{{ fieldDefinition.name }}\" uib-datepicker-popup ng-model=\"model[fieldDefinition.name]\" is-open=\"popup.opened\" alt-input-formats=\"['dd-MM-yyyy', 'dd MM yyyy', 'dd-MMMM-yyyy', 'dd MMMM yyyy']\" datepicker-options=\"dateOptions\" close-text=\"Close\" ng-change=\"fieldChange(fieldDefinition.name)\"/>\n" +
+    "                    <span class=\"input-group-btn\">\n" +
+    "                      <button type=\"button\" class=\"btn btn-default\" ng-click=\"open()\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                    </span>\n" +
+    "                  </div>\n" +
+    "                  <div class=\"alert alert-danger\" ng-repeat=\"error in errors[fieldDefinition.name]\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "                </div>\n" +
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"gender\">\n" +
-    "                <br />\n" +
-    "                <label class=\"radio-inline\">\n" +
-    "                  <input type=\"radio\" ng-model=\"model[fieldDefinition.name]\" value=\"M\" ng-change=\"fieldChange(fieldDefinition.name)\"> {{ ::waid.config.getTranslation('idm', 'male') }}\n" +
-    "                </label>\n" +
-    "                <label class=\"radio-inline\">\n" +
-    "                  <input type=\"radio\" ng-model=\"model[fieldDefinition.name]\" value=\"F\" ng-change=\"fieldChange(fieldDefinition.name)\"> {{ ::waid.config.getTranslation('idm', 'female') }}\n" +
-    "                </label>\n" +
+    "                <div class=\"form-group has-feedback\" ng-class=\"errors[fieldDefinition.name] ? 'has-error' : ''\">\n" +
+    "                  <label class=\"radio-inline\">\n" +
+    "                    <input type=\"radio\" ng-model=\"model[fieldDefinition.name]\" value=\"M\" ng-change=\"fieldChange(fieldDefinition.name)\"> {{ ::waid.config.getTranslation('idm', 'male') }}\n" +
+    "                  </label>\n" +
+    "                  <label class=\"radio-inline\">\n" +
+    "                    <input type=\"radio\" ng-model=\"model[fieldDefinition.name]\" value=\"F\" ng-change=\"fieldChange(fieldDefinition.name)\"> {{ ::waid.config.getTranslation('idm', 'female') }}\n" +
+    "                  </label>\n" +
+    "                  <div class=\"alert alert-danger\" ng-repeat=\"error in errors[fieldDefinition.name]\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                </div>\n" +
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"avatar\">\n" +
@@ -636,17 +649,27 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "                  </div>\n" +
     "                  <div class=\"media-body\">\n" +
     "                    <div ng-show=\"isUploading\" class=\"alert alert-info\" role=\"alert\">Bezig met uploaden van foto.</div>\n" +
-    "                    <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Profielfoto\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
+    "                    <div class=\"form-group has-feedback\" ng-class=\"errors[fieldDefinition.name] ? 'has-error' : ''\">\n" +
+    "                      <input type=\"file\" class=\"form-control\" id=\"avatar\" placeholder=\"Profielfoto\" onchange=\"angular.element(this).scope().uploadFile(this.files)\">\n" +
+    "                      <div class=\"alert alert-danger\" ng-repeat=\"error in errors[fieldDefinition.name]\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                    </div>\n" +
     "                  </div>\n" +
     "                </div>\n" +
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"textarea\">\n" +
-    "                <textarea class=\"form-control\" rows=\"3\" id=\"{{ fieldDefinition.name }}\" ng-model=\"model[fieldDefinition.name]\" ng-change=\"fieldChange(fieldDefinition.name)\" msd-elastic></textarea>\n" +
+    "                <div class=\"form-group has-feedback\" ng-class=\"errors[fieldDefinition.name] ? 'has-error' : ''\">\n" +
+    "                  <textarea class=\"form-control\" rows=\"3\" id=\"{{ fieldDefinition.name }}\" ng-model=\"model[fieldDefinition.name]\" ng-change=\"fieldChange(fieldDefinition.name)\" msd-elastic></textarea>\n" +
+    "                  <div class=\"alert alert-danger\" ng-repeat=\"error in errors[fieldDefinition.name]\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                </div>\n" +
     "              </ANY>\n" +
     "\n" +
     "              <ANY ng-switch-when=\"password\">\n" +
-    "                <input type=\"password\" class=\"form-control\" id=\"{{ fieldDefinition.name }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}\" ng-model=\"model[fieldDefinition.name]\" ng-change=\"fieldChange(fieldDefinition.name)\" />\n" +
+    "                <div class=\"form-group has-feedback\" ng-class=\"errors[fieldDefinition.name] ? 'has-error' : ''\">\n" +
+    "                  <input type=\"password\" class=\"form-control\" id=\"{{ fieldDefinition.name }}\" placeholder=\"{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}\" ng-model=\"model[fieldDefinition.name]\" ng-change=\"fieldChange(fieldDefinition.name)\" />\n" +
+    "                  <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"errors[fieldDefinition.name]\"></span>\n" +
+    "                  <div class=\"alert alert-danger\" ng-repeat=\"error in errors[fieldDefinition.name]\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "                </div>\n" +
     "              </ANY>\n" +
     "                  \n" +
     "              <ANY ng-switch-when=\"multipleEmail\">\n" +
@@ -700,7 +723,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "              \n" +
     "              <ANY ng-switch-default>Invalid fieldDefinition</ANY>\n" +
     "\n" +
-    "              <div class=\"alert alert-danger\" ng-repeat=\"error in errors[fieldDefinition.name]\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "              \n" +
     "        	  </ANY>\n" +
     "            \n" +
     "          </div>\n" +
@@ -720,21 +743,27 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_intro') }}</div>\n" +
     "      <div class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_email_allready_sent') }}</div>\n" +
     "    <form role=\"form\" name=\"registerForm\" novalidate>\n" +
-    "      <div class=\"form-group\" ng-show=\"show.username\">\n" +
+    "      <div class=\"form-group has-feedback\" ng-class=\"errors.username ? 'has-error' : ''\" ng-show=\"show.username\">\n" +
     "          <label for=\"id_username\">{{ ::waid.config.getTranslation('idm', 'register_form_username') }}</label>\n" +
     "          <input name=\"username\" id=\"id_username\" class=\"form-control\" type=\"text\" ng-model=\"model.username\" placeholder=\"{{ ::waid.config.getTranslation('idm', 'register_form_username') }}\" required />\n" +
+    "          <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"errors.username\"></span>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.username\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "      </div>\n" +
-    "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.username\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "      <div class=\"form-group\" ng-show=\"show.password\">\n" +
+    "      \n" +
+    "      <div class=\"form-group has-feedback\" ng-class=\"errors.password ? 'has-error' : ''\" ng-show=\"show.password\">\n" +
     "          <label for=\"id_password\">{{ ::waid.config.getTranslation('idm', 'register_form_password') }}</label>\n" +
     "          <input name=\"password1\" id=\"id_password\" class=\"form-control\" type=\"password\" ng-model=\"model.password\" placeholder=\"{{ ::waid.config.getTranslation('idm', 'register_form_password') }}\" required />\n" +
+    "          <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"errors.password\"></span>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.password\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "      </div>\n" +
-    "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.password\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "      <div class=\"form-group\" ng-show=\"show.email\">\n" +
+    "      \n" +
+    "      <div class=\"form-group has-feedback\" ng-class=\"errors.email ? 'has-error' : ''\" ng-show=\"show.email\">\n" +
     "          <label for=\"id_email\">{{ ::waid.config.getTranslation('idm', 'register_form_email') }}</label>\n" +
     "          <input name=\"email\" id=\"id_email\" class=\"form-control\" type=\"email\" ng-model=\"model.email\" placeholder=\"{{ ::waid.config.getTranslation('idm', 'register_form_email') }}\" required />\n" +
+    "          <span class=\"glyphicon glyphicon-remove form-control-feedback\" aria-hidden=\"true\" ng-show=\"errors.email\"></span>\n" +
+    "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.email\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
     "      </div>\n" +
-    "      <div class=\"alert alert-danger\" ng-repeat=\"error in errors.email\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
+    "\n" +
     "      <div class=\"checkbox\" ng-show=\"show.terms_and_conditions_check\">\n" +
     "        <label>\n" +
     "          <input type=\"checkbox\" ng-model=\"model.terms_and_conditions_check\" /> <waid-translation module=\"idm\" key=\"terms_and_conditions_check\"></waid-translation>\n" +

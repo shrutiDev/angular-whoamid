@@ -22,8 +22,11 @@
             <ANY ng-switch="fieldDefinition.type">
               
               <ANY ng-switch-when="input">
-                <input type="input" class="form-control" id="{{ fieldDefinition.name }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" />
-
+                <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
+                  <input type="input" class="form-control" id="{{ fieldDefinition.name }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" />
+                  <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="errors[fieldDefinition.name]"></span>
+                  <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+                </div>
               </ANY>
 
               <ANY ng-switch-when="multipleTelephone">
@@ -90,22 +93,27 @@
               </ANY>
 
               <ANY ng-switch-when="date">
-                <div class="input-group">
-                  <input type="text" class="form-control" id="{{ fieldDefinition.name }}" uib-datepicker-popup ng-model="model[fieldDefinition.name]" is-open="popup.opened" alt-input-formats="['dd-MM-yyyy', 'dd MM yyyy', 'dd-MMMM-yyyy', 'dd MMMM yyyy']" datepicker-options="dateOptions" close-text="Close" ng-change="fieldChange(fieldDefinition.name)"/>
-                  <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
-                  </span>
+                <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="{{ fieldDefinition.name }}" uib-datepicker-popup ng-model="model[fieldDefinition.name]" is-open="popup.opened" alt-input-formats="['dd-MM-yyyy', 'dd MM yyyy', 'dd-MMMM-yyyy', 'dd MMMM yyyy']" datepicker-options="dateOptions" close-text="Close" ng-change="fieldChange(fieldDefinition.name)"/>
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                  </div>
+                  <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
                 </div>
               </ANY>
 
               <ANY ng-switch-when="gender">
-                <br />
-                <label class="radio-inline">
-                  <input type="radio" ng-model="model[fieldDefinition.name]" value="M" ng-change="fieldChange(fieldDefinition.name)"> {{ ::waid.config.getTranslation('idm', 'male') }}
-                </label>
-                <label class="radio-inline">
-                  <input type="radio" ng-model="model[fieldDefinition.name]" value="F" ng-change="fieldChange(fieldDefinition.name)"> {{ ::waid.config.getTranslation('idm', 'female') }}
-                </label>
+                <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
+                  <label class="radio-inline">
+                    <input type="radio" ng-model="model[fieldDefinition.name]" value="M" ng-change="fieldChange(fieldDefinition.name)"> {{ ::waid.config.getTranslation('idm', 'male') }}
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" ng-model="model[fieldDefinition.name]" value="F" ng-change="fieldChange(fieldDefinition.name)"> {{ ::waid.config.getTranslation('idm', 'female') }}
+                  </label>
+                  <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+                </div>
               </ANY>
 
               <ANY ng-switch-when="avatar">
@@ -117,17 +125,27 @@
                   </div>
                   <div class="media-body">
                     <div ng-show="isUploading" class="alert alert-info" role="alert">Bezig met uploaden van foto.</div>
-                    <input type="file" class="form-control" id="avatar" placeholder="Profielfoto" onchange="angular.element(this).scope().uploadFile(this.files)">
+                    <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
+                      <input type="file" class="form-control" id="avatar" placeholder="Profielfoto" onchange="angular.element(this).scope().uploadFile(this.files)">
+                      <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+                    </div>
                   </div>
                 </div>
               </ANY>
 
               <ANY ng-switch-when="textarea">
-                <textarea class="form-control" rows="3" id="{{ fieldDefinition.name }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" msd-elastic></textarea>
+                <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
+                  <textarea class="form-control" rows="3" id="{{ fieldDefinition.name }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" msd-elastic></textarea>
+                  <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+                </div>
               </ANY>
 
               <ANY ng-switch-when="password">
-                <input type="password" class="form-control" id="{{ fieldDefinition.name }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" />
+                <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
+                  <input type="password" class="form-control" id="{{ fieldDefinition.name }}" placeholder="{{ ::waid.config.getTranslation('idm',   fieldDefinition.labelKey ) }}" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)" />
+                  <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="errors[fieldDefinition.name]"></span>
+                  <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+                </div>
               </ANY>
                   
               <ANY ng-switch-when="multipleEmail">
@@ -181,7 +199,7 @@
               
               <ANY ng-switch-default>Invalid fieldDefinition</ANY>
 
-              <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+              
         	  </ANY>
             
           </div>

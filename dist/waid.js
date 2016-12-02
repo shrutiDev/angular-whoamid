@@ -116,11 +116,21 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     }
     $cookies.putObject('waid_last_action', object, { 'path': '/' });
   };
-
   waid.getLastAction = function () {
     var object = $cookies.getObject('waid_last_action');
     if (object) {
       return object;
+    }
+    return false;
+  };
+  waid.setLastProfileFieldSet = function(action) {
+    $cookies.put('waid_last_profile_field_set', action, { 'path': '/' });
+  }
+  waid.getLastProfileFieldSet = function () {
+    var data = $cookies.get('waid_last_profile_field_set');
+    if (data) {
+      $cookies.remove('waid_last_profile_field_set', { 'path': '/' });
+      return data;
     }
     return false;
   };
@@ -205,6 +215,9 @@ angular.module('waid.core.strategy', [
   };
   waidCore.openUserProfileHome = function(fieldSet) {
     $rootScope.$broadcast('waid.idm.strategy.openUserProfileHome', {'fieldSet':fieldSet});
+    if (fieldSet) {
+      $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
+    }
   };
   waidCore.openLoginAndRegisterHome = function() {
     $rootScope.$broadcast('waid.idm.strategy.openLoginAndRegisterHome');
@@ -318,14 +331,15 @@ angular.module('waid.core.strategy', [
       waidCore.preInitialize();
       var promises = [];
       promises.push(waidCore.applicationInit());
-      promises.push(waidCore.initAlCode());
       promises.push(waidCore.initAuthentication());
       // init
 
       $q.all(promises).then(function () {
-        waidCore.storeBaseData();
-        waidCore.isInit = true;
-        $rootScope.$broadcast('waid.core.strategy.isInit');
+        waidCore.initAlCode().then(function(){
+          waidCore.storeBaseData();
+          waidCore.isInit = true;
+          $rootScope.$broadcast('waid.core.strategy.isInit');
+        })
       }, function(){
         // console.log('Fatal error');
       });
@@ -353,6 +367,36 @@ angular.module('waid.core.strategy', [
 
 
   // Start listeners
+
+
+  var currentFieldSet = '';
+
+  $rootScope.$on('waid.idm.action.goToFieldSet', function (event, fieldSet) {
+    currentFieldSet = fieldSet;
+  });
+  $rootScope.$on('waid.idm.action.associateSocial', function (event, data) {
+    // Store last fieldSet so it can be opened when the user returns.
+    console.log(data['action']);
+    if (data['action'] == 'associate_known_user') {
+      console.log(currentFieldSet);
+      waidCore.setLastProfileFieldSet(currentFieldSet);
+    }
+  });
+
+  // If a new e-mail is added.. set return to email fieldset on autologin
+  $rootScope.$on('waid.idm.action.addEmail.ok', function (event, data) {
+    console.log('Store last action for activating email');
+    console.log(currentFieldSet);
+    waidCore.setLastProfileFieldSet(currentFieldSet);
+  });
+
+  $rootScope.$on('waid.idm.action.lostLogin.ok', function (event, data) {
+    console.log('Lost login, set goto password');
+    // TODO : Get password field from config
+    waidCore.setLastProfileFieldSet('password');
+  });
+
+
 
   // When 403 response is given check if profile is valid
   $rootScope.$on('waid.core.services.noPermission', function (event, data) {
@@ -521,13 +565,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       }));
       return deferred.promise;
     },
-    '_login': function (token) {
-      // waidCore.token = token;
-      // waidCore.isLoggedIn = true;
-      // waidCore.authenticateCheck = false;
-      // waidCore.saveWaidData();
-      // this.authenticate();
-    },
     '_clearAuthorizationData': function () {
       this.authenticated = false;
       waidCore.token = null;
@@ -617,6 +654,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userLinkSocialProfilePost': function (data) {
       return this._makeRequest('POST', 'app', '/user/link-social-profile/', 'application.userLinkSocialProfile', data);
     },
+    'userLinkSocialProfileDelete': function (data) {
+      return this._makeRequest('DELETE', 'app', '/user/link-social-profile/', 'application.userLinkSocialProfile');
+    },
     'userAssociateSocialDelete': function (provider) {
       return this._makeRequest('DELETE', 'app', '/user/associate-social/' + provider + '/', 'application.userAssociateSocial');
     },
@@ -639,7 +679,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       this._clearAuthorizationData();
       var that = this;
       return this._makeRequest('POST', 'app', '/user/login/', 'application.userLogin', data).then(function (data) {
-        that._login(data.token);
         return data;
       });
     },
@@ -647,7 +686,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       var that = this;
       this._clearAuthorizationData();
       return this._makeRequest('GET', 'app', '/user/autologin/' + code + '/', 'application.userAutoLogin', null, true).then(function (data) {
-        that._login(data.token);
         return data;
       });
     },
@@ -1646,7 +1684,6 @@ angular.module('waid.idm', [
       'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account.',
       'system-error': 'Systeem fout. Ons excuus voor het ongemak.',
       'edit': 'Wijzigen',
-      'loggedin_success': 'Je bent succesvol ingelogd.',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
       'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mailadres in en dan word er een nieuwe activatie link toegestuurd.',
       'delete':'Verwijderen',
@@ -1914,12 +1951,17 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   });
 }).controller('WAIDIDMProfileNavbarCtrl', function ($scope, $rootScope) {
   $scope.goToFieldSet = function (fieldSet) {
-    $rootScope.$broadcast('waid.idm.goToFieldSet', fieldSet);
+    $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
   };
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
+  $scope.goToFieldSet = function (fieldSet) {
+    $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
+  };
+
   // Goto fieldset event
-  $rootScope.$on('waid.idm.goToFieldSet', function (event, fieldSet) {
-    $scope.goToFieldSet(fieldSet);
+  $rootScope.$on('waid.idm.action.goToFieldSet', function (event, fieldSet) {
+    $scope.currentFieldSet = fieldSet;
+    $scope.errors = [];
   });
 
   $scope.waid = waidCore;
@@ -1948,10 +1990,6 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
   $scope.getActiveFieldSetMenuClass = function (fieldSet) {
     return fieldSet == $scope.currentFieldSet ? 'active' : '';
-  };
-  $scope.goToFieldSet = function (fieldSet) {
-    $scope.currentFieldSet = fieldSet;
-    $scope.errors = [];
   };
   $scope.getAllFieldDefinitions = function () {
     var fieldDefinitions = [];
@@ -2190,10 +2228,12 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
   $scope.addEmail = function () {
     var data = { 'email': $scope.email.add };
+
     waidService.userEmailPost(data).then(function (data) {
       $scope.errors = [];
       $scope.loadEmailList();
       $scope.email.add = '';
+      $rootScope.$broadcast('waid.idm.action.addEmail.ok', data);
     }, function (data) {
       $scope.errors = data;
     });
@@ -2554,18 +2594,19 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       $scope.errors = data;
     });
   };
-}).controller('WAIDIDMLostLoginCtrl', function ($scope, $location, waidService, waidCore) {
+}).controller('WAIDIDMLostLoginCtrl', function ($scope, $rootScope, $location, waidService, waidCore) {
   $scope.waid = waidCore;
   $scope.model = { 'email': '' };
   $scope.errors = [];
   $scope.submit = function () {
     waidService.userLostLoginPost($scope.model).then(function (data) {
+      $rootScope.$broadcast('waid.idm.action.lostLogin.ok', data);
       $scope.errors = [];
     }, function (data) {
       $scope.errors = data;
     });
   };
-}).controller('WAIDIDMSocialCtrl', function ($scope, $location, waidService, $window, waidCore) {
+}).controller('WAIDIDMSocialCtrl', function ($scope, $rootScope, $location, waidService, $window, waidCore) {
   $scope.waid = waidCore;
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -2577,10 +2618,11 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     });
   };
   $scope.goToSocialLogin = function (provider) {
+    $rootScope.$broadcast('waid.idm.action.associateSocial', {'action':'associate_unknown_user', 'provider':provider});
     $window.location.assign(provider.url);
   };
   $scope.getProviders();
-}).controller('WAIDIDMAssociatedSocialAccountsCtrl', function ($scope, $location, waidService, $window, waidCore) {
+}).controller('WAIDIDMAssociatedSocialAccountsCtrl', function ($scope, $rootScope, $location, waidService, $window, waidCore) {
   $scope.waid = waidCore;
   $scope.providers = [];
   $scope.getProviders = function () {
@@ -2592,12 +2634,16 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     });
   };
   $scope.associateSocialAction = function (provider) {
+    
     // Toggle between linking and unlinking
     if (provider.linked) {
+      $rootScope.$broadcast('waid.idm.action.associateSocial', {'action':'delete', 'provider':provider});
       waidService.userAssociateSocialDelete(provider.backend).then(function(){
+        
         $scope.getProviders();
       })
     } else {
+      $rootScope.$broadcast('waid.idm.action.associateSocial', {'action':'associate_known_user', 'provider':provider});
       $window.location.assign(provider.url);
     }
   };

@@ -42,6 +42,9 @@ angular.module('waid.core.strategy', [
   };
   waidCore.openUserProfileHome = function(fieldSet) {
     $rootScope.$broadcast('waid.idm.strategy.openUserProfileHome', {'fieldSet':fieldSet});
+    if (fieldSet) {
+      $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
+    }
   };
   waidCore.openLoginAndRegisterHome = function() {
     $rootScope.$broadcast('waid.idm.strategy.openLoginAndRegisterHome');
@@ -155,14 +158,15 @@ angular.module('waid.core.strategy', [
       waidCore.preInitialize();
       var promises = [];
       promises.push(waidCore.applicationInit());
-      promises.push(waidCore.initAlCode());
       promises.push(waidCore.initAuthentication());
       // init
 
       $q.all(promises).then(function () {
-        waidCore.storeBaseData();
-        waidCore.isInit = true;
-        $rootScope.$broadcast('waid.core.strategy.isInit');
+        waidCore.initAlCode().then(function(){
+          waidCore.storeBaseData();
+          waidCore.isInit = true;
+          $rootScope.$broadcast('waid.core.strategy.isInit');
+        })
       }, function(){
         // console.log('Fatal error');
       });
@@ -190,6 +194,36 @@ angular.module('waid.core.strategy', [
 
 
   // Start listeners
+
+
+  var currentFieldSet = '';
+
+  $rootScope.$on('waid.idm.action.goToFieldSet', function (event, fieldSet) {
+    currentFieldSet = fieldSet;
+  });
+  $rootScope.$on('waid.idm.action.associateSocial', function (event, data) {
+    // Store last fieldSet so it can be opened when the user returns.
+    console.log(data['action']);
+    if (data['action'] == 'associate_known_user') {
+      console.log(currentFieldSet);
+      waidCore.setLastProfileFieldSet(currentFieldSet);
+    }
+  });
+
+  // If a new e-mail is added.. set return to email fieldset on autologin
+  $rootScope.$on('waid.idm.action.addEmail.ok', function (event, data) {
+    console.log('Store last action for activating email');
+    console.log(currentFieldSet);
+    waidCore.setLastProfileFieldSet(currentFieldSet);
+  });
+
+  $rootScope.$on('waid.idm.action.lostLogin.ok', function (event, data) {
+    console.log('Lost login, set goto password');
+    // TODO : Get password field from config
+    waidCore.setLastProfileFieldSet('password');
+  });
+
+
 
   // When 403 response is given check if profile is valid
   $rootScope.$on('waid.core.services.noPermission', function (event, data) {

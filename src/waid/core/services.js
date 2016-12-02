@@ -90,13 +90,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       }));
       return deferred.promise;
     },
-    '_login': function (token) {
-      // waidCore.token = token;
-      // waidCore.isLoggedIn = true;
-      // waidCore.authenticateCheck = false;
-      // waidCore.saveWaidData();
-      // this.authenticate();
-    },
     '_clearAuthorizationData': function () {
       this.authenticated = false;
       waidCore.token = null;
@@ -186,6 +179,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userLinkSocialProfilePost': function (data) {
       return this._makeRequest('POST', 'app', '/user/link-social-profile/', 'application.userLinkSocialProfile', data);
     },
+    'userLinkSocialProfileDelete': function (data) {
+      return this._makeRequest('DELETE', 'app', '/user/link-social-profile/', 'application.userLinkSocialProfile');
+    },
     'userAssociateSocialDelete': function (provider) {
       return this._makeRequest('DELETE', 'app', '/user/associate-social/' + provider + '/', 'application.userAssociateSocial');
     },
@@ -208,7 +204,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       this._clearAuthorizationData();
       var that = this;
       return this._makeRequest('POST', 'app', '/user/login/', 'application.userLogin', data).then(function (data) {
-        that._login(data.token);
         return data;
       });
     },
@@ -216,7 +211,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       var that = this;
       this._clearAuthorizationData();
       return this._makeRequest('GET', 'app', '/user/autologin/' + code + '/', 'application.userAutoLogin', null, true).then(function (data) {
-        that._login(data.token);
         return data;
       });
     },

@@ -1,16 +1,21 @@
 <div class="waid">
   <div id="login_view">
     <form role="form"  name="loginForm" novalidate>
-      <div class="form-group">
+      <div class="form-group has-feedback" ng-class="errors.username ? 'has-error' : ''">
+
         <label for="id_username">{{ ::waid.config.getTranslation('idm', 'login_form_username_label') }}</label>
         <input name="username" id="id_username" type="text" ng-model="model.username" placeholder="Username" class="form-control" required />
+        <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="errors.username"></span>
+        <div class="alert alert-danger" ng-repeat="error in errors.username"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
       </div>
-      <div class="alert alert-danger" ng-repeat="error in errors.username"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
-      <div class="form-group">
+      
+      <div class="form-group has-feedback" ng-class="errors.password ? 'has-error' : ''">
         <label for="id_password">{{ ::waid.config.getTranslation('idm', 'login_form_password_label') }}</label>
         <input name="password" id="id_password" type="password" ng-model="model.password" placeholder="Password" class="form-control" required />
+        <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-show="errors.password"></span>
+        <div class="alert alert-danger" ng-repeat="error in errors.password"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
       </div>
-      <div class="alert alert-danger" ng-repeat="error in errors.password"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
+      
       <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ error }}</div>
       <button type="submit" class="btn btn-primary" ng-click="login()" ng-disabled="waid.isLoading">{{ ::waid.config.getTranslation('idm', 'login_submit') }}</button>
     </form>

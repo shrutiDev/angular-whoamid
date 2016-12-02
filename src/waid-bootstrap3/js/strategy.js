@@ -216,14 +216,16 @@ angular.module('waid.core.app.strategy', [
     waidCore.openCompleteProfile();
   });
 
+  $rootScope.$on('waid.services.application.userAutoLogin.get.ok', function (event, data) {
+    var lastProfileFieldSet = waidCore.getLastProfileFieldSet();
+    if (lastProfileFieldSet) {
+      waidCore.openUserProfileHome(lastProfileFieldSet);
+    }
+  });
+
   $rootScope.$on('waid.core.strategy.profileCheck.linkProfile', function(event, data){
     //console.log('waid.core.strategy.profileCheck.linkProfile');
     waidCore.openLinkSocialProfile();
-  });
-
-  $rootScope.$on('waid.core.strategy.profileCheck.success', function (event, data) {
-    //console.log('waid.core.strategy.profileCheck.success');
-    growl.addSuccessMessage(waidCore.config.getConfig('idm.translations.loggedin_success'));
   });
   $rootScope.$on('waid.services.application.userEmail.post.ok', function (event, data) {
     //console.log('waid.services.application.userEmail.post.ok');
@@ -260,6 +262,9 @@ angular.module('waid.core.app.strategy', [
   });
   $rootScope.$on('waid.idm.strategy.action.doNotLinkSocialProfile', function (event) {
     //console.log('waid.idm.strategy.action.doNotLinkSocialProfile');
+    // Remove inactive linked social profiles
+    console.log('NEEN');
+    waidService.userLinkSocialProfileDelete();
     waidCore.closeLinkSocialProfileModal();
   });
 

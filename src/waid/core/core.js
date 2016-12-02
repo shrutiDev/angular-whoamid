@@ -67,11 +67,21 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     }
     $cookies.putObject('waid_last_action', object, { 'path': '/' });
   };
-
   waid.getLastAction = function () {
     var object = $cookies.getObject('waid_last_action');
     if (object) {
       return object;
+    }
+    return false;
+  };
+  waid.setLastProfileFieldSet = function(action) {
+    $cookies.put('waid_last_profile_field_set', action, { 'path': '/' });
+  }
+  waid.getLastProfileFieldSet = function () {
+    var data = $cookies.get('waid_last_profile_field_set');
+    if (data) {
+      $cookies.remove('waid_last_profile_field_set', { 'path': '/' });
+      return data;
     }
     return false;
   };
