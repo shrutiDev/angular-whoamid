@@ -141,9 +141,11 @@ angular.module('waid.core.strategy', [
     if (waidCore.token) {
       waidService.authenticate().then(function(){
         waidCore.isLoggedIn = true;
+        $rootScope.$broadcast('waid.core.strategy.initAuthentication.ok');
         deferred.resolve();
       }, function(){
         waidCore.isLoggedIn = false;
+        $rootScope.$broadcast('waid.core.strategy.initAuthentication.error');
         deferred.resolve();
       })
     } else {
