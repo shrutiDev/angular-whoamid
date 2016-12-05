@@ -9,10 +9,11 @@ angular.module('waid', [
   'waid.idm',
   'waid.comments',
   'waid.rating',
-  'monospaced.elastic'
+  'monospaced.elastic',
+  'LocalStorageModule'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.36';
+  waidCore.config.version = '0.0.37';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -48,7 +49,7 @@ angular.module('waid', [
   waidService.initialize(url);
 });
 'use strict';
-angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCore', ['$rootScope', '$cookies', 'localStorageService', function ($rootScope, $cookies, localStorageService) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -114,28 +115,28 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
       'type':type,
       'data':data
     }
-    $cookies.putObject('waid_last_action', object, { 'path': '/' });
+    localStorageService.set('waid_last_action', object);
   };
   waid.getLastAction = function () {
-    var object = $cookies.getObject('waid_last_action');
+    var object = localStorageService.get('waid_last_action');
     if (object) {
       return object;
     }
     return false;
   };
   waid.setLastProfileFieldSet = function(action) {
-    $cookies.put('waid_last_profile_field_set', action, { 'path': '/' });
+    localStorageService.put('waid_last_profile_field_set', action);
   }
   waid.getLastProfileFieldSet = function () {
-    var data = $cookies.get('waid_last_profile_field_set');
+    var data = localStorageService.get('waid_last_profile_field_set');
     if (data) {
-      $cookies.remove('waid_last_profile_field_set', { 'path': '/' });
+      localStorageService.remove('waid_last_profile_field_set');
       return data;
     }
     return false;
   };
   waid.clearLastAction = function (){
-    $cookies.remove('waid_last_action', { 'path': '/' });
+    localStorageService.remove('waid_last_action');
   };
   waid.clearWaidData = function () {
     $rootScope.waid.account = false;
@@ -143,23 +144,34 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     $rootScope.waid.user = false;
     $rootScope.waid.isLoggedIn = false;
     $rootScope.waid.token = false;
-    $cookies.remove('waid', { 'path': '/' });
-  };
-  waid.saveWaidData = function (waid) {
-    $cookies.putObject('waid', waid, { 'path': '/' });
-  };
-  waid.getWaidData = function () {
-    var waid = $cookies.getObject('waid');
-    if (waid) {
-      return waid;
-    }
-    return false;
+    localStorageService.remove('waid');
   };
   waid.clearUserData = function () {
     $rootScope.waid.user = false;
     $rootScope.waid.isLoggedIn = false;
     $rootScope.waid.token = false;
     waid.saveWaidData();
+  };
+  waid.saveWaidData = function (waid) {
+    var encrypted = false;
+    if (waid) {
+      waid['timestamp'] = Date.now();
+      var jsonData = JSON.stringify(waid);
+      var encrypted = CryptoJS.AES.encrypt(jsonData, this.fp).toString();
+    }
+    localStorageService.set('waid', encrypted, 'localStorage');
+  };
+  waid.getWaidData = function () {
+    var waid = localStorageService.get('waid');
+    if (waid) {
+      var decrypted = CryptoJS.AES.decrypt(waid, this.fp);
+      try{
+        return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+      } catch (err) {
+        return false;
+      }
+    }
+    return false;
   };
   waid.utils = {};
   waid.user = false;
@@ -170,7 +182,7 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
   waid.isLoading = false;
   $rootScope.waid = waid;
   return waid;
-});
+}]);
 'use strict';
 angular.module('waid.core.strategy', [
   'waid.core',
@@ -238,10 +250,21 @@ angular.module('waid.core.strategy', [
   }
 
   waidCore.storeBaseData = function() {
+    if (waidCore.user) {
+      var user = {
+        'default_name': waidCore.user['default_name'],
+        'id': waidCore.user['id'],
+        'avatar_thumb_50_50': waidCore.user['avatar_thumb_50_50'],
+        'has_own_avatar': waidCore.user['has_own_avatar']
+      }
+    } else {
+      var user = false;
+    }
     waidCore.saveWaidData({
       'account':waidCore.account,
       'application':waidCore.application,
-      'token':waidCore.token
+      'token':waidCore.token,
+      'user':user
     });
   }
   waidCore.initAlCode = function () {
@@ -281,7 +304,7 @@ angular.module('waid.core.strategy', [
   waidCore.initFP = function () {
     var deferred = $q.defer();
     new Fingerprint2().get(function (result, components) {
-      waidService.fp = result;
+      waidCore.fp = result;
       deferred.resolve(result);
     });
     return deferred.promise;
@@ -291,13 +314,27 @@ angular.module('waid.core.strategy', [
     var deferred = $q.defer();
     // Minimum required
     if (typeof waidCore.account != 'undefined' && typeof waidCore.application != 'undefined' && waidCore.account.id && waidCore.application.id) {
-      waidService.applicationInitGet(waidCore.account.id , waidCore.application.id).then(function(data){
-        waidCore.account = data.account;
-        waidCore.application = data.application;
-        deferred.resolve();
-      }, function(){
-        deferred.reject();
-      });
+      var waid = waidCore.getWaidData();
+      var cacheOk = false;
+      if (waid && waid.account && waid.application) {
+        if (waidCore.account.id == waid.account.id && waidCore.application.id == waid.application.id) {
+          waidCore.account = waid.account;
+          waidCore.application = waid.application;
+          deferred.resolve();
+          cacheOk = true;
+        }
+      } 
+
+      // Otherwhise continue to retrieve data
+      if (!cacheOk) {
+        waidService.applicationInitGet(waidCore.account.id , waidCore.application.id).then(function(data){
+          waidCore.account = data.account;
+          waidCore.application = data.application;
+          deferred.resolve();
+        }, function(){
+          deferred.reject();
+        });
+      }
     } else {
       deferred.reject();
     }
@@ -311,16 +348,25 @@ angular.module('waid.core.strategy', [
     if (waid && waid.token) {
         waidCore.token = waid.token;
     }
+    if (waid && waid.user) {
+        waidCore.user = waid.user;
+    }
     if (waidCore.token) {
-      waidService.authenticate().then(function(){
+      if (waidCore.user) {
         waidCore.isLoggedIn = true;
         $rootScope.$broadcast('waid.core.strategy.initAuthentication.ok');
         deferred.resolve();
-      }, function(){
-        waidCore.isLoggedIn = false;
-        $rootScope.$broadcast('waid.core.strategy.initAuthentication.error');
-        deferred.resolve();
-      })
+      } else {
+        waidService.authenticate().then(function(){
+          waidCore.isLoggedIn = true;
+          $rootScope.$broadcast('waid.core.strategy.initAuthentication.ok');
+          deferred.resolve();
+        }, function(){
+          waidCore.isLoggedIn = false;
+          $rootScope.$broadcast('waid.core.strategy.initAuthentication.error');
+          deferred.resolve();
+        });
+      }
     } else {
       waidCore.isLoggedIn = false;
       deferred.resolve();
@@ -410,7 +456,7 @@ angular.module('waid.core.strategy', [
   });
 
   // Check last action, if nog logged in try to place latest action (post comment when not logged in)
-  $rootScope.$on('waid.services.authenticate.ok', function (event, data) {
+  $rootScope.$on('waid.core.strategy.initAuthentication.ok', function (event, data) {
     var action = waidCore.getLastAction();
     if (action.type == 'comment_post') {
       waidService.userCommentPost(action.data).then(function(data){
@@ -427,10 +473,12 @@ angular.module('waid.core.strategy', [
 
   $rootScope.$on('waid.services.application.userProfile.patch.ok', function (event, data) {
     waidCore.user = data;
+    waidCore.storeBaseData();
   });
 
   $rootScope.$on('waid.services.application.userProfile.get.ok', function (event, data) {
     waidCore.user = data;
+    waidCore.storeBaseData();
   });
 
   $rootScope.$on('waid.idm.strategy.action.doNotLinkSocialProfile', function (event, data) {
@@ -441,15 +489,15 @@ angular.module('waid.core.strategy', [
   });
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {
     waidCore.token = data['token'];
-    waidCore.storeBaseData();
     waidCore.initAuthentication();
+    waidCore.storeBaseData();
     waidCore.profileCheck(data);
   });
 
   $rootScope.$on('waid.services.application.userAutoLogin.get.ok', function (event, data) {
     waidCore.token = data['token'];
-    waidCore.storeBaseData();
     waidCore.initAuthentication();
+    waidCore.storeBaseData();
     waidCore.profileCheck(data);
   });
 
@@ -482,7 +530,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'apiVersion': 'v1',
     'token': null,
     'authenticated': false,
-    'fp': '',
     'running': [],
     'request': function (args) {
       var that = this;
@@ -496,7 +543,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         $http.defaults.headers.common.Authorization = null;
       }
-      $http.defaults.headers.common.FPID = this.fp;
+      $http.defaults.headers.common.FPID = waidCore.fp;
       $http.defaults.headers.common.CID = 'AngularJS ' + waidCore.config.version;
       // Extend headers
       var headers = {};

@@ -1,5 +1,5 @@
 'use strict';
-angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootScope, $cookies) {
+angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCore', ['$rootScope', '$cookies', 'localStorageService', function ($rootScope, $cookies, localStorageService) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -65,28 +65,28 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
       'type':type,
       'data':data
     }
-    $cookies.putObject('waid_last_action', object, { 'path': '/' });
+    localStorageService.set('waid_last_action', object);
   };
   waid.getLastAction = function () {
-    var object = $cookies.getObject('waid_last_action');
+    var object = localStorageService.get('waid_last_action');
     if (object) {
       return object;
     }
     return false;
   };
   waid.setLastProfileFieldSet = function(action) {
-    $cookies.put('waid_last_profile_field_set', action, { 'path': '/' });
+    localStorageService.put('waid_last_profile_field_set', action);
   }
   waid.getLastProfileFieldSet = function () {
-    var data = $cookies.get('waid_last_profile_field_set');
+    var data = localStorageService.get('waid_last_profile_field_set');
     if (data) {
-      $cookies.remove('waid_last_profile_field_set', { 'path': '/' });
+      localStorageService.remove('waid_last_profile_field_set');
       return data;
     }
     return false;
   };
   waid.clearLastAction = function (){
-    $cookies.remove('waid_last_action', { 'path': '/' });
+    localStorageService.remove('waid_last_action');
   };
   waid.clearWaidData = function () {
     $rootScope.waid.account = false;
@@ -94,23 +94,34 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
     $rootScope.waid.user = false;
     $rootScope.waid.isLoggedIn = false;
     $rootScope.waid.token = false;
-    $cookies.remove('waid', { 'path': '/' });
-  };
-  waid.saveWaidData = function (waid) {
-    $cookies.putObject('waid', waid, { 'path': '/' });
-  };
-  waid.getWaidData = function () {
-    var waid = $cookies.getObject('waid');
-    if (waid) {
-      return waid;
-    }
-    return false;
+    localStorageService.remove('waid');
   };
   waid.clearUserData = function () {
     $rootScope.waid.user = false;
     $rootScope.waid.isLoggedIn = false;
     $rootScope.waid.token = false;
     waid.saveWaidData();
+  };
+  waid.saveWaidData = function (waid) {
+    var encrypted = false;
+    if (waid) {
+      waid['timestamp'] = Date.now();
+      var jsonData = JSON.stringify(waid);
+      var encrypted = CryptoJS.AES.encrypt(jsonData, this.fp).toString();
+    }
+    localStorageService.set('waid', encrypted, 'localStorage');
+  };
+  waid.getWaidData = function () {
+    var waid = localStorageService.get('waid');
+    if (waid) {
+      var decrypted = CryptoJS.AES.decrypt(waid, this.fp);
+      try{
+        return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+      } catch (err) {
+        return false;
+      }
+    }
+    return false;
   };
   waid.utils = {};
   waid.user = false;
@@ -121,4 +132,4 @@ angular.module('waid.core', ['ngCookies']).service('waidCore', function ($rootSc
   waid.isLoading = false;
   $rootScope.waid = waid;
   return waid;
-});
+}]);

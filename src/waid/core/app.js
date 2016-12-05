@@ -9,10 +9,11 @@ angular.module('waid', [
   'waid.idm',
   'waid.comments',
   'waid.rating',
-  'monospaced.elastic'
+  'monospaced.elastic',
+  'LocalStorageModule'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.36';
+  waidCore.config.version = '0.0.37';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },

@@ -83,7 +83,7 @@ module.exports = function (grunt) {
               },
               url:    function(url) { 
                 url = url.replace('waid-bootstrap3/', ''); 
-                url = url.replace('.html', '.html?v=0.0.36'); 
+                url = url.replace('.html', '.html?v=0.0.37'); 
                 return url
               }
             },
@@ -135,6 +135,8 @@ module.exports = function (grunt) {
           },
           waiddependenciesjs:{
               src: [
+                'src/bower_components/cryptojslib/rollups/aes.js',
+                'src/bower_components/angular-local-storage/dist/angular-local-storage.js',
                 'src/dependencies/angular-slugify.js',
                 'src/dependencies/elastic.js',
                 'src/dependencies/fingerprint2.js'

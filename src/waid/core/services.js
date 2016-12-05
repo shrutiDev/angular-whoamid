@@ -5,7 +5,6 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'apiVersion': 'v1',
     'token': null,
     'authenticated': false,
-    'fp': '',
     'running': [],
     'request': function (args) {
       var that = this;
@@ -19,7 +18,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
       } else {
         $http.defaults.headers.common.Authorization = null;
       }
-      $http.defaults.headers.common.FPID = this.fp;
+      $http.defaults.headers.common.FPID = waidCore.fp;
       $http.defaults.headers.common.CID = 'AngularJS ' + waidCore.config.version;
       // Extend headers
       var headers = {};
