@@ -13,7 +13,7 @@ angular.module('waid', [
   'LocalStorageModule'
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.37';
+  waidCore.config.version = '0.0.38';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -125,7 +125,7 @@ angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCo
     return false;
   };
   waid.setLastProfileFieldSet = function(action) {
-    localStorageService.put('waid_last_profile_field_set', action);
+    localStorageService.set('waid_last_profile_field_set', action);
   }
   waid.getLastProfileFieldSet = function () {
     var data = localStorageService.get('waid_last_profile_field_set');
@@ -424,22 +424,17 @@ angular.module('waid.core.strategy', [
   });
   $rootScope.$on('waid.idm.action.associateSocial', function (event, data) {
     // Store last fieldSet so it can be opened when the user returns.
-    console.log(data['action']);
     if (data['action'] == 'associate_known_user') {
-      console.log(currentFieldSet);
       waidCore.setLastProfileFieldSet(currentFieldSet);
     }
   });
 
   // If a new e-mail is added.. set return to email fieldset on autologin
   $rootScope.$on('waid.idm.action.addEmail.ok', function (event, data) {
-    console.log('Store last action for activating email');
-    console.log(currentFieldSet);
     waidCore.setLastProfileFieldSet(currentFieldSet);
   });
 
   $rootScope.$on('waid.idm.action.lostLogin.ok', function (event, data) {
-    console.log('Lost login, set goto password');
     // TODO : Get password field from config
     waidCore.setLastProfileFieldSet('password');
   });

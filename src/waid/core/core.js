@@ -75,7 +75,7 @@ angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCo
     return false;
   };
   waid.setLastProfileFieldSet = function(action) {
-    localStorageService.put('waid_last_profile_field_set', action);
+    localStorageService.set('waid_last_profile_field_set', action);
   }
   waid.getLastProfileFieldSet = function () {
     var data = localStorageService.get('waid_last_profile_field_set');
