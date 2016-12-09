@@ -51,12 +51,50 @@
                   <div ng-show="emails.length > 0" ng-cloak>
                     <dl class="dl-horizontal" ng-repeat="email in emails">
                       <dt>
-                        <span class="glyphicon glyphicon-eye-close text-danger" ng-show="!email.is_verified"></span>
-                        <span class="glyphicon glyphicon-ok text-success" ng-show="email.is_verified"></span>
+                        {{ email.email }}
                       </dt>
-                      <dd>{{ email.email }}</dd>
+                      <dd>
+                        <span class="glyphicon glyphicon-minus text-danger" ng-show="!email.is_verified"></span>
+                        <span class="glyphicon glyphicon-ok text-success" ng-show="email.is_verified"></span>
+                      </dd>
                     </dl>
                   </div>
+                </ANY>
+
+                <ANY ng-switch-when="associatedSocialAccounts">
+                  <div ng-show="providers.length > 0" ng-cloak>
+                    <dl class="dl-horizontal" ng-repeat="provider in providers">
+                      <dt>
+                        <i class="fa fa-{{ provider.icon }}-square" aria-hidden="true"></i> {{ provider.name }}
+                      </dt>
+                      <dd>
+                        <span class="glyphicon glyphicon-ok text-success" ng-show="provider.linked"></span>
+                        <span class="glyphicon glyphicon-minus text-danger" ng-show="!provider.linked">-</span>
+                      </dd>
+                    </dl>
+                  </div>
+                </ANY>
+
+                <ANY ng-switch-when="checkbox">
+                  <dl class="dl-horizontal">
+                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>
+                    <dd>
+                      <span class="glyphicon glyphicon-ok text-success" ng-show="model[fieldDefinition.name]"></span>
+                      <span class="glyphicon glyphicon-minus text-danger" ng-show="!model[fieldDefinition.name]"></span>
+                    </dd>
+                  </dl>
+                </ANY>
+
+                <ANY ng-switch-when="multipleCheckbox">
+                  <dl class="dl-horizontal">
+                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>
+                    <dd>
+                      <ul ng-show="model[fieldDefinition.name]">
+                        <li ng-repeat="(key, value) in model[fieldDefinition.name]" ng-show="value">{{ getMultipleCheckBoxName(fieldDefinition, key) }}</li>
+                      </ul>
+                      <span class="glyphicon glyphicon-minus text-danger" ng-show="!model[fieldDefinition.name]"></span>
+                    </dd>
+                  </dl>
                 </ANY>
 
                 <ANY ng-switch-default>Invalid fieldDefinition</ANY>

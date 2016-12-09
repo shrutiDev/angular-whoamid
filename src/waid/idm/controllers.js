@@ -9,6 +9,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
   };
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
+  $scope.model = {};
   $scope.goToFieldSet = function (fieldSet) {
     $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
   };
@@ -79,7 +80,9 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     waidService.userProfileGet().then(function (data) {
       var data = $scope.formatDataFromApi(data);
       $scope.errors = [];
-      $scope.model = data;
+      for (var key in data) {
+        $scope.model[key] = data[key];
+      }
       waidCore.user = data;
       defer.resolve(data);
     }, function (data) {
@@ -139,7 +142,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
   $scope.saveMetadata = function (defaultMetadataPostData) {
     var defer = $q.defer();
-    waidService.userMetadataPost(defaultMetadataPostData).then(function (data) {
+    waidService.userApplicationMetadataPost(defaultMetadataPostData).then(function (data) {
       defer.resolve(data);
     }, function (data) {
       angular.extend($scope.errors, data);
@@ -183,15 +186,16 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     var fieldDefinitions = $scope.getAllFieldDefinitions();
     //var profilePostData = angular.copy($scope.model);
     //console.log(profilePostData);
+    var collectMetadata = false;
     var defaultProfilePostData = {};
     var passwordProfilePostData = {};
     var usernameProfilePostData = {};
     var metadataProfilePostData = {};
     for (var i in fieldDefinitions) {
       var fieldDefinition = fieldDefinitions[i];
+      var storageType = (typeof fieldDefinition.storageType != 'undefined') ? fieldDefinition.storageType : 'default';
 
       if ($scope.changedFields.indexOf(fieldDefinition.name) != -1) {
-        var storageType = (typeof fieldDefinition.storageType != 'undefined') ? fieldDefinition.storageType : 'default';
         if (storageType == 'username') {
           usernameProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
           continue;
@@ -210,8 +214,12 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
         }
 
         if (storageType == 'metadata') {
-          metadataProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
+          collectMetadata = true;
         }
+      }
+      if (storageType == 'metadata') {
+        // Store all metadata fields becouse it must post all values
+        metadataProfilePostData[fieldDefinition.name] = dataPrepared[fieldDefinition.name];
       }
     }
     var promises = [];
@@ -228,7 +236,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       promises.push($scope.saveDefault(defaultProfilePostData));
     }
     // Metadata store call
-    if (Object.keys(metadataProfilePostData).length) {
+    if (Object.keys(metadataProfilePostData).length && collectMetadata) {
       promises.push($scope.saveMetadata(metadataProfilePostData));
     }
 
@@ -249,6 +257,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
       if (forceProfileUpdate) {
         $scope.updateProfileInfo();
       }
+      // Reset changed fields
+      $scope.changedFields = [];
     }, function (errors) {
       // pass
     });
@@ -612,12 +622,44 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     })
   };
 
+  $scope.getMultipleCheckBoxName = function(fieldDefinition, key) {
+    for(var i=0; fieldDefinition.data.length > i; i++){
+      if (fieldDefinition.data[i].id == key) {
+        return fieldDefinition.data[i].name;
+      }
+    }
+    return 'Unknown';
+  }
+
+  $scope.loadApplicationMetadata = function(){
+    waidService.userApplicationMetadataGet().then(function(data){
+      var fieldDefinitions = $scope.getAllFieldDefinitions();
+      for(var i=0; fieldDefinitions.length > i; i++) {
+        var storageType = (typeof fieldDefinitions[i].storageType != 'undefined') ? fieldDefinitions[i].storageType : 'default';
+        if (storageType == 'metadata') {
+          if (typeof data[fieldDefinitions[i].name] != 'undefined') {
+            $scope.model[fieldDefinitions[i].name] = data[fieldDefinitions[i].name];
+          }
+        }
+      }
+    });
+  }
+
+
+  $scope.providers = [];
+  $scope.getProviders = function () {
+    waidService.socialProviderListGet().then(function (data) {
+      $scope.providers = data;
+    });
+  };
 
   $scope.init = function() {
     $scope.updateProfileInfo();
+    $scope.loadApplicationMetadata();
     $scope.loadEmailList();
     $scope.loadTelephoneList();
     $scope.loadAddressList();
+    $scope.getProviders();
   }
 
   $scope.init();

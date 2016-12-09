@@ -3,7 +3,7 @@
     <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs">
       <div class="waid">
         <ul class="nav nav-pills nav-stacked">
-          <li role="presentation" ng-repeat="menuItem in waid.config.getConfig('idm').profileDefinition.fieldSet" ng-class="getActiveFieldSetMenuClass(menuItem.key)"><a ng-click="goToFieldSet(menuItem.key)">{{ waid.config.getTranslation('idm', 'profile_' + menuItem.key + '_title') }}</a></li>
+          <li role="presentation" ng-repeat="menuItem in waid.config.getConfig('idm').profileDefinition.fieldSet" ng-class="getActiveFieldSetMenuClass(menuItem.key)"><a ng-click="goToFieldSet(menuItem.key)">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>
           <li role="presentation" ng-click="waid.logout()"><a>Uitloggen</a></li>
         </ul>
       </div>
@@ -16,7 +16,7 @@
 
         <p ng-if="fieldSet.introKey">{{ ::waid.config.getTranslation('idm',   fieldSet.introKey) }}</p>
         <form ng-if="fieldSet.fieldDefinitions">
-          <div class="form-group" ng-repeat="fieldDefinition in fieldSet.fieldDefinitions">
+          <ANY ng-repeat="fieldDefinition in fieldSet.fieldDefinitions">
           	<label for="{{ fieldDefinition.name }}" ng-hide="fieldDefinition.noLabel">{{ ::waid.config.getTranslation('idm', 	fieldDefinition.labelKey ) }}</label>
 
             <ANY ng-switch="fieldDefinition.type">
@@ -116,6 +116,28 @@
                 </div>
               </ANY>
 
+              <ANY ng-switch-when="checkbox">
+                <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" ng-model="model[fieldDefinition.name]" ng-change="fieldChange(fieldDefinition.name)"> {{ ::waid.config.getTranslation('idm', fieldDefinition.labelKey ) }}
+                    </label>
+                  </div>
+                  <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+                </div>
+              </ANY>
+
+              <ANY ng-switch-when="multipleCheckbox">
+                <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
+                  <div class="checkbox" ng-repeat="row in fieldDefinition.data">
+                    <label>
+                      <input type="checkbox" ng-model="model[fieldDefinition.name][row.id]" ng-change="fieldChange(fieldDefinition.name)"> {{ row.name }}
+                    </label>
+                  </div>
+                  <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
+                </div>
+              </ANY>
+
               <ANY ng-switch-when="avatar">
                 <div class="media">
                   <div class="media-left">
@@ -202,7 +224,7 @@
               
         	  </ANY>
             
-          </div>
+          </ANY>
           <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
           <button type="submit" ng-disabled="waid.isLoading" class="btn btn-default btn-block" ng-click="save()" ng-hide="fieldSet.noSaveButton" ng-cloak><i class="fa fa-floppy-o" aria-hidden="true"></i> Opslaan</button>
         </form>

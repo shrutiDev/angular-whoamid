@@ -243,11 +243,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'userProfilePatch': function (data) {
       return this._makeRequest('PATCH', 'app', '/user/profile/', 'application.userProfile', data);
     },
-    'userMetadataPost': function(data){
-      return this._makeRequest('POST', 'app', '/user/metadata/', 'application.userMetadata', data);
+    'userApplicationMetadataPost': function(data){
+      return this._makeRequest('POST', 'app', '/user/application/metadata/', 'application.userMetadata', data);
     },
-    'userMetadataGet': function(){
-      return this._makeRequest('GET', 'app', '/user/metadata/', 'application.userMetadata');
+    'userApplicationMetadataGet': function(){
+      return this._makeRequest('GET', 'app', '/user/application/metadata/', 'application.userMetadata');
     },
     'userUsernamePut': function (data) {
       return this._makeRequest('PUT', 'app', '/user/username/', 'application.userUsername', data);
