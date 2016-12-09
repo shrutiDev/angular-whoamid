@@ -37,7 +37,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         headers: headers,
         params: params,
         data: data
-      }).success(angular.bind(this, function (data, status, headers, config) {
+      }).then(angular.bind(this, function(response){ //function (data, status, headers, config) {
         //$rootScope.waid.isLoading = false;
         var index = this.running.indexOf(url);
         if (index > -1) {
@@ -48,8 +48,8 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
             waidCore.isLoading = false;
           }
         }
-        deferred.resolve(data, status);
-      })).error(angular.bind(this, function (data, status, headers, config) {
+        deferred.resolve(response.data, response.status);
+      }), angular.bind(this, function(response){ //function (data, status, headers, config) {
         var index = this.running.indexOf(url);
         if (index > -1) {
           this.running.splice(index, 1);
@@ -60,32 +60,32 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
           }
         }
         // Set request status
-        if (data) {
-          data.status = status;
+        if (response.data) {
+          response.data.status = response.status;
         }
-        if (typeof data != 'undefined' && typeof data.error != 'undefined' && data.error.code != 'undefined' && data.error.code == 'invalid_authentication_credentials') {
+        if (typeof response.data != 'undefined' && typeof response.data.error != 'undefined' && response.data.error.code != 'undefined' && response.data.error.code == 'invalid_authentication_credentials') {
           that._clearAuthorizationData();
         }
         // Forbidden, send out event..
-        if (status == 403) {
-          $rootScope.$broadcast('waid.core.services.noPermission', data);
+        if (response.data == 403) {
+          $rootScope.$broadcast('waid.core.services.noPermission', response.data);
         }
         if (status == 0) {
-          if (data == '') {
-            data = {};
-            data.status = 0;
-            data.non_field_errors = ['Could not connect. Please try again.'];
+          if (response.data == '') {
+            response.data = {};
+            response.data.status = 0;
+            response.data.non_field_errors = ['Could not connect. Please try again.'];
           }
           // or if the data is null, then there was a timeout.
-          if (data == null) {
+          if (response.data == null) {
             // Inject a non field error alerting the user
             // that there's been a timeout error.
-            data = {};
-            data.status = 0;
-            data.non_field_errors = ['Server timed out. Please try again.'];
+            response.data = {};
+            response.data.status = 0;
+            response.data.non_field_errors = ['Server timed out. Please try again.'];
           }
         }
-        deferred.reject(data, status, headers, config);
+        deferred.reject(response.data, response.data.status, response.headers, response.config);
       }));
       return deferred.promise;
     },
