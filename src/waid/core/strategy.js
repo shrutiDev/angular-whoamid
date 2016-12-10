@@ -192,19 +192,19 @@ angular.module('waid.core.strategy', [
   waidCore.initialize = function () {
     waidCore.initFP().then(function(){
       waidCore.preInitialize();
-      var promises = [];
-      promises.push(waidCore.applicationInit());
-      promises.push(waidCore.initAuthentication());
-      // init
 
-      $q.all(promises).then(function () {
+      waidCore.applicationInit().then(function () {
         waidCore.initAlCode().then(function(){
-          waidCore.storeBaseData();
           waidCore.isInit = true;
           $rootScope.$broadcast('waid.core.strategy.isInit');
+        }, function(){
+          waidCore.initAuthentication().then(function(){
+            waidCore.isInit = true;
+            $rootScope.$broadcast('waid.core.strategy.isInit');
+          })
         })
       }, function(){
-        // console.log('Fatal error');
+        console.log('Fatal error when ');
       });
 
       // Handle error code
@@ -299,21 +299,24 @@ angular.module('waid.core.strategy', [
   });
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {
     waidCore.token = data['token'];
-    waidCore.initAuthentication();
-    waidCore.storeBaseData();
-    waidCore.profileCheck(data);
+    waidCore.initAuthentication().then(function(){
+      waidCore.storeBaseData();
+      waidCore.profileCheck(data);
+    });
   });
 
   $rootScope.$on('waid.services.application.userAutoLogin.get.ok', function (event, data) {
     waidCore.token = data['token'];
-    waidCore.initAuthentication();
-    waidCore.storeBaseData();
-    waidCore.profileCheck(data);
+    waidCore.initAuthentication().then(function(){
+      waidCore.storeBaseData();
+      waidCore.profileCheck(data);
+    });
   });
 
   $rootScope.$on('waid.services.application.userLinkSocialProfile.post.ok', function (event, data) {
-    waidCore.initAuthentication();
-    waidCore.profileCheck(data);
+    waidCore.initAuthentication().then(function(){
+      waidCore.profileCheck(data);
+    });
   });
 
   $rootScope.$on('waid.idm.strategy.action.logout', function (event) {

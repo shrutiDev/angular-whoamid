@@ -13,15 +13,17 @@ angular.module('waid', [
   'LocalStorageModule'
 ]).config([
   '$locationProvider',
-  function ($locationProvider) {
+  '$qProvider',
+  function ($locationProvider, $qProvider) {
     $locationProvider.html5Mode({
       enabled: true,
       requireBase: false
     });
+    $qProvider.errorOnUnhandledRejections(false);
   }
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.41';
+  waidCore.config.version = '0.0.42';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -384,19 +386,19 @@ angular.module('waid.core.strategy', [
   waidCore.initialize = function () {
     waidCore.initFP().then(function(){
       waidCore.preInitialize();
-      var promises = [];
-      promises.push(waidCore.applicationInit());
-      promises.push(waidCore.initAuthentication());
-      // init
 
-      $q.all(promises).then(function () {
+      waidCore.applicationInit().then(function () {
         waidCore.initAlCode().then(function(){
-          waidCore.storeBaseData();
           waidCore.isInit = true;
           $rootScope.$broadcast('waid.core.strategy.isInit');
+        }, function(){
+          waidCore.initAuthentication().then(function(){
+            waidCore.isInit = true;
+            $rootScope.$broadcast('waid.core.strategy.isInit');
+          })
         })
       }, function(){
-        // console.log('Fatal error');
+        console.log('Fatal error when ');
       });
 
       // Handle error code
@@ -491,21 +493,24 @@ angular.module('waid.core.strategy', [
   });
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {
     waidCore.token = data['token'];
-    waidCore.initAuthentication();
-    waidCore.storeBaseData();
-    waidCore.profileCheck(data);
+    waidCore.initAuthentication().then(function(){
+      waidCore.storeBaseData();
+      waidCore.profileCheck(data);
+    });
   });
 
   $rootScope.$on('waid.services.application.userAutoLogin.get.ok', function (event, data) {
     waidCore.token = data['token'];
-    waidCore.initAuthentication();
-    waidCore.storeBaseData();
-    waidCore.profileCheck(data);
+    waidCore.initAuthentication().then(function(){
+      waidCore.storeBaseData();
+      waidCore.profileCheck(data);
+    });
   });
 
   $rootScope.$on('waid.services.application.userLinkSocialProfile.post.ok', function (event, data) {
-    waidCore.initAuthentication();
-    waidCore.profileCheck(data);
+    waidCore.initAuthentication().then(function(){
+      waidCore.profileCheck(data);
+    });
   });
 
   $rootScope.$on('waid.idm.strategy.action.logout', function (event) {

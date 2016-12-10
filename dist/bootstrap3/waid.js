@@ -223,6 +223,10 @@ angular.module('waid.core.app.strategy', [
     }
   });
 
+  $rootScope.$on('waid.services.application.userAutoLogin.get.error', function (event, data) {
+    growl.addErrorMessage('Kon niet automatisch inloggen. Ons excuus voor het ongemak.');
+  });
+
   $rootScope.$on('waid.core.strategy.profileCheck.linkProfile', function(event, data){
     //console.log('waid.core.strategy.profileCheck.linkProfile');
     waidCore.openLinkSocialProfile();
