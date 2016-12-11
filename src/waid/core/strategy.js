@@ -85,6 +85,18 @@ angular.module('waid.core.strategy', [
   waidCore.initAlCode = function () {
     var deferred = $q.defer();
     var waidAlCode = $location.search().waidAlCode;
+
+    if (typeof waidAlCode == 'undefined' || !waidAlCode) {
+      if($location.url().indexOf('waidAlCode') > -1){
+        var endPart = unescape($location.url().split('waidAlCode=')[1]);
+        endPart = endPart.split('?')[0];
+        endPart = endPart.split('/')[0];
+        endPart = endPart.split('#')[0];
+        endPart = endPart.split('=')[0];
+        waidAlCode = endPart;
+      }
+    }
+    
     if (waidAlCode) {
       waidService.userAutoLoginGet(waidAlCode).then(function (data) {
         deferred.resolve(data);

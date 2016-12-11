@@ -12,18 +12,13 @@ angular.module('waid', [
   'monospaced.elastic',
   'LocalStorageModule'
 ]).config([
-  '$locationProvider',
   '$qProvider',
-  function ($locationProvider, $qProvider) {
-    $locationProvider.html5Mode({
-      enabled: true,
-      requireBase: false
-    });
+  function ($qProvider) {
     $qProvider.errorOnUnhandledRejections(false);
   }
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.43';
+  waidCore.config.version = '0.0.44';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
