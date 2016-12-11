@@ -145,6 +145,7 @@ angular.module('waid.core.strategy', [
         waidService.applicationInitGet(waidCore.account.id , waidCore.application.id).then(function(data){
           waidCore.account = data.account;
           waidCore.application = data.application;
+          waidCore.storeBaseData();
           deferred.resolve();
         }, function(){
           deferred.reject();
@@ -195,8 +196,10 @@ angular.module('waid.core.strategy', [
 
       waidCore.applicationInit().then(function () {
         waidCore.initAlCode().then(function(){
-          waidCore.isInit = true;
-          $rootScope.$broadcast('waid.core.strategy.isInit');
+          waidCore.initAuthentication().then(function(){
+            waidCore.isInit = true;
+            $rootScope.$broadcast('waid.core.strategy.isInit');
+          })
         }, function(){
           waidCore.initAuthentication().then(function(){
             waidCore.isInit = true;

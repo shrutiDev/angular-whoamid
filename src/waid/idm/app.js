@@ -38,7 +38,7 @@ angular.module('waid.idm', [
       'auth-state-missing': 'The state parameter is missing from the server response.',
       'auth-state-forbidden': 'The state parameter returned by the server is not the one sent.',
       'auth-token-error': 'Geen permissie of toegang met de token. Kan hierdoor niet authenticeren. Controlleer de instellingen in de admin.',
-      'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account.',
+      'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account. Je bent nu uitgelogd. Probeer in te loggen met dezelfde social login.',
       'system-error': 'Systeem fout. Ons excuus voor het ongemak.',
       'edit': 'Wijzigen',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',

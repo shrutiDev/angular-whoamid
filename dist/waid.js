@@ -23,7 +23,7 @@ angular.module('waid', [
   }
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.42';
+  waidCore.config.version = '0.0.43';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -339,6 +339,7 @@ angular.module('waid.core.strategy', [
         waidService.applicationInitGet(waidCore.account.id , waidCore.application.id).then(function(data){
           waidCore.account = data.account;
           waidCore.application = data.application;
+          waidCore.storeBaseData();
           deferred.resolve();
         }, function(){
           deferred.reject();
@@ -389,8 +390,10 @@ angular.module('waid.core.strategy', [
 
       waidCore.applicationInit().then(function () {
         waidCore.initAlCode().then(function(){
-          waidCore.isInit = true;
-          $rootScope.$broadcast('waid.core.strategy.isInit');
+          waidCore.initAuthentication().then(function(){
+            waidCore.isInit = true;
+            $rootScope.$broadcast('waid.core.strategy.isInit');
+          })
         }, function(){
           waidCore.initAuthentication().then(function(){
             waidCore.isInit = true;
@@ -1737,7 +1740,7 @@ angular.module('waid.idm', [
       'auth-state-missing': 'The state parameter is missing from the server response.',
       'auth-state-forbidden': 'The state parameter returned by the server is not the one sent.',
       'auth-token-error': 'Geen permissie of toegang met de token. Kan hierdoor niet authenticeren. Controlleer de instellingen in de admin.',
-      'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account.',
+      'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account. Je bent nu uitgelogd. Probeer in te loggen met dezelfde social login.',
       'system-error': 'Systeem fout. Ons excuus voor het ongemak.',
       'edit': 'Wijzigen',
       'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',

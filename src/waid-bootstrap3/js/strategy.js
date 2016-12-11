@@ -21,6 +21,7 @@ angular.module('waid.core.app.strategy', [
   waidCore.openLinkSocialProfileModal = function() {
     if (!linkSocialProfileModalInstance) {
       linkSocialProfileModalInstance = $uibModal.open({
+        appendTo: angular.element(document).find('#waid'),
         animation: true,
         templateUrl: waidCore.config.getTemplateUrl('idm', 'linkSocialProfileModal'),
         controller: 'WAIDIDMLinkSocialProfileCtrl',
@@ -41,6 +42,7 @@ angular.module('waid.core.app.strategy', [
   waidCore.openEmoticonsModal = function (targetId, comment) {
     var input = document.getElementById(targetId);
     emoticonsModalInstance = $uibModal.open({
+      appendTo: angular.element(document).find('#waid'),
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('core', 'emoticonsModal'),
       controller: 'WAIDCoreEmoticonModalCtrl',
@@ -71,6 +73,7 @@ angular.module('waid.core.app.strategy', [
 
   waidCore.openTermsAndConditionsModal = function (template) {
     termsAndConditionsModalInstance = $uibModal.open({
+      appendTo: angular.element(document).find('#waid'),
       animation: true,
       controller: 'WAIDIDMTermsAndConditionsCtrl',
       templateUrl: waidCore.config.getTemplateUrl('idm', 'termsAndConditionsModal'),
@@ -88,6 +91,7 @@ angular.module('waid.core.app.strategy', [
   waidCore.openCompleteProfileModal = function () {
     if (!completeProfileModalInstance) {
       completeProfileModalInstance = $uibModal.open({
+        appendTo: angular.element(document).find('#waid'),
         animation: true,
         templateUrl: waidCore.config.getTemplateUrl('idm', 'completeProfileModal'),
         controller: 'WAIDIDMCompleteProfileCtrl',
@@ -105,6 +109,7 @@ angular.module('waid.core.app.strategy', [
   };
   waidCore.openLostLoginModal = function () {
     lostLoginModalInstance = $uibModal.open({
+      appendTo: angular.element(document).find('#waid'),
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('idm', 'lostLoginModal'),
       size: 'lg',
@@ -120,6 +125,7 @@ angular.module('waid.core.app.strategy', [
   };
   waidCore.openLoginAndRegisterHomeModal = function () {
     loginAndRegisterHomeModalInstance = $uibModal.open({
+      appendTo: angular.element(document).find('#waid'),
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('idm', 'loginAndRegisterModal'),
       size: 'lg',
@@ -135,6 +141,7 @@ angular.module('waid.core.app.strategy', [
   };
   waidCore.openUserProfileHomeModal = function (fieldSet) {
     userProfileHomeModalInstance = $uibModal.open({
+      appendTo: angular.element(document).find('#waid'),
       animation: true,
       templateUrl: waidCore.config.getTemplateUrl('idm', 'userProfileModal'),
       size: 'lg',
