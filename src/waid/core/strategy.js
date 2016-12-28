@@ -2,7 +2,7 @@
 angular.module('waid.core.strategy', [
   'waid.core',
   'waid.core.services'
-]).service('waidCoreStrategy', function ($rootScope, waidCore, waidService, $location, $cookies, $q) {
+]).service('waidCoreStrategy', function ($rootScope, waidCore, waidService, $location, $window, $cookies, $q) {
   waidCore.getAlCodeUrl = function () {
     var url = $location.absUrl();
     if ($location.$$html5 == false) {
@@ -85,6 +85,7 @@ angular.module('waid.core.strategy', [
   waidCore.initAlCode = function () {
     var deferred = $q.defer();
     var waidAlCode = $location.search().waidAlCode;
+    var html5Mode = true;
 
     if (typeof waidAlCode == 'undefined' || !waidAlCode) {
       if($location.url().indexOf('waidAlCode') > -1){
@@ -94,6 +95,7 @@ angular.module('waid.core.strategy', [
         endPart = endPart.split('#')[0];
         endPart = endPart.split('=')[0];
         waidAlCode = endPart;
+        html5Mode = false;
       }
     }
     
@@ -104,6 +106,11 @@ angular.module('waid.core.strategy', [
         // Fix facebook hash
         if ($location.hash() == '_=_') {
           $location.hash('');
+        }
+        if (html5Mode == false) {
+          // Match not done by html5 mode 
+          var newUrl = $location.url().replace('waidAlCode=' + waidAlCode, '');
+          $window.location.href = newUrl;
         }
       }, function (data) {
         deferred.reject(data);
