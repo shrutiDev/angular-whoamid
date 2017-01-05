@@ -360,6 +360,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     'applicationInitGet': function () {
       return this._makeRequest('GET', 'app', '/application/init/', 'application.init',  {}, true);
     },
+    'applicationProfileDefinitionGet': function (){
+      return this._makeRequest('GET', 'app', '/application/profile-definition/', 'application.profileDefinition',  {}, true);
+    },
     'documentGet': function (doc) {
       return this._makeRequest('GET', 'app', '/docs/' + doc + '/', 'applicationDocument');
     },

@@ -17,7 +17,7 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="waid-profile-navbar">
         <ul class="nav navbar-nav">
-          <li ng-repeat="menuItem in waid.config.getConfig('idm').profileDefinition.fieldSet"><a ng-class="getActiveFieldSetMenuClass(menuItem.key)" ng-click="goToFieldSet(menuItem.key)" data-toggle="collapse" data-target="#waid-profile-navbar">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>
+          <li ng-repeat="(groupName, menuItem) in fieldSet.groups"><a ng-class="getActiveFieldSetMenuClass(menuItem.key)" ng-click="goToFieldSet(menuItem.key)" data-toggle="collapse" data-target="#waid-profile-navbar">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>
           <li role="separator" class="divider"></li>
           <li><a href="#" ng-click="waid.logout()" class="visible-xs" data-toggle="collapse" data-target="#waid-profile-navbar">Uitloggen</a>
         </ul>

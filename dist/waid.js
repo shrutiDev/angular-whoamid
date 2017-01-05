@@ -51,7 +51,20 @@ angular.module('waid', [
     var url = waidCore.config.getConfig('api.environment.production.url');
   }
   waidService.initialize(url);
+}).filter('orderObjectBy', function() {
+  return function(items, field, reverse) {
+    var filtered = [];
+    angular.forEach(items, function(item) {
+      filtered.push(item);
+    });
+    filtered.sort(function (a, b) {
+      return (a[field] > b[field] ? 1 : -1);
+    });
+    if(reverse) filtered.reverse();
+    return filtered;
+  };
 });
+
 'use strict';
 angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCore', ['$rootScope', '$cookies', 'localStorageService', function ($rootScope, $cookies, localStorageService) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
@@ -191,7 +204,7 @@ angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCo
 angular.module('waid.core.strategy', [
   'waid.core',
   'waid.core.services'
-]).service('waidCoreStrategy', function ($rootScope, waidCore, waidService, $location, $cookies, $q) {
+]).service('waidCoreStrategy', function ($rootScope, waidCore, waidService, $location, $window, $cookies, $q) {
   waidCore.getAlCodeUrl = function () {
     var url = $location.absUrl();
     if ($location.$$html5 == false) {
@@ -274,6 +287,7 @@ angular.module('waid.core.strategy', [
   waidCore.initAlCode = function () {
     var deferred = $q.defer();
     var waidAlCode = $location.search().waidAlCode;
+    var html5Mode = true;
 
     if (typeof waidAlCode == 'undefined' || !waidAlCode) {
       if($location.url().indexOf('waidAlCode') > -1){
@@ -283,6 +297,7 @@ angular.module('waid.core.strategy', [
         endPart = endPart.split('#')[0];
         endPart = endPart.split('=')[0];
         waidAlCode = endPart;
+        html5Mode = false;
       }
     }
     
@@ -293,6 +308,11 @@ angular.module('waid.core.strategy', [
         // Fix facebook hash
         if ($location.hash() == '_=_') {
           $location.hash('');
+        }
+        if (html5Mode == false) {
+          // Match not done by html5 mode 
+          var newUrl = $location.url().replace('waidAlCode=' + waidAlCode, '');
+          $window.location.href = newUrl;
         }
       }, function (data) {
         deferred.reject(data);
@@ -901,6 +921,9 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
     },
     'applicationInitGet': function () {
       return this._makeRequest('GET', 'app', '/application/init/', 'application.init',  {}, true);
+    },
+    'applicationProfileDefinitionGet': function (){
+      return this._makeRequest('GET', 'app', '/application/profile-definition/', 'application.profileDefinition',  {}, true);
     },
     'documentGet': function (doc) {
       return this._makeRequest('GET', 'app', '/docs/' + doc + '/', 'applicationDocument');
@@ -1814,188 +1837,6 @@ angular.module('waid.idm', [
       'surname':'Achternaam',
       'associated_social_accounts': 'Social koppelingen',
       'associated_social_accounts_intro': 'Met deze social koppelingen kan je snel inloggen op onze site. Klik op een van de social sites om te koppelen of te ontkoppelen.'
-    },
-    'profileDefinition': {
-      'fieldSet': [
-        {
-          'key': 'overview',
-          'order': 10,
-          'templateKey': 'overview'
-        },
-        {
-          'key': 'main',
-          'order': 20,
-          'fieldDefinitions': [
-            {
-              'order': 10,
-              'name': 'display_name',
-              'labelKey': 'display_name',
-              'type': 'input'
-            },
-            {
-              'order': 20,
-              'name': 'first_name',
-              'labelKey': 'first_name',
-              'type': 'input'
-            },
-            {
-              'order': 30,
-              'name': 'surname_prefix',
-              'labelKey': 'surname_prefix',
-              'type': 'input'
-            },
-            {
-              'order': 40,
-              'name': 'surname',
-              'labelKey': 'surname',
-              'type': 'input'
-            },
-            {
-              'order': 50,
-              'name': 'date_of_birth',
-              'labelKey': 'date_of_birth',
-              'type': 'date'
-            },
-            {
-              'order': 60,
-              'name': 'gender',
-              'labelKey': 'gender',
-              'type': 'gender'
-            },
-            {
-              'order': 70,
-              'name': 'avatar_thumb_50_50',
-              'labelKey': 'avatar',
-              'type': 'avatar'
-            },
-            {
-              'order': 80,
-              'name': 'about_public',
-              'labelKey': 'about_public',
-              'helpKey': 'about_public_help',
-              'type': 'textarea'
-            }
-          ]
-        },
-        {
-          'key': 'interests',
-          'order': 30,
-          'fieldDefinitions': [
-            {
-              'order': 10,
-              'name': 'like_tags',
-              'labelKey': 'like_tags',
-              'helpKey': 'like_tags_help',
-              'type': 'textarea'
-            },
-            {
-              'order': 20,
-              'name': 'dislike_tags',
-              'labelKey': 'dislike_tags',
-              'type': 'textarea'
-            }
-          ]
-        },
-        {
-          'key': 'emails',
-          'order': 40,
-          'noSaveButton': true,
-          'fieldDefinitions': [
-            {
-              'order': 10,
-              'noLabel': true,
-              'name': 'emails',
-              'labelKey': 'emails',
-              'type': 'multipleEmail',
-              'storageType':'none'
-            }
-          ]
-        },
-        {
-          'key': 'telephone_numbers',
-          'hideFromOverview':true,
-          'order': 50,
-          'fieldDefinitions': [
-            {
-              'order': 10,
-              'noLabel': true,
-              'name': 'telephone_numbers',
-              'labelKey': 'telephone_numbers',
-              'numberKey': 'telepone_number',
-              'helpKey': 'telephone_number_help',
-              'type': 'multipleTelephone',
-              'hideFromOverview':true,
-              'storageType':'none'
-            }
-          ]
-        },
-        {
-          'key': 'addresses',
-          'hideFromOverview':true,
-          'order': 60,
-          'fieldDefinitions': [
-            {
-              'order': 10,
-              'noLabel': true,
-              'name': 'addresses',
-              'labelKey': 'addresses',
-              'type': 'multipleAddresses',
-              'hideFromOverview':true,
-              'storageType':'none'
-            }
-          ]
-        },
-        {
-          'key': 'associated_social_accounts',
-          'introKey':'associated_social_accounts_intro',
-          'order': 70,
-          'noSaveButton': true,
-          'fieldDefinitions': [
-            {
-              'order': 10,
-              'noLabel': true,
-              'name': 'associated_social_accounts',
-              'labelKey': 'associated_social_accounts',
-              'type': 'associatedSocialAccounts',
-              'storageType':'none'
-            }
-          ]
-        },
-        {
-          'key': 'username',
-          'order': 70,
-          'fieldDefinitions': [
-            {
-              'order': 10,
-              'name': 'username',
-              'labelKey': 'username',
-              'type': 'input',
-              'storageType':'username',
-            }
-          ]
-        },
-        {
-          'key': 'password',
-          'order': 80,
-          'fieldDefinitions': [
-            {
-              'order': 10,
-              'name': 'password',
-              'labelKey': 'password',
-              'type': 'password',
-              'storageType':'password'
-            },
-            {
-              'order': 20,
-              'name': 'password_confirm',
-              'labelKey': 'password_confirm',
-              'type': 'password',
-              'hideFromOverview': true,
-              'storageType':'password'
-            }
-          ]
-        }
-      ]
     }
   });
 });
@@ -2005,12 +1846,69 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     var text = $interpolate(data.text)($rootScope);
     $scope.document = text;
   });
-}).controller('WAIDIDMProfileNavbarCtrl', function ($scope, $rootScope) {
+}).controller('WAIDIDMProfileNavbarCtrl', function ($scope, $rootScope, waidService) {
   $scope.goToFieldSet = function (fieldSet) {
     $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
   };
+
+  // TODO : Duplicate Initialize user profile an viewset models
+  waidService.applicationProfileDefinitionGet().then(function(data) {
+    var fieldSet = data.fieldSets.profile;
+
+    // Create new Ordered fieldset for objects properties 
+    var orderedGroup = {};
+    for (var i = 0; fieldSet.order.length > i; i++) {
+      var groupName = fieldSet.order[i];
+      orderedGroup[groupName] = fieldSet.groups[groupName];
+    }
+    fieldSet.groups = orderedGroup;
+
+    $scope.fieldSet = fieldSet;
+    $scope.fieldDefinitions = data.fieldDefinitions;
+  });
+
+
+
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
   $scope.model = {};
+
+  // Initialize user profile an viewset models
+  waidService.applicationProfileDefinitionGet().then(function(data) {
+    var fieldSet = data.fieldSets.profile;
+
+    // Create new Ordered fieldset for objects properties 
+    var orderedGroup = {};
+    for (var i = 0; fieldSet.order.length > i; i++) {
+      var groupName = fieldSet.order[i];
+      orderedGroup[groupName] = fieldSet.groups[groupName];
+    }
+    fieldSet.groups = orderedGroup;
+
+    $scope.fieldSet = fieldSet;
+    $scope.fieldDefinitions = data.fieldDefinitions;
+   
+    // Overwrite fieldDefinition parameters if set in fieldSet
+    for(var fieldName in $scope.fieldDefinitions){
+      if(typeof($scope.fieldSet.fieldDefinitions[fieldName]) != 'undefined') {
+        for(var fieldDefinitionProperty in $scope.fieldSet.fieldDefinitions[fieldName]){
+          $scope.fieldDefinitions[fieldName][fieldDefinitionProperty] = $scope.fieldSet.fieldDefinitions[fieldName][fieldDefinitionProperty]
+        }
+      } 
+    }
+    var groupedFieldDefinitions = {};
+    for(var group in $scope.fieldSet.groups){
+      var fieldDefinitions = {};
+      if (typeof($scope.fieldSet.groups[group]['fieldDefinitions']) != 'undefined') {
+        for (var i = 0; $scope.fieldSet.groups[group]['fieldDefinitions'].length > i; i++) {
+          var fieldSetFieldDefinitionName = $scope.fieldSet.groups[group]['fieldDefinitions'][i];
+          fieldDefinitions[fieldSetFieldDefinitionName] = $scope.fieldDefinitions[fieldSetFieldDefinitionName];
+        }
+      }
+      groupedFieldDefinitions[group] = fieldDefinitions;
+    }
+    $scope.groupedFieldDefinitions = groupedFieldDefinitions;    
+  });
+
   $scope.goToFieldSet = function (fieldSet) {
     $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
   };
@@ -2023,7 +1921,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
 
   $scope.waid = waidCore;
   // Set profile definition
-  $scope.profileDefinition = waidCore.config.idm.profileDefinition;
+  //$scope.profileDefinition = waidCore.config.idm.profileDefinition;
 
   // Telephone numbers objects
   $scope.telephoneNumbers = [];
@@ -2050,15 +1948,18 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
   $scope.getAllFieldDefinitions = function () {
     var fieldDefinitions = [];
-    for (var i = 0; $scope.profileDefinition.fieldSet.length > i; i++) {
-      if (typeof $scope.profileDefinition.fieldSet[i].fieldDefinitions != 'undefined') {
-        for (var a = 0; $scope.profileDefinition.fieldSet[i].fieldDefinitions.length > a; a++) {
-          fieldDefinitions.push($scope.profileDefinition.fieldSet[i].fieldDefinitions[a]);
-        }
-      }
+    for(var fieldName in $scope.fieldDefinitions){
+      fieldDefinitions.push($scope.fieldDefinitions[fieldName]);
     }
     return fieldDefinitions;
   };
+  // $scope.getFieldSetGroups = function() {
+  //   var fieldSetGroups = [];
+  //   for(var group in $scope.fieldSet.groups){
+  //     fieldSetGroups.push($scope.fieldSet.groups[group]);
+  //   }
+  //   return fieldSetGroups;
+  // }
 
   $scope.dateOptions = {
     dateDisabled: false,

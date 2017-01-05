@@ -4,12 +4,69 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     var text = $interpolate(data.text)($rootScope);
     $scope.document = text;
   });
-}).controller('WAIDIDMProfileNavbarCtrl', function ($scope, $rootScope) {
+}).controller('WAIDIDMProfileNavbarCtrl', function ($scope, $rootScope, waidService) {
   $scope.goToFieldSet = function (fieldSet) {
     $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
   };
+
+  // TODO : Duplicate Initialize user profile an viewset models
+  waidService.applicationProfileDefinitionGet().then(function(data) {
+    var fieldSet = data.fieldSets.profile;
+
+    // Create new Ordered fieldset for objects properties 
+    var orderedGroup = {};
+    for (var i = 0; fieldSet.order.length > i; i++) {
+      var groupName = fieldSet.order[i];
+      orderedGroup[groupName] = fieldSet.groups[groupName];
+    }
+    fieldSet.groups = orderedGroup;
+
+    $scope.fieldSet = fieldSet;
+    $scope.fieldDefinitions = data.fieldDefinitions;
+  });
+
+
+
 }).controller('WAIDIDMProfileCtrl', function ($scope, $rootScope, waidCore, waidService, $filter, $timeout, $q) {
   $scope.model = {};
+
+  // Initialize user profile an viewset models
+  waidService.applicationProfileDefinitionGet().then(function(data) {
+    var fieldSet = data.fieldSets.profile;
+
+    // Create new Ordered fieldset for objects properties 
+    var orderedGroup = {};
+    for (var i = 0; fieldSet.order.length > i; i++) {
+      var groupName = fieldSet.order[i];
+      orderedGroup[groupName] = fieldSet.groups[groupName];
+    }
+    fieldSet.groups = orderedGroup;
+
+    $scope.fieldSet = fieldSet;
+    $scope.fieldDefinitions = data.fieldDefinitions;
+   
+    // Overwrite fieldDefinition parameters if set in fieldSet
+    for(var fieldName in $scope.fieldDefinitions){
+      if(typeof($scope.fieldSet.fieldDefinitions[fieldName]) != 'undefined') {
+        for(var fieldDefinitionProperty in $scope.fieldSet.fieldDefinitions[fieldName]){
+          $scope.fieldDefinitions[fieldName][fieldDefinitionProperty] = $scope.fieldSet.fieldDefinitions[fieldName][fieldDefinitionProperty]
+        }
+      } 
+    }
+    var groupedFieldDefinitions = {};
+    for(var group in $scope.fieldSet.groups){
+      var fieldDefinitions = {};
+      if (typeof($scope.fieldSet.groups[group]['fieldDefinitions']) != 'undefined') {
+        for (var i = 0; $scope.fieldSet.groups[group]['fieldDefinitions'].length > i; i++) {
+          var fieldSetFieldDefinitionName = $scope.fieldSet.groups[group]['fieldDefinitions'][i];
+          fieldDefinitions[fieldSetFieldDefinitionName] = $scope.fieldDefinitions[fieldSetFieldDefinitionName];
+        }
+      }
+      groupedFieldDefinitions[group] = fieldDefinitions;
+    }
+    $scope.groupedFieldDefinitions = groupedFieldDefinitions;    
+  });
+
   $scope.goToFieldSet = function (fieldSet) {
     $rootScope.$broadcast('waid.idm.action.goToFieldSet', fieldSet);
   };
@@ -22,7 +79,7 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
 
   $scope.waid = waidCore;
   // Set profile definition
-  $scope.profileDefinition = waidCore.config.idm.profileDefinition;
+  //$scope.profileDefinition = waidCore.config.idm.profileDefinition;
 
   // Telephone numbers objects
   $scope.telephoneNumbers = [];
@@ -49,15 +106,18 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
   };
   $scope.getAllFieldDefinitions = function () {
     var fieldDefinitions = [];
-    for (var i = 0; $scope.profileDefinition.fieldSet.length > i; i++) {
-      if (typeof $scope.profileDefinition.fieldSet[i].fieldDefinitions != 'undefined') {
-        for (var a = 0; $scope.profileDefinition.fieldSet[i].fieldDefinitions.length > a; a++) {
-          fieldDefinitions.push($scope.profileDefinition.fieldSet[i].fieldDefinitions[a]);
-        }
-      }
+    for(var fieldName in $scope.fieldDefinitions){
+      fieldDefinitions.push($scope.fieldDefinitions[fieldName]);
     }
     return fieldDefinitions;
   };
+  // $scope.getFieldSetGroups = function() {
+  //   var fieldSetGroups = [];
+  //   for(var group in $scope.fieldSet.groups){
+  //     fieldSetGroups.push($scope.fieldSet.groups[group]);
+  //   }
+  //   return fieldSetGroups;
+  // }
 
   $scope.dateOptions = {
     dateDisabled: false,

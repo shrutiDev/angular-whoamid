@@ -446,116 +446,112 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
 
 
   $templateCache.put('/templates/idm/overview.html?v=0.0.44',
+    "<div >\n" +
+    "<div ng-repeat=\"(groupName, fieldSet) in $parent.fieldSet.groups\">\n" +
+    "  <div ng-if=\"!fieldSet.hideFromOverview\">\n" +
+    "    <h5>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h5>\n" +
+    "      <div ng-repeat=\"(fieldDefinitionName, fieldDefinition) in $parent.groupedFieldDefinitions[groupName]\">\n" +
+    "        <ANY ng-switch=\"fieldDefinition.type\" ng-if=\"!fieldDefinition.hideFromOverview\">\n" +
+    "          <ANY ng-switch-when=\"input\">\n" +
+    "            <dl class=\"dl-horizontal\">\n" +
+    "              <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
+    "              <dd>{{ model[fieldDefinition.name] }}</dd>\n" +
+    "            </dl>\n" +
+    "          </ANY>\n" +
     "\n" +
-    "      <div ng-repeat=\"fieldSet in profileDefinition.fieldSet\">\n" +
-    "        <div ng-if=\"fieldSet.key != currentFieldSet && !fieldSet.hideFromOverview\">\n" +
-    "          <h5>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h5>\n" +
-    "          <div ng-if=\"fieldSet.fieldDefinitions\">\n" +
-    "            <div ng-repeat=\"fieldDefinition in fieldSet.fieldDefinitions\">\n" +
-    "              <ANY ng-switch=\"fieldDefinition.type\" ng-if=\"!fieldDefinition.hideFromOverview\">\n" +
-    "                <ANY ng-switch-when=\"input\">\n" +
-    "                  <dl class=\"dl-horizontal\">\n" +
-    "                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
-    "                    <dd>{{ model[fieldDefinition.name] }}</dd>\n" +
-    "                  </dl>\n" +
-    "                </ANY>\n" +
+    "          <ANY ng-switch-when=\"date\">\n" +
+    "            <dl class=\"dl-horizontal\">\n" +
+    "              <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
+    "              <dd>{{ model[fieldDefinition.name] | date:'longDate' }}</dd>\n" +
+    "            </dl>\n" +
+    "          </ANY>\n" +
     "\n" +
-    "                <ANY ng-switch-when=\"date\">\n" +
-    "                  <dl class=\"dl-horizontal\">\n" +
-    "                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
-    "                    <dd>{{ model[fieldDefinition.name] | date:'longDate' }}</dd>\n" +
-    "                  </dl>\n" +
-    "                </ANY>\n" +
+    "          <ANY ng-switch-when=\"password\">\n" +
+    "            <dl class=\"dl-horizontal\">\n" +
+    "              <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
+    "              <dd>*******</dd>\n" +
+    "            </dl>\n" +
+    "          </ANY>\n" +
     "\n" +
-    "                <ANY ng-switch-when=\"password\">\n" +
-    "                  <dl class=\"dl-horizontal\">\n" +
-    "                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
-    "                    <dd>*******</dd>\n" +
-    "                  </dl>\n" +
-    "                </ANY>\n" +
+    "          <ANY ng-switch-when=\"gender\">\n" +
+    "            <dl class=\"dl-horizontal\">\n" +
+    "              <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
+    "              <dd><span ng-show=\"model[fieldDefinition.name]=='F'\">{{ waid.config.getConfig('idm.translations.female') }}</span><span ng-show=\"model[fieldDefinition.name]=='M'\">{{ waid.config.getConfig('idm.translations.male') }}</span></dd>\n" +
+    "            </dl>\n" +
+    "          </ANY>\n" +
     "\n" +
-    "                <ANY ng-switch-when=\"gender\">\n" +
-    "                  <dl class=\"dl-horizontal\">\n" +
-    "                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
-    "                    <dd><span ng-show=\"model[fieldDefinition.name]=='F'\">{{ waid.config.getConfig('idm.translations.female') }}</span><span ng-show=\"model[fieldDefinition.name]=='M'\">{{ waid.config.getConfig('idm.translations.male') }}</span></dd>\n" +
-    "                  </dl>\n" +
-    "                </ANY>\n" +
+    "          <ANY ng-switch-when=\"avatar\">\n" +
+    "            <dl class=\"dl-horizontal\">\n" +
+    "              <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
+    "              <dd><img ng-show=\"model.avatar_thumb_50_50\" ng-src=\"{{ model.avatar_thumb_50_50 }}\"></dd>\n" +
+    "            </dl>\n" +
+    "          </ANY>\n" +
     "\n" +
-    "                <ANY ng-switch-when=\"avatar\">\n" +
-    "                  <dl class=\"dl-horizontal\">\n" +
-    "                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
-    "                    <dd><img ng-show=\"model.avatar_thumb_50_50\" ng-src=\"{{ model.avatar_thumb_50_50 }}\"></dd>\n" +
-    "                  </dl>\n" +
-    "                </ANY>\n" +
+    "          <ANY ng-switch-when=\"textarea\">\n" +
+    "            <dl class=\"dl-horizontal\">\n" +
+    "              <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
+    "              <dd>{{ model[fieldDefinition.name] }}</dd>\n" +
+    "            </dl>\n" +
+    "          </ANY>\n" +
     "\n" +
-    "                <ANY ng-switch-when=\"textarea\">\n" +
-    "                  <dl class=\"dl-horizontal\">\n" +
-    "                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
-    "                    <dd>{{ model[fieldDefinition.name] }}</dd>\n" +
-    "                  </dl>\n" +
-    "                </ANY>\n" +
-    "\n" +
-    "                <ANY ng-switch-when=\"multipleEmail\">\n" +
-    "                  <div ng-show=\"emails.length > 0\" ng-cloak>\n" +
-    "                    <dl class=\"dl-horizontal\" ng-repeat=\"email in emails\">\n" +
-    "                      <dt>\n" +
-    "                        {{ email.email }}\n" +
-    "                      </dt>\n" +
-    "                      <dd>\n" +
-    "                        <span class=\"glyphicon glyphicon-minus text-danger\" ng-show=\"!email.is_verified\"></span>\n" +
-    "                        <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"email.is_verified\"></span>\n" +
-    "                      </dd>\n" +
-    "                    </dl>\n" +
-    "                  </div>\n" +
-    "                </ANY>\n" +
-    "\n" +
-    "                <ANY ng-switch-when=\"associatedSocialAccounts\">\n" +
-    "                  <div ng-show=\"providers.length > 0\" ng-cloak>\n" +
-    "                    <dl class=\"dl-horizontal\" ng-repeat=\"provider in providers\">\n" +
-    "                      <dt>\n" +
-    "                        <i class=\"fa fa-{{ provider.icon }}-square\" aria-hidden=\"true\"></i> {{ provider.name }}\n" +
-    "                      </dt>\n" +
-    "                      <dd>\n" +
-    "                        <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"provider.linked\"></span>\n" +
-    "                        <span class=\"glyphicon glyphicon-minus text-danger\" ng-show=\"!provider.linked\">-</span>\n" +
-    "                      </dd>\n" +
-    "                    </dl>\n" +
-    "                  </div>\n" +
-    "                </ANY>\n" +
-    "\n" +
-    "                <ANY ng-switch-when=\"checkbox\">\n" +
-    "                  <dl class=\"dl-horizontal\">\n" +
-    "                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
-    "                    <dd>\n" +
-    "                      <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"model[fieldDefinition.name]\"></span>\n" +
-    "                      <span class=\"glyphicon glyphicon-minus text-danger\" ng-show=\"!model[fieldDefinition.name]\"></span>\n" +
-    "                    </dd>\n" +
-    "                  </dl>\n" +
-    "                </ANY>\n" +
-    "\n" +
-    "                <ANY ng-switch-when=\"multipleCheckbox\">\n" +
-    "                  <dl class=\"dl-horizontal\">\n" +
-    "                    <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
-    "                    <dd>\n" +
-    "                      <ul ng-show=\"model[fieldDefinition.name]\">\n" +
-    "                        <li ng-repeat=\"(key, value) in model[fieldDefinition.name]\" ng-show=\"value\">{{ getMultipleCheckBoxName(fieldDefinition, key) }}</li>\n" +
-    "                      </ul>\n" +
-    "                      <span class=\"glyphicon glyphicon-minus text-danger\" ng-show=\"!model[fieldDefinition.name]\"></span>\n" +
-    "                    </dd>\n" +
-    "                  </dl>\n" +
-    "                </ANY>\n" +
-    "\n" +
-    "                <ANY ng-switch-default>Invalid fieldDefinition</ANY>\n" +
-    "              </ANY>\n" +
+    "          <ANY ng-switch-when=\"multipleEmail\">\n" +
+    "            <div ng-show=\"emails.length > 0\" ng-cloak>\n" +
+    "              <dl class=\"dl-horizontal\" ng-repeat=\"email in emails\">\n" +
+    "                <dt>\n" +
+    "                  {{ email.email }}\n" +
+    "                </dt>\n" +
+    "                <dd>\n" +
+    "                  <span class=\"glyphicon glyphicon-minus text-danger\" ng-show=\"!email.is_verified\"></span>\n" +
+    "                  <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"email.is_verified\"></span>\n" +
+    "                </dd>\n" +
+    "              </dl>\n" +
     "            </div>\n" +
-    "            <a class=\"btn btn-default btn-block\" ng-click=\"goToFieldSet(fieldSet.key)\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i> {{ ::waid.config.getTranslation('idm', 'edit') }}</a>\n" +
-    "          </div>\n" +
-    "        </div>\n" +
-    "        \n" +
+    "          </ANY>\n" +
     "\n" +
+    "          <ANY ng-switch-when=\"associatedSocialAccounts\">\n" +
+    "            <div ng-show=\"providers.length > 0\" ng-cloak>\n" +
+    "              <dl class=\"dl-horizontal\" ng-repeat=\"provider in providers\">\n" +
+    "                <dt>\n" +
+    "                  <i class=\"fa fa-{{ provider.icon }}-square\" aria-hidden=\"true\"></i> {{ provider.name }}\n" +
+    "                </dt>\n" +
+    "                <dd>\n" +
+    "                  <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"provider.linked\"></span>\n" +
+    "                  <span class=\"glyphicon glyphicon-minus text-danger\" ng-show=\"!provider.linked\">-</span>\n" +
+    "                </dd>\n" +
+    "              </dl>\n" +
+    "            </div>\n" +
+    "          </ANY>\n" +
     "\n" +
-    "     \n" +
-    "      </div>"
+    "          <ANY ng-switch-when=\"checkbox\">\n" +
+    "            <dl class=\"dl-horizontal\">\n" +
+    "              <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
+    "              <dd>\n" +
+    "                <span class=\"glyphicon glyphicon-ok text-success\" ng-show=\"model[fieldDefinition.name]\"></span>\n" +
+    "                <span class=\"glyphicon glyphicon-minus text-danger\" ng-show=\"!model[fieldDefinition.name]\"></span>\n" +
+    "              </dd>\n" +
+    "            </dl>\n" +
+    "          </ANY>\n" +
+    "\n" +
+    "          <ANY ng-switch-when=\"multipleCheckbox\">\n" +
+    "            <dl class=\"dl-horizontal\">\n" +
+    "              <dt>{{ ::waid.config.getTranslation('idm',  fieldDefinition.labelKey ) }}</dt>\n" +
+    "              <dd>\n" +
+    "                <ul ng-show=\"model[fieldDefinition.name]\">\n" +
+    "                  <li ng-repeat=\"(key, value) in model[fieldDefinition.name]\" ng-show=\"value\">{{ getMultipleCheckBoxName(fieldDefinition, key) }}</li>\n" +
+    "                </ul>\n" +
+    "                <span class=\"glyphicon glyphicon-minus text-danger\" ng-show=\"!model[fieldDefinition.name]\"></span>\n" +
+    "              </dd>\n" +
+    "            </dl>\n" +
+    "          </ANY>\n" +
+    "\n" +
+    "          <ANY ng-switch-default>Invalid fieldDefinition</ANY>\n" +
+    "        </ANY>\n" +
+    "      </div>\n" +
+    "      <a class=\"btn btn-default btn-block\" ng-click=\"goToFieldSet(fieldSet.key)\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i> {{ ::waid.config.getTranslation('idm', 'edit') }}</a>\n" +
+    "    \n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "</div>"
   );
 
 
@@ -565,22 +561,24 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "    <div class=\"col-lg-4 col-md-4 col-sm-4 hidden-xs\">\n" +
     "      <div class=\"waid\">\n" +
     "        <ul class=\"nav nav-pills nav-stacked\">\n" +
-    "          <li role=\"presentation\" ng-repeat=\"menuItem in waid.config.getConfig('idm').profileDefinition.fieldSet\" ng-class=\"getActiveFieldSetMenuClass(menuItem.key)\"><a ng-click=\"goToFieldSet(menuItem.key)\">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>\n" +
+    "          <li role=\"presentation\" ng-repeat=\"(groupName, menuItem) in fieldSet.groups\" ng-class=\"getActiveFieldSetMenuClass(menuItem.key)\"><a ng-click=\"goToFieldSet(menuItem.key)\">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>\n" +
     "          <li role=\"presentation\" ng-click=\"waid.logout()\"><a>Uitloggen</a></li>\n" +
     "        </ul>\n" +
     "      </div>\n" +
     "\n" +
     "    </div>\n" +
     "    <div class=\"col-lg-8 col-md-8 col-sm-8 col-xs-12\">\n" +
-    "      <div ng-repeat=\"fieldSet in profileDefinition.fieldSet\" ng-show=\"showFieldSet(fieldSet.key)\" ng-cloak>\n" +
+    "      <div ng-repeat=\"(groupName, fieldSetGroup) in fieldSet.groups\" ng-show=\"showFieldSet(fieldSetGroup.key)\" ng-cloak>\n" +
     "        <h4>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h4>\n" +
-    "        <div ng-if=\"fieldSet.templateKey\"><ng-include src=\"waid.config.getTemplateUrl('idm', fieldSet.templateKey)\"></ng-include></div>\n" +
+    "        \n" +
+    "        <div ng-if=\"fieldSetGroup.templateKey\">\n" +
+    "          <ng-include ng-init=\"fieldSetGroup.length > 0\" src=\"waid.config.getTemplateUrl('idm', fieldSetGroup.templateKey)\"></ng-include>\n" +
+    "        </div>\n" +
     "\n" +
-    "        <p ng-if=\"fieldSet.introKey\">{{ ::waid.config.getTranslation('idm',   fieldSet.introKey) }}</p>\n" +
-    "        <form ng-if=\"fieldSet.fieldDefinitions\">\n" +
-    "          <ANY ng-repeat=\"fieldDefinition in fieldSet.fieldDefinitions\">\n" +
+    "        <p ng-if=\"fieldSetGroup.introKey\">{{ ::waid.config.getTranslation('idm',   fieldSetGroup.introKey) }}</p>\n" +
+    "        <form ng-if=\"fieldSetGroup.fieldDefinitions\">\n" +
+    "          <ANY ng-repeat=\"(fieldDefinitionName, fieldDefinition) in groupedFieldDefinitions[groupName]\">\n" +
     "          	<label for=\"{{ fieldDefinition.name }}\" ng-hide=\"fieldDefinition.noLabel\">{{ ::waid.config.getTranslation('idm', 	fieldDefinition.labelKey ) }}</label>\n" +
-    "\n" +
     "            <ANY ng-switch=\"fieldDefinition.type\">\n" +
     "              \n" +
     "              <ANY ng-switch-when=\"input\">\n" +
@@ -788,7 +786,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "            \n" +
     "          </ANY>\n" +
     "          <div class=\"alert alert-danger\" ng-repeat=\"error in errors.non_field_errors\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{error}}</div>\n" +
-    "          <button type=\"submit\" ng-disabled=\"waid.isLoading\" class=\"btn btn-default btn-block\" ng-click=\"save()\" ng-hide=\"fieldSet.noSaveButton\" ng-cloak><i class=\"fa fa-floppy-o\" aria-hidden=\"true\"></i> Opslaan</button>\n" +
+    "          <button type=\"submit\" ng-disabled=\"waid.isLoading\" class=\"btn btn-default btn-block\" ng-click=\"save(true)\" ng-hide=\"fieldSetGroup.noSaveButton\" ng-cloak><i class=\"fa fa-floppy-o\" aria-hidden=\"true\"></i> Opslaan</button>\n" +
     "        </form>\n" +
     "      </div>\n" +
     "    </div>\n" +
@@ -884,7 +882,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "      <!-- Collect the nav links, forms, and other content for toggling -->\n" +
     "      <div class=\"collapse navbar-collapse\" id=\"waid-profile-navbar\">\n" +
     "        <ul class=\"nav navbar-nav\">\n" +
-    "          <li ng-repeat=\"menuItem in waid.config.getConfig('idm').profileDefinition.fieldSet\"><a ng-class=\"getActiveFieldSetMenuClass(menuItem.key)\" ng-click=\"goToFieldSet(menuItem.key)\" data-toggle=\"collapse\" data-target=\"#waid-profile-navbar\">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>\n" +
+    "          <li ng-repeat=\"(groupName, menuItem) in fieldSet.groups\"><a ng-class=\"getActiveFieldSetMenuClass(menuItem.key)\" ng-click=\"goToFieldSet(menuItem.key)\" data-toggle=\"collapse\" data-target=\"#waid-profile-navbar\">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>\n" +
     "          <li role=\"separator\" class=\"divider\"></li>\n" +
     "          <li><a href=\"#\" ng-click=\"waid.logout()\" class=\"visible-xs\" data-toggle=\"collapse\" data-target=\"#waid-profile-navbar\">Uitloggen</a>\n" +
     "        </ul>\n" +

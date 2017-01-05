@@ -3,22 +3,24 @@
     <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs">
       <div class="waid">
         <ul class="nav nav-pills nav-stacked">
-          <li role="presentation" ng-repeat="menuItem in waid.config.getConfig('idm').profileDefinition.fieldSet" ng-class="getActiveFieldSetMenuClass(menuItem.key)"><a ng-click="goToFieldSet(menuItem.key)">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>
+          <li role="presentation" ng-repeat="(groupName, menuItem) in fieldSet.groups" ng-class="getActiveFieldSetMenuClass(menuItem.key)"><a ng-click="goToFieldSet(menuItem.key)">{{ waid.config.getTranslation('idm', menuItem.key) }}</a></li>
           <li role="presentation" ng-click="waid.logout()"><a>Uitloggen</a></li>
         </ul>
       </div>
 
     </div>
     <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-      <div ng-repeat="fieldSet in profileDefinition.fieldSet" ng-show="showFieldSet(fieldSet.key)" ng-cloak>
+      <div ng-repeat="(groupName, fieldSetGroup) in fieldSet.groups" ng-show="showFieldSet(fieldSetGroup.key)" ng-cloak>
         <h4>{{ ::waid.config.getTranslation('idm', fieldSet.key ) }}</h4>
-        <div ng-if="fieldSet.templateKey"><ng-include src="waid.config.getTemplateUrl('idm', fieldSet.templateKey)"></ng-include></div>
+        
+        <div ng-if="fieldSetGroup.templateKey">
+          <ng-include ng-init="fieldSetGroup.length > 0" src="waid.config.getTemplateUrl('idm', fieldSetGroup.templateKey)"></ng-include>
+        </div>
 
-        <p ng-if="fieldSet.introKey">{{ ::waid.config.getTranslation('idm',   fieldSet.introKey) }}</p>
-        <form ng-if="fieldSet.fieldDefinitions">
-          <ANY ng-repeat="fieldDefinition in fieldSet.fieldDefinitions">
+        <p ng-if="fieldSetGroup.introKey">{{ ::waid.config.getTranslation('idm',   fieldSetGroup.introKey) }}</p>
+        <form ng-if="fieldSetGroup.fieldDefinitions">
+          <ANY ng-repeat="(fieldDefinitionName, fieldDefinition) in groupedFieldDefinitions[groupName]">
           	<label for="{{ fieldDefinition.name }}" ng-hide="fieldDefinition.noLabel">{{ ::waid.config.getTranslation('idm', 	fieldDefinition.labelKey ) }}</label>
-
             <ANY ng-switch="fieldDefinition.type">
               
               <ANY ng-switch-when="input">
@@ -226,7 +228,7 @@
             
           </ANY>
           <div class="alert alert-danger" ng-repeat="error in errors.non_field_errors"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>
-          <button type="submit" ng-disabled="waid.isLoading" class="btn btn-default btn-block" ng-click="save()" ng-hide="fieldSet.noSaveButton" ng-cloak><i class="fa fa-floppy-o" aria-hidden="true"></i> Opslaan</button>
+          <button type="submit" ng-disabled="waid.isLoading" class="btn btn-default btn-block" ng-click="save(true)" ng-hide="fieldSetGroup.noSaveButton" ng-cloak><i class="fa fa-floppy-o" aria-hidden="true"></i> Opslaan</button>
         </form>
       </div>
     </div>
