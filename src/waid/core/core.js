@@ -1,5 +1,5 @@
 'use strict';
-angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCore', ['$rootScope', '$cookies', 'localStorageService', function ($rootScope, $cookies, localStorageService) {
+angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCore', ['$rootScope', '$cookies', 'localStorageService', '$location', function ($rootScope, $cookies, localStorageService, $location) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -107,15 +107,17 @@ angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCo
     if (waid) {
       waid['timestamp'] = Date.now();
       var jsonData = JSON.stringify(waid);
-      var encrypted = CryptoJS.AES.encrypt(jsonData, this.fp).toString();
+      var encrypted = CryptoJS.AES.encrypt(jsonData, $location.host()).toString();
     }
     localStorageService.set('waid', encrypted, 'localStorage');
   };
   waid.getWaidData = function () {
     var waid = localStorageService.get('waid');
+
     if (waid) {
-      var decrypted = CryptoJS.AES.decrypt(waid, this.fp);
       try{
+        var decrypted = CryptoJS.AES.decrypt(waid, $location.host());
+        console.log(JSON.parse(decrypted.toString(CryptoJS.enc.Utf8)));
         return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
       } catch (err) {
         return false;

@@ -66,7 +66,7 @@ angular.module('waid', [
 });
 
 'use strict';
-angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCore', ['$rootScope', '$cookies', 'localStorageService', function ($rootScope, $cookies, localStorageService) {
+angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCore', ['$rootScope', '$cookies', 'localStorageService', '$location', function ($rootScope, $cookies, localStorageService, $location) {
   var waid = angular.isDefined($rootScope.waid) ? $rootScope.waid : {};
   waid.config = {};
   waid.config.mergeRecursive = function (obj1, obj2) {
@@ -174,15 +174,17 @@ angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCo
     if (waid) {
       waid['timestamp'] = Date.now();
       var jsonData = JSON.stringify(waid);
-      var encrypted = CryptoJS.AES.encrypt(jsonData, this.fp).toString();
+      var encrypted = CryptoJS.AES.encrypt(jsonData, $location.host()).toString();
     }
     localStorageService.set('waid', encrypted, 'localStorage');
   };
   waid.getWaidData = function () {
     var waid = localStorageService.get('waid');
+
     if (waid) {
-      var decrypted = CryptoJS.AES.decrypt(waid, this.fp);
       try{
+        var decrypted = CryptoJS.AES.decrypt(waid, $location.host());
+        console.log(JSON.parse(decrypted.toString(CryptoJS.enc.Utf8)));
         return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
       } catch (err) {
         return false;
@@ -1773,7 +1775,7 @@ angular.module('waid.idm', [
       'auth-state-missing': 'The state parameter is missing from the server response.',
       'auth-state-forbidden': 'The state parameter returned by the server is not the one sent.',
       'auth-token-error': 'Geen permissie of toegang met de token. Kan hierdoor niet authenticeren. Controlleer de instellingen in de admin.',
-      'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account. Je bent nu uitgelogd. Probeer in te loggen met dezelfde social login.',
+      'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account. Log uit en probeer nogmaals in te loggen met dezelfde social login.',
       'system-error': 'Systeem fout. Ons excuus voor het ongemak.',
       'edit': 'Wijzigen',
       'missing_profile_data': 'Om verder te gaan hebben we wat extra gegevens nodig...',
