@@ -1,7 +1,10 @@
 <div class="waid">
  <div>
-      <div ng-show="modus=='complete'" class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_intro') }}</div>
-      <div class="alert alert-warning" ng-show="missingEmailVerification"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_email_allready_sent') }}</div>
+      <div ng-show="modus=='complete'" class="alert alert-warning" ng-show="missingProfileData"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'missing_profile_data') }}</div>
+      <div class="alert alert-warning" ng-show="emailIsNotVerified"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'email_is_not_verified') }}</div>
+      <div class="alert alert-warning" ng-show="invalidProfileData"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{ ::waid.config.getTranslation('idm', 'invalid_profile_data') }}</div>
+
+
     <form role="form" name="registerForm" novalidate>
       <div class="form-group has-feedback" ng-class="errors.username ? 'has-error' : ''" ng-show="show.username">
           <label for="id_username">{{ ::waid.config.getTranslation('idm', 'register_form_username') }}</label>

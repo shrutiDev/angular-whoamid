@@ -808,17 +808,29 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
 }).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal, waidCore) {
   $scope.waid = waidCore;
   $scope.show = {};
-  $scope.missingEmailVerification = false;
+  $scope.emailIsNotVerified = false;
+  $scope.invalidProfileData = false;
+  $scope.missingProfileData = false;
   if ($scope.modus == 'complete') {
     // Check for logged-in user
     waidService.userCompleteProfileGet().then(function (data) {
       $scope.model = data.user;
       if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('email_is_not_verified') !== -1) {
-        $scope.missingEmailVerification = true;
+        $scope.emailIsNotVerified = true;
       }
-      // Set missing data
-      for (var i = 0; i < data.missing_data.length; i++) {
-        $scope.show[data.missing_data[i]] = true;
+      if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('invalid_profile_data') !== -1) {
+        $scope.invalidProfileData = true;
+        // Set invalid data
+        for (var i = 0; i < data.invalid_data.length; i++) {
+          $scope.show[data.invalid_data[i]] = true;
+        }
+      }
+      if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('missing_profile_data') !== -1) {
+        $scope.missingProfileData = true;
+        // Set missing data
+        for (var i = 0; i < data.missing_data.length; i++) {
+          $scope.show[data.missing_data[i]] = true;
+        }
       }
     }, function (data) {
     });

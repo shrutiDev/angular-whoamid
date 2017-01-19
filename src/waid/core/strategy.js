@@ -244,6 +244,9 @@ angular.module('waid.core.strategy', [
       } else if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('missing_profile_data') !== -1) {
         // Missing profile data!
         $rootScope.$broadcast('waid.core.strategy.profileCheck.completeProfile', data);
+      } else if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('invalid_profile_data') !== -1) {
+        // Missing profile data!
+        $rootScope.$broadcast('waid.core.strategy.profileCheck.completeProfile', data);
       } else {
         // pass do noting?
       }

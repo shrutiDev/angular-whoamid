@@ -446,6 +446,9 @@ angular.module('waid.core.strategy', [
       } else if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('missing_profile_data') !== -1) {
         // Missing profile data!
         $rootScope.$broadcast('waid.core.strategy.profileCheck.completeProfile', data);
+      } else if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('invalid_profile_data') !== -1) {
+        // Missing profile data!
+        $rootScope.$broadcast('waid.core.strategy.profileCheck.completeProfile', data);
       } else {
         // pass do noting?
       }
@@ -1773,8 +1776,9 @@ angular.module('waid.idm', [
       'auth-already-associated': 'Een andere gebruiker is al geassocieerd met de social account. Je bent nu uitgelogd. Probeer in te loggen met dezelfde social login.',
       'system-error': 'Systeem fout. Ons excuus voor het ongemak.',
       'edit': 'Wijzigen',
-      'complete_profile_intro': 'Om verder te gaan met jouw account hebben we wat extra gegevens nodig...',
-      'complete_profile_email_allready_sent': 'Er was al een bevestigings e-mail naar je toe gestuurd. Heb je deze niet ontvangen? voer opnieuw een geldig e-mailadres in en dan word er een nieuwe activatie link toegestuurd.',
+      'missing_profile_data': 'Om verder te gaan hebben we wat extra gegevens nodig...',
+      'invalid_profile_data': 'Sommige profielgegevens zijn niet meer up-to-date of geldig meer. Pas deze gegevens aan om verder te gaan...',
+      'email_is_not_verified': 'Er was al een e-mail naar je toe gestuurd met activatie link. Heb je deze niet ontvangen? voer opnieuw een geldig e-mailadres in en dan word er een nieuwe activatie e-mail gestuurd.',
       'delete':'Verwijderen',
       'male': 'Man',
       'female': 'Vrouw',
@@ -1806,7 +1810,7 @@ angular.module('waid.idm', [
       'login_and_register_home_social_login_intro': '<p>Maak gebruik van jouw social media account bij Facebook, Twitter of LinkedIn om snel en gemakkelijk in te loggen.</p>',
       'login_and_register_modal_close_button': 'Sluiten',
       'login_and_register_modal_title': 'Inloggen of registreren',
-      'complete_profile_modal_title': 'Bevestig uw gegevens',
+      'complete_profile_modal_title': 'Profiel update',
       'complete_profile_modal_close_button': 'Niet verdergaan en uitloggen',
       'login_lost_login_link': 'Login gegevens kwijt?',
       'login_submit': 'Inloggen',
@@ -2650,17 +2654,29 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
 }).controller('WAIDIDMRegisterCtrl', function ($scope, $route, waidService, $location, $uibModal, waidCore) {
   $scope.waid = waidCore;
   $scope.show = {};
-  $scope.missingEmailVerification = false;
+  $scope.emailIsNotVerified = false;
+  $scope.invalidProfileData = false;
+  $scope.missingProfileData = false;
   if ($scope.modus == 'complete') {
     // Check for logged-in user
     waidService.userCompleteProfileGet().then(function (data) {
       $scope.model = data.user;
       if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('email_is_not_verified') !== -1) {
-        $scope.missingEmailVerification = true;
+        $scope.emailIsNotVerified = true;
       }
-      // Set missing data
-      for (var i = 0; i < data.missing_data.length; i++) {
-        $scope.show[data.missing_data[i]] = true;
+      if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('invalid_profile_data') !== -1) {
+        $scope.invalidProfileData = true;
+        // Set invalid data
+        for (var i = 0; i < data.invalid_data.length; i++) {
+          $scope.show[data.invalid_data[i]] = true;
+        }
+      }
+      if (typeof data.profile_status != 'undefined' && data.profile_status.indexOf('missing_profile_data') !== -1) {
+        $scope.missingProfileData = true;
+        // Set missing data
+        for (var i = 0; i < data.missing_data.length; i++) {
+          $scope.show[data.missing_data[i]] = true;
+        }
       }
     }, function (data) {
     });

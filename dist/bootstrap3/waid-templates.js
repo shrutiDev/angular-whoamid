@@ -798,8 +798,11 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
   $templateCache.put('/templates/idm/register.html?v=0.0.44',
     "<div class=\"waid\">\n" +
     " <div>\n" +
-    "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_intro') }}</div>\n" +
-    "      <div class=\"alert alert-warning\" ng-show=\"missingEmailVerification\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'complete_profile_email_allready_sent') }}</div>\n" +
+    "      <div ng-show=\"modus=='complete'\" class=\"alert alert-warning\" ng-show=\"missingProfileData\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'missing_profile_data') }}</div>\n" +
+    "      <div class=\"alert alert-warning\" ng-show=\"emailIsNotVerified\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'email_is_not_verified') }}</div>\n" +
+    "      <div class=\"alert alert-warning\" ng-show=\"invalidProfileData\"><span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> {{ ::waid.config.getTranslation('idm', 'invalid_profile_data') }}</div>\n" +
+    "\n" +
+    "\n" +
     "    <form role=\"form\" name=\"registerForm\" novalidate>\n" +
     "      <div class=\"form-group has-feedback\" ng-class=\"errors.username ? 'has-error' : ''\" ng-show=\"show.username\">\n" +
     "          <label for=\"id_username\">{{ ::waid.config.getTranslation('idm', 'register_form_username') }}</label>\n" +
@@ -940,7 +943,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "<div class=\"waid\">\n" +
     "  <span>Rate</span>\n" +
     "  <a href=\"#\" ng-repeat=\"star in stars\" ng-click=\"rate(star.value)\" ng-mouseover=\"rateOver(star.value)\" ng-mouseout=\"rateOut()\"><i class=\"glyphicon\" ng-class=\"star.active ? 'glyphicon-star' : 'glyphicon-star-empty'\"></i></a>\n" +
-    "  <span ng-show=\"rating.total_votes > 1\">({{ rating.total_votes }} votes)</span>\n" +
+    "  <span ng-show=\"rating.total_votes > 1\">(<a href=\"\" popover-placement=\"bottom\" uib-popover-html=\"'<b>HTML</b>, <i>inline</i>'\" popover-trigger=\"'click mouseenter mouseleave outsideClick'\">{{ rating.total_votes }} votes</a>)</span>\n" +
     "</div>\n"
   );
 }]);
