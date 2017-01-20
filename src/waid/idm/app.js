@@ -89,7 +89,7 @@ angular.module('waid.idm', [
       'register_form_email': 'E-mailadres',
       'register_form_password': 'Wachtwoord',
       'register_submit_register': 'Registreren',
-      'register_submit_register_complete': 'Registratie afronden',
+      'register_submit_register_complete': 'Gegevens opslaan',
       'terms_and_conditions_check': 'Ik ga akkoord met de <a ng-click="waid.openTermsAndConditionsModal()">algemene voorwaarden</a>.',
       'terms_and_condition_modal_title': 'Algemene voorwaarden',
       'terms_and_condition_modal_close': 'Sluiten',

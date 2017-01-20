@@ -153,7 +153,7 @@ module.exports = function (grunt) {
               src: [
                 'src/waid-bootstrap3/js/dependencies/angular-confirm.js',
                 'src/waid-bootstrap3/js/dependencies/angular-growl.js',
-                'src/bower_components/angular-bootstrap/ui-bootstrap.js',
+                'src/waid-bootstrap3/js/dependencies/ui-bootstrap.js',
                 'src/bower_components/angular-bootstrap/ui-bootstrap-tpls.js'
               ],
               dest: 'dist/bootstrap3/waid-dependencies.js'

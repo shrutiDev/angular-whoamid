@@ -433,12 +433,12 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
           // Still needed?
           that.authenticated = true;
           waidCore.user = data;
-          $rootScope.$broadcast('waid.services.authenticate.ok', that);
+          $rootScope.$broadcast('waid.services.authenticate.ok', data);
           deferred.resolve(data);
         }, function (data) {
           // Still needed?
           that.authenticated = false;
-          $rootScope.$broadcast('waid.services.authenticate.error', that);
+          $rootScope.$broadcast('waid.services.authenticate.error', data);
           deferred.reject(data);
         });
       } else {

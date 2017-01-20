@@ -943,7 +943,7 @@ angular.module('waid.templates',[]).run(['$templateCache', function($templateCac
     "<div class=\"waid\">\n" +
     "  <span>Rate</span>\n" +
     "  <a href=\"#\" ng-repeat=\"star in stars\" ng-click=\"rate(star.value)\" ng-mouseover=\"rateOver(star.value)\" ng-mouseout=\"rateOut()\"><i class=\"glyphicon\" ng-class=\"star.active ? 'glyphicon-star' : 'glyphicon-star-empty'\"></i></a>\n" +
-    "  <span ng-show=\"rating.total_votes > 1\">(<a href=\"\" popover-placement=\"bottom\" uib-popover-html=\"'<b>HTML</b>, <i>inline</i>'\" popover-trigger=\"'click mouseenter mouseleave outsideClick'\">{{ rating.total_votes }} votes</a>)</span>\n" +
+    "  <span ng-show=\"rating.total_votes > 1\">({{ rating.total_votes }} votes)</span>\n" +
     "</div>\n"
   );
 }]);
