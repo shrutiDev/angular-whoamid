@@ -67,8 +67,11 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
           that._clearAuthorizationData();
         }
         // Forbidden, send out event..
-        if (response.data == 403) {
+        if (response.status == 403) {
           $rootScope.$broadcast('waid.core.services.noPermission', response.data);
+        }
+        if (response.status == 401) {
+          $rootScope.$broadcast('waid.core.services.unAuthorized', response.data);
         }
         if (status == 0) {
           if (response.data == '') {

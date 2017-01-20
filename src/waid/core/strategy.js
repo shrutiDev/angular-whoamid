@@ -226,7 +226,7 @@ angular.module('waid.core.strategy', [
           })
         })
       }, function(){
-        console.log('Fatal error when ');
+        console.log('Fatal error when initializing...');
       });
 
       // Handle error code
@@ -287,6 +287,13 @@ angular.module('waid.core.strategy', [
       waidService.userCompleteProfileGet().then(function (data) {
         waidCore.profileCheck(data);
       });
+    }
+  });
+
+    // When 401 response is given check if profile is valid
+  $rootScope.$on('waid.core.services.unAuthorized', function (event, data) {
+    if (waidCore.user) {
+      waidCore.clearUserData();
     }
   });
 

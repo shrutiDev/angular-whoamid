@@ -117,7 +117,6 @@ angular.module('waid.core', ['ngCookies', 'LocalStorageModule']).service('waidCo
     if (waid) {
       try{
         var decrypted = CryptoJS.AES.decrypt(waid, $location.host());
-        console.log(JSON.parse(decrypted.toString(CryptoJS.enc.Utf8)));
         return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
       } catch (err) {
         return false;

@@ -274,7 +274,6 @@ angular.module('waid.core.app.strategy', [
   $rootScope.$on('waid.idm.strategy.action.doNotLinkSocialProfile', function (event) {
     //console.log('waid.idm.strategy.action.doNotLinkSocialProfile');
     // Remove inactive linked social profiles
-    console.log('NEEN');
     waidService.userLinkSocialProfileDelete();
     waidCore.closeLinkSocialProfileModal();
   });
