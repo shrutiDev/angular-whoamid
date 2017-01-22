@@ -18,7 +18,7 @@ angular.module('waid', [
   }
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.47';
+  waidCore.config.version = '0.0.48';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -646,7 +646,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         if (response.status == 401) {
           $rootScope.$broadcast('waid.core.services.unAuthorized', response.data);
         }
-        if (status == 0) {
+        if (response.status == 0) {
           if (response.data == '') {
             response.data = {};
             response.data.status = 0;

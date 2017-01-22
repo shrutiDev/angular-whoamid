@@ -213,8 +213,12 @@ angular.module('waid.core.app.strategy', [
       }, 1000);
     }
     waidCore.closeCompleteProfileModal();
-    if (data.profile_status.indexOf('email_is_not_verified') !== -1) {
-      growl.addErrorMessage('Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.', { ttl: -1 });
+    if (data.profile_status.indexOf('profile_ok') !== -1) {
+      growl.addSuccessMessage('Je bent succesvol ingelogd.');
+    } else {
+      if (data.profile_status.indexOf('email_is_not_verified') !== -1) {
+        growl.addErrorMessage('Er is activatie e-mail verstuurd. Controleer je e-mail om de login te verifieren.', { ttl: -1 });
+      }
     }
   });
 
@@ -227,6 +231,9 @@ angular.module('waid.core.app.strategy', [
     var lastProfileFieldSet = waidCore.getLastProfileFieldSet();
     if (lastProfileFieldSet) {
       waidCore.openUserProfileHome(lastProfileFieldSet);
+    }
+    if (data.profile_status.indexOf('profile_ok') !== -1) {
+      growl.addSuccessMessage('Je bent succesvol ingelogd.');
     }
   });
 
@@ -279,15 +286,18 @@ angular.module('waid.core.app.strategy', [
   });
 
   $rootScope.$on('waid.services.application.userLinkSocialProfile.post.ok', function (event, data) {
+    if (data.profile_status.indexOf('profile_ok') !== -1) {
+      growl.addSuccessMessage('Je bent succesvol ingelogd.');
+    }
     waidCore.closeLinkSocialProfileModal();
   });
-  $rootScope.$on('waid.services.application.userCompleteProfile.post.ok', function (event, data) {
-    waidCore.closeCompleteProfileModal();
-  });
+
 
   $rootScope.$on('waid.services.application.userLogin.post.ok', function (event, data) {
     waidCore.closeLoginAndRegisterModal();
-    //console.log('waid.services.application.userLogin.post.ok');
+    if (data.profile_status.indexOf('profile_ok') !== -1) {
+      growl.addSuccessMessage('Je bent succesvol ingelogd.');
+    }
   });
   $rootScope.$on('waid.core.strategy.errorCode', function(event, data){
     growl.addErrorMessage(waidCore.config.getTranslation('idm', data.errorCode));

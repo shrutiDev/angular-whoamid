@@ -73,7 +73,7 @@ angular.module('waid.core.services', ['waid.core']).service('waidService', funct
         if (response.status == 401) {
           $rootScope.$broadcast('waid.core.services.unAuthorized', response.data);
         }
-        if (status == 0) {
+        if (response.status == 0) {
           if (response.data == '') {
             response.data = {};
             response.data.status = 0;
