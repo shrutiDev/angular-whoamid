@@ -133,7 +133,7 @@
                 <div class="form-group has-feedback" ng-class="errors[fieldDefinition.name] ? 'has-error' : ''">
                   <div class="checkbox" ng-repeat="row in fieldDefinition.data">
                     <label>
-                      <input type="checkbox" ng-model="model[fieldDefinition.name][row.id]" ng-change="fieldChange(fieldDefinition.name)"> {{ row.name }}
+                      <input type="checkbox" ng-model="model[fieldDefinition.name][row.id]" value="row" ng-change="fieldChange(fieldDefinition.name)"> {{ row.name }}
                     </label>
                   </div>
                   <div class="alert alert-danger" ng-repeat="error in errors[fieldDefinition.name]"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span> {{error}}</div>

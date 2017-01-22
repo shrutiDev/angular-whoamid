@@ -18,7 +18,7 @@ angular.module('waid', [
   }
 ]).run(function (waidCore, waidCoreStrategy, waidCoreAppStrategy, waidService) {
   waidCore.config.baseTemplatePath = '';
-  waidCore.config.version = '0.0.48';
+  waidCore.config.version = '0.0.49';
   waidCore.config.setConfig('api', {
     'environment': {
       'development': { 'url': 'dev.whoamid.com:8000/nl/api' },
@@ -2037,6 +2037,8 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
     }
     return data;
   };
+
+
   $scope.formatDataToApi = function (data) {
     var fieldDefinitions = $scope.getAllFieldDefinitions();
     var fieldValues = {};
@@ -2053,6 +2055,21 @@ angular.module('waid.idm.controllers', ['waid.core']).controller('WAIDIDMTermsAn
           continue;
         }
       }
+
+      if (fieldDefinition.type == 'multipleCheckbox') {
+        // If input is array, try to make an object...
+        if (typeof data[fieldDefinition.name] == 'array') {
+          var new_values = {};
+          for(var i=0; i < data[fieldDefinition.name].length; i++) {
+            if (typeof data[fieldDefinition.name][i] != 'undefined') {
+              new_values[i] = data[fieldDefinition.name][i];
+            }
+          }
+          fieldValues[fieldDefinition.name] = new_values;
+          continue;
+        }
+      }
+      
       fieldValues[fieldDefinition.name] = data[fieldDefinition.name];
     }
     return fieldValues;
