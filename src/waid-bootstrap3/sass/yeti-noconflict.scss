@@ -5,6 +5,8 @@
 }
 
 .waid {
+	all:initial;
+	font:inherit;
 	@import "_main.scss";
 	@import "_noconflict.scss";
 	@import "_ui-bootstrap.scss";

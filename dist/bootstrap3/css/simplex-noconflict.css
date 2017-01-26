@@ -5,6 +5,8 @@
   height: 100px; }
 
 .waid {
+  all: initial;
+  font: inherit;
   /* HTML5 display-role reset for older browsers */
   /* makes the font 33% larger relative to the icon container */
   /* Deprecated as of 4.4.0 */
